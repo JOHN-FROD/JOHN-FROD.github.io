@@ -20,7 +20,7 @@
   <entry>
     <title>PHP基础</title>
     <url>/2021/01/23/PHP%E5%9F%BA%E7%A1%80/</url>
-    <content><![CDATA[<h1 id="PHP基础"><a href="#PHP基础" class="headerlink" title="PHP基础"></a>PHP基础</h1><h2 id="PHP语法初步"><a href="#PHP语法初步" class="headerlink" title="PHP语法初步"></a>PHP语法初步</h2><p>PHP是一种运行在服务器端的脚本语言，可以嵌入到HTML中。</p>
+    <content><![CDATA[<h2 id="PHP语法初步"><a href="#PHP语法初步" class="headerlink" title="PHP语法初步"></a>PHP语法初步</h2><p>PHP是一种运行在服务器端的脚本语言，可以嵌入到HTML中。</p>
 <h2 id="代码标记"><a href="#代码标记" class="headerlink" title="代码标记"></a>代码标记</h2><p>在PHP历史发展中，可以使用多种标记来区分PHP脚本。</p>
 <p>ASP标记：&lt;% php代码 %&gt;</p>
 <p>短标记：&lt;? php代码 ?&gt; ，以上两种基本启用，如果要使用需要在配置文件中开启</p>
@@ -923,6 +923,732 @@
 <p>​    4、匹配</p>
 <p>​    5、然后根据大小重定边界</p>
 <figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//查找算法：二分查找算法</span></span><br><span class="line"><span class="variable">$arr</span> = <span class="keyword">array</span>(<span class="number">1</span>,<span class="number">3</span>,<span class="number">6</span>,<span class="number">8</span>,<span class="number">23</span>,<span class="number">68</span>,<span class="number">100</span>);</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">check_break</span>(<span class="params"><span class="variable">$arr</span>,<span class="variable">$res</span></span>)</span>&#123;</span><br><span class="line">    <span class="comment">//1、得到数组的边界</span></span><br><span class="line">    <span class="variable">$right</span> = count(<span class="variable">$arr</span>);</span><br><span class="line">    <span class="variable">$left</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//循环匹配</span></span><br><span class="line">    <span class="keyword">while</span>(<span class="variable">$left</span> &lt;= <span class="variable">$right</span>)&#123;</span><br><span class="line">        <span class="comment">//3、得到中间位置</span></span><br><span class="line">        <span class="variable">$middle</span> = floor((<span class="variable">$left</span> + <span class="variable">$right</span>) / <span class="number">2</span>);</span><br><span class="line">        <span class="comment">//4、匹配数据</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="variable">$arr</span>[<span class="variable">$middle</span>] == <span class="variable">$res</span>)&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="variable">$middle</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//5、没有找到</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="variable">$arr</span>[<span class="variable">$middle</span>] &lt;= <span class="variable">$res</span>)&#123;</span><br><span class="line">            <span class="comment">//值在右边</span></span><br><span class="line">            <span class="variable">$left</span> = <span class="variable">$middle</span> + <span class="number">1</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="comment">//值在左边</span></span><br><span class="line">            <span class="variable">$right</span> = <span class="variable">$middle</span> - <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br><span class="line">var_dump(check_break(<span class="variable">$arr</span>,<span class="number">100</span>));		<span class="comment">//float(6)</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>PHP</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>面向对象基础</title>
+    <url>/2021/01/25/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%9F%BA%E7%A1%80/</url>
+    <content><![CDATA[<blockquote>
+<p>引入：计算机编程在历史的发展长河中，经历了多次<code>版本变革</code>，变化的轨迹是伴随着硬件的发展和人们对于计算机的认知以及需求。</p>
+</blockquote>
+<ul>
+<li><p>机器语言：即开发者（科学家）使用<code>0</code>和<code>1</code>组成命令，然后在特定计算机上执行</p>
+<ul>
+<li><p>优点：执行效率高</p>
+</li>
+<li><p>缺点：开发难度大、移植性差、开发成本高</p>
+</li>
+</ul>
+</li>
+<li><p>汇编语言：开发者使用简洁<code>英文字母</code>和<code>符号</code>组成，让计算机读取后根据符号进行加工执行</p>
+<ul>
+<li>优点：指令简单明了、推广性高</li>
+<li>缺点：移植性差、功能简单</li>
+</ul>
+</li>
+<li><p>高级计算机语言：开发者使用类似自然语言的<code>符号</code>组成，高级语言根据编程思想分为<code>面向过程编程</code>和<code>面向对象编程</code>两种，然后系统对程序代码进行编译（需要第三方编译器）然后执行</p>
+<ul>
+<li>优点：移植性强、可读性强、推广性非常高</li>
+<li>缺点：执行效率降低</li>
+</ul>
+</li>
+</ul>
+<p><strong>面向过程编程</strong></p>
+<ul>
+<li><p>将要解决的问题（功能需求）分解成具体的步骤，然后通过<strong>函数编程</strong>实现每一个步骤，最后通过函数规定好的顺序调用完成</p>
+</li>
+<li><p>面向过程编程思想的优点</p>
+<ul>
+<li>能够针对步骤拆分，进行模块化封装（函数）</li>
+<li>可以实现代码复用，从而节省开发成本</li>
+</ul>
+</li>
+<li><p>面向过程编程思想的缺点</p>
+<ul>
+<li>不够灵活维护，流程一旦确定就必须按照既定方式执行到底。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>小结</strong></p>
+</blockquote>
+<p>1、计算机编程从对开发人员要求极高到要求不高，是一代代人坚持不懈的结果</p>
+<p>2、面向对象编程是目前最为符合人类思维逻辑的一种编程思想</p>
+<h2 id="一、面向对象编程思想"><a href="#一、面向对象编程思想" class="headerlink" title="一、面向对象编程思想"></a>一、面向对象编程思想</h2><h3 id="面向对象编程思想概念及原理"><a href="#面向对象编程思想概念及原理" class="headerlink" title="面向对象编程思想概念及原理"></a>面向对象编程思想概念及原理</h3><blockquote>
+<p><strong>定义</strong>：面向对象编程也叫做OOP编程（Objected Oriented Programming），是一种基于面向过程的开发思想。与面向过程强调分解事务步骤相似，面向对象更需要追求事务操作的“主体”，也就是<code>对象</code></p>
+</blockquote>
+<ol>
+<li>面向对象编程是一种编程思想，不是一种具体技术</li>
+<li>面向对象是在面向过程基础之上发展而来，因此也是一种模块化编程思想（有函数）</li>
+<li>面向对象能够更加方便的实现代码的重复利用（适用于大型项目）</li>
+<li>在面向对象思维中，任何动作的执行或者数据都属于对象（一切皆对象）</li>
+</ol>
+<blockquote>
+<p><strong>小结</strong></p>
+</blockquote>
+<ol>
+<li>面向对象编程是一种编程思想，与技术无关</li>
+<li>面向对象编程的本质是增加数据和功能的操作主体，即对象</li>
+<li>面向对象中所有的数据和功能都是由主体（对象）来调用和操作</li>
+</ol>
+<h2 id="二、面向对象基础"><a href="#二、面向对象基础" class="headerlink" title="二、面向对象基础"></a>二、面向对象基础</h2><blockquote>
+<p><strong>思考</strong>：按照面向对象编程思想逻辑，先编写好对应的功能函数，然后再放到某个主体中。那么已经写好的函数如何放到某个主体中去呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：上述图片中描述的是思想的实现，在实际编写代码的过程中，肯定不是这么去实现的。面向对象中，对于一些思想产物有一些不同的称呼。</p>
+</blockquote>
+<h3 id="1-面向对象关键字说明【掌握】"><a href="#1-面向对象关键字说明【掌握】" class="headerlink" title="1.面向对象关键字说明【掌握】"></a>1.面向对象关键字说明【掌握】</h3><blockquote>
+<p><strong>定义</strong>：面向对象关键字说明，即在面向对象思想设计的程序中，有一些关键的结构用词。在面向对象中，关键结构包括以下几个：</p>
+</blockquote>
+<ol>
+<li>类：class，是定义面向对象主体的最外层结构，用来包裹主体的数据和功能（函数）。类是一类具有共性事务的代表，代表的是事务的共性。</li>
+<li>对象：object，是某类事务的具体代表，也是实际数据和功能操作的具体单元，也被称之为实例（instance）</li>
+<li>实例化：new，从一个抽象的概念(类)得到一个符合抽象概念的具体实例(对象)的过程</li>
+<li>类成员：member，指类class结构中的所有内容，类成员里有三种</li>
+</ol>
+<ul>
+<li>方法：method，本质是在类class结构中创建的函数，也称之为<code>成员方法</code>或者成员函数</li>
+<li>属性：property，本质是在类class结构中创建的变量，也称之为<code>成员变量</code></li>
+<li>类常量：constant，本质是在类class结构中创建的常量</li>
+</ul>
+<blockquote>
+<p><strong>总结</strong>：面向对象基础中没有本质多出很多东西，基本只是将原来面向过程的内容进行一层包裹而已。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：面向对象编程到底是如何用代码实现这样的编程思想的呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：其实所有的编程都大同小异：编写程序–&gt;运行程序。只是根据不同的思想会有不同的关键字让系统识别而已。</p>
+</blockquote>
+<h3 id="2-面向对象简单技术实现【掌握】"><a href="#2-面向对象简单技术实现【掌握】" class="headerlink" title="2.面向对象简单技术实现【掌握】"></a>2.面向对象简单技术实现【掌握】</h3><blockquote>
+<p><strong>定义</strong>：面向对象思维的实现，就是利用面向对象提供的关键字和代码规范来进行编程，而这里面最核心的两个部分就是类class和对象object</p>
+</blockquote>
+<ol>
+<li>定义类基本语法：class 类名{}</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">    <span class="comment">//定义一个空类</span></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Nothing</span></span>&#123;    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>类class是一种结构，如果写好没有语法错误的情况下，代码不会执行（与函数定义一样），也无法打印输出</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">clsss Nothing&#123;&#125;</span><br><span class="line">var_dump(Nothing);		<span class="comment">//错误，提示未定义的常量</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>类的命名规范：类的命名规范与函数类似，区别在于人为的通常会将类名的首字母大写</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//有效类名</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">My1</span></span>&#123;&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">My_1</span></span>&#123;&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">_My1</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//无效类名</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> 1<span class="title">My</span></span>&#123;&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> 1<span class="title">_my</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>如果碰到多单词组成的类名，通常使用驼峰法</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyClass</span></span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>类无法直接访问，需要得到类的具体对象才能访问，可以通过<strong>实例化</strong>new来实现对象的创建：new 类名[()]</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">My</span></span>&#123;&#125;</span><br><span class="line"><span class="keyword">new</span> My;			<span class="comment">//创建一个My类的对象</span></span><br><span class="line"><span class="keyword">new</span> My();		<span class="comment">//创建一个My类的对象</span></span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>对象创建后可以直接使用或者打印，但是为了方便后续使用，通常使用变量保存实例化的对象</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">My</span></span>&#123;&#125;</span><br><span class="line">var_dump(<span class="keyword">new</span> My);	<span class="comment">//直接打印输出对象</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$m</span> = <span class="keyword">new</span> My;		<span class="comment">//保存对象</span></span><br><span class="line">var_dump(<span class="variable">$m</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印结果</span></span><br><span class="line"><span class="keyword">object</span>(My)<span class="comment">#1 (0) &#123; &#125; object(My)#2 (0) &#123; &#125;</span></span><br><span class="line"><span class="keyword">object</span>：对象</span><br><span class="line">(My)：类名 </span><br><span class="line"><span class="comment">#1：编号</span></span><br><span class="line">(<span class="number">0</span>)：成员变量（属性）个数   </span><br><span class="line">&#123;&#125;：具体成员变量信息（键值对）</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>通过class关键字 + 类名 +{}创建类</li>
+<li>类是一种结构，不会自动运行，也不能输出</li>
+<li>通过new 类名实例化对象得到类的具体对象（具象）</li>
+<li>可以通过new实例化无限个对象</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：上面定义的类就是个空类，里面什么都没有，类里面能够放些什么东西呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：通常空类没有什么价值，需要往类里填充<code>类成员</code>，这样的类才有价值，这样的类实例化得到的对象才有意义。</p>
+</blockquote>
+<h3 id="3-类成员【掌握】"><a href="#3-类成员【掌握】" class="headerlink" title="3.类成员【掌握】"></a>3.类成员【掌握】</h3><blockquote>
+<p><strong>定义</strong>：类成员，指直接定义在类结构{}内部的一级成员，即直接依赖{}的成员。在PHP中类成员有三种：成员变量（属性），成员方法（成员函数）和类常量</p>
+</blockquote>
+<ol>
+<li>成员变量：就是在类结构{}下直接定义的变量，但是定义的方式与普通变量稍微有点不同，需要在变量名字前使用一个关键字public，定义语法：public 变量名字 [= 值];，成员变量可以赋值也可以不赋值。</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//定义买家类：买家有姓名，有钱</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Buyer</span></span>&#123;</span><br><span class="line">	<span class="comment">//$name;			//错误</span></span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$name</span>;		 <span class="comment">//正确：没有赋值</span></span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$money</span> = <span class="number">0</span>;	 <span class="comment">//正确：有赋值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>成员变量访问：成员变量必须通过对象才能进行访问，也就是需要先通过实例化得到对象，然后通过对象实现对成员变量的增删改查：访问语法：$对象名-&gt;属性名;</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">#定义买家类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Buyer</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$name</span>;	</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$money</span> = <span class="number">0</span>;	 </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$b</span> = <span class="keyword">new</span> Buyer();</span><br><span class="line"><span class="comment">//访问属性</span></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$b</span>-&gt;money;</span><br><span class="line"><span class="comment">//修改属性</span></span><br><span class="line"><span class="variable">$b</span>-&gt;money = <span class="number">1000</span>;</span><br><span class="line"><span class="comment">//删除属性</span></span><br><span class="line"><span class="keyword">unset</span>(<span class="variable">$b</span>-&gt;name);</span><br><span class="line"><span class="comment">//新增属性</span></span><br><span class="line"><span class="variable">$b</span>-&gt;age = <span class="number">20</span>;</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：删除属性和新增属性通常使用较少，更多的属性操作是访问和修改</p>
+<ol start="3">
+<li>成员方法：就是在类结构{}下定义的函数，函数内部的内容与原来函数结构一样，可以有分支、循环结构等</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//定义买家类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Buyer</span></span>&#123;</span><br><span class="line">    <span class="comment">//定义方法</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">display</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">__CLASS__</span>;	</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>成员方法访问：成员方法也是需要通过对象进行访问的，访问语法为：$对象名-&gt;方法名字();</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//定义买家类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Buyer</span></span>&#123;</span><br><span class="line">    <span class="comment">//定义方法</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">display</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">__CLASS__</span>;	</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//实例化</span></span><br><span class="line"><span class="variable">$b</span> = <span class="keyword">new</span> Buyer();</span><br><span class="line"><span class="variable">$b</span>-&gt;display();</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>类常量：类常量是在类结构{}下定义的常量，类常量的定义只能使用一种方式：const 常量名 = 值;</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//定义买家类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Buyer</span></span>&#123;</span><br><span class="line">    <span class="comment">//定义类常量</span></span><br><span class="line">    <span class="keyword">const</span> PI = <span class="number">3.14</span>;</span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：类常量不是由对象来进行访问，所以暂时不做访问讲解，到后面知识再讲。</p>
+<ol start="6">
+<li>类成员中：属性、类常量和方法都可以无限定义，但是定义的原则是相关性。除了以上三个类成员，不能在类结构{}中直接写其他任何代码</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Buyer</span></span>&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="keyword">__CLASS__</span>;					<span class="comment">//错误</span></span><br><span class="line">    define(<span class="string">&#x27;PI&#x27;</span>,<span class="number">3.14</span>);	 			<span class="comment">//错误</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="literal">true</span>)&#123; <span class="keyword">echo</span> <span class="string">&#x27;hello world&#x27;</span>&#125;	 <span class="comment">//错误</span></span><br><span class="line">&#125;    </span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>PHP类结构中有三种成员：属性、方法和类常量</li>
+<li>类结构中只能有三种成员，不限数量，其他代码需要写到方法里面，否则报错</li>
+<li>类中属性和方法的访问方式都是通过对象来调用：$对象-&gt;属性名/方法名()；注意属性名不带$符号</li>
+<li>类中定义属性不能直接使用属性名，需要使用符号public修饰</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：属性本质是变量，只是放到类结构中而已，为什么一定要使用public呢？有什么用呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：在面向对象中，属性或者方法都是用来给对象访问的，但是有的时候并不是所有的内容都是允许对象在外部访问的，这个时候就出现<code>访问修饰限定符</code>来控制访问位置。</p>
+</blockquote>
+<h3 id="4-访问修饰限定符【掌握】"><a href="#4-访问修饰限定符【掌握】" class="headerlink" title="4.访问修饰限定符【掌握】"></a>4.访问修饰限定符【掌握】</h3><blockquote>
+<p><strong>定义</strong>：访问修饰限定符，是一种用在属性或者方法前的修饰关键字，是用来控制属性或者方法的访问位置的。在PHP中访问修饰限定符分为三种：public、protected和private</p>
+</blockquote>
+<ol>
+<li>首先需要明白一组概念类的内部和外部</li>
+</ol>
+<ul>
+<li>类内部：是指类定义的内容内部，即类名后{}内部</li>
+<li>类外部：是指类定义的外部内容，即类名后{}之外的所有地方</li>
+<li>类成员的访问权限控制是内部访问（私有）、链内部访问（受保护）和全部访问（公有）</li>
+</ul>
+<ol start="2">
+<li>public：公有，即表示所修饰的内容（属性或者方法）可以在当前类的内部访问，也可以在类的外部访问</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  <span class="comment">//公有属性</span></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$count</span> = <span class="number">100</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$s</span>-&gt;count;				<span class="comment">//正常输出100</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>protected：受保护，即表示所修饰的内容只能在<code>类的内部</code>访问（在学习继承时再讲）</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  <span class="comment">//受保护属性</span></span><br><span class="line">  <span class="keyword">protected</span> <span class="variable">$discount</span> = <span class="number">0.8</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$s</span>-&gt;discount;				<span class="comment">//错误：受保护属性不允许在类外访问</span></span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>private：私有，即表示所修饰的内容只能在<code>当前类的内部</code>访问</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  <span class="comment">//私有属性</span></span><br><span class="line">  <span class="keyword">private</span> <span class="variable">$money</span> = <span class="number">100</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$s</span>-&gt;money;				<span class="comment">//错误：私有属性不允许在类外访问</span></span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>访问修饰限定符不只是限定属性，也用来限定方法</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  <span class="comment">//属性</span></span><br><span class="line">  <span class="keyword">public</span> <span class="variable">$count</span> = <span class="number">100</span>;</span><br><span class="line">  <span class="keyword">protected</span> <span class="variable">$discount</span> = <span class="number">0.8</span>;</span><br><span class="line">  <span class="keyword">private</span> <span class="variable">$money</span> = <span class="number">100</span>;</span><br><span class="line">    </span><br><span class="line">  <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getCount</span>(<span class="params"></span>)</span>&#123;&#125;	</span><br><span class="line">  <span class="keyword">protected</span> <span class="function"><span class="keyword">function</span> <span class="title">getDiscount</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line">  <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">getMoney</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">getAll</span>(<span class="params"></span>)</span>&#123;&#125;					<span class="comment">#如果没有指定访问修饰限定符，默认public</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>访问修饰限定符分为三种：public、protected和private，访问权限依次降低</li>
+<li>访问修饰限定符限定的是成员到底在哪里能被访问，私有和受保护都只能在类内部访问，公有可以在任何地方访问（但都必须是对象去访问）</li>
+<li>属性必须写清楚访问修饰限定符，方法可以省去（不建议），因为系统默认是public</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：前面访问修饰限定符描述的只是在外部调用访问，怎么能够体现在类的内部访问呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：类的内部如果是在类结构{}后，除了类三种成员，不能有别的代码；但是类成员方法内部可以写任何代码，因此可以在类方法内部实现访问：此时方法运行的内部环境属于类内部。</p>
+</blockquote>
+<h3 id="5-类内部对象【掌握】"><a href="#5-类内部对象【掌握】" class="headerlink" title="5.类内部对象【掌握】"></a>5.类内部对象【掌握】</h3><blockquote>
+<p><strong>定义</strong>：类成员属性和方法的访问必须通过对象才能访问，类外部可以通过实例化得到类对象从而实现成员访问，但是类内部又不能访问类外部的对象（未知），此时类的内部就内置了一个对象$this代表来访对象。</p>
+</blockquote>
+<ol>
+<li>尝试在类内部方法中访问属性</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span> = <span class="number">100</span>;</span><br><span class="line">  	<span class="keyword">protected</span> <span class="variable">$discount</span> = <span class="number">0.8</span>;</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span> = <span class="number">100</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getAll</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="variable">$count</span>,<span class="variable">$discount</span>,<span class="variable">$money</span>;	<span class="comment">//全部错误：提示未定义的“变量”</span></span><br><span class="line">    &#125;					</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s</span>-&gt;getAll();</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：方法本质是定义在类内部的函数，因此受制于作用域的问题，在方法内部访问的变量系统认定为局部变量（必须内部定义或者参数传入），否则就会提示未定义</p>
+<ol start="2">
+<li>类内部访问类成员，需要通过对象来进行访问</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span> = <span class="number">100</span>;</span><br><span class="line">  	<span class="keyword">protected</span> <span class="variable">$discount</span> = <span class="number">0.8</span>;</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span> = <span class="number">100</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getAll</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">       <span class="comment">//需要获取到对象名字：因为方法本身就是函数，访问外部全局变量可以通过global引入实现</span></span><br><span class="line">        <span class="keyword">global</span> <span class="variable">$s</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="variable">$s</span>-&gt;count,<span class="variable">$s</span>-&gt;discount,<span class="variable">$s</span>-&gt;money;		<span class="comment">#正确输出</span></span><br><span class="line">    &#125;					</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s</span>-&gt;getAll();</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>思考这样一个问题：类一开始定义好，但是对象实例化是在需要使用该类的时候来调用的，如何保证外部保存对象的变量一定是$s呢？对象可以创建多个，如果有多个对象变量，那内部怎么实现呢？如果系统内部能够检测到是哪个对象在调用方法，并且能够复制对应对象就好了，这个就是类成员方法<code>内置对象$this</code></li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span> = <span class="number">100</span>;</span><br><span class="line">  	<span class="keyword">protected</span> <span class="variable">$discount</span> = <span class="number">0.8</span>;</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span> = <span class="number">100</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getAll</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        var_dump(<span class="keyword">$this</span>);</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">$this</span>-&gt;count,<span class="keyword">$this</span>-&gt;discount,<span class="keyword">$this</span>-&gt;money;		<span class="comment">#正确输出</span></span><br><span class="line">    &#125;					</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s</span>-&gt;getAll();</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li><p>由上述代码可见：$this代表的是对象，而$this所在环境为类内部的方法内部，所以$this对象是在类内部访问，因此可以访问所有的属性和方法，不受访问修饰限定符限制</p>
+</li>
+<li><p>$this、class和new之间的关系原理</p>
+</li>
+</ol>
+<ul>
+<li><p>class是定义类结构，属于非执行段代码，因此会被加载到代码段（编译阶段）</p>
+</li>
+<li><p>new是实例化对象，先判定类在内存（代码段）是否存在</p>
+<ul>
+<li>类不存在，报错；</li>
+<li>类存在，将类内部的属性部分复制一份，然后在内存（堆区）开辟一块内存空间，将属性放到里面，同时内部有一个指针指向类的内存空间（代码段）</li>
+<li>对象访问属性即访问的是对象空间里存储的部分</li>
+<li>对象访问方法是对象通过内部指针找到类空间中的方法，然后在内存（栈区）开辟运行</li>
+</ul>
+</li>
+<li><p>$this是系统在方法内置的对象通用名字</p>
+<ul>
+<li><p>对象在调用方法的时候，系统会自动找到对象所保存的内存地址（堆区），然后把地址赋值给$this</p>
+</li>
+<li><p>方法内部的$this就代表调用当前$this所在方法的外部对象</p>
+</li>
+<li><p>$this的本质是函数内部的一个局部变量，只是系统自动对其进行赋值，而且一定是调用方法的对象本身</p>
+</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>类内部方法内有一个内置对象$this，代表访问该方法的外部对象</li>
+<li>类在实例化对象的时候要保证内存中有该类</li>
+<li>一个类可以实例化多个对象，每个对象访问成员方法时，$this就代表对应对象</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：面向对象中，属性在定义类结构的时候是否需要赋值？到底该如何使用访问修饰限定符呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：站在开发者的角度，并没有任何强制规定属性在类中定义的时候就需要初始化，也没有任何规定访问修饰限定符到底该用哪个。但是从业务需求和隐私保护角度出发，有一些规则需要我们遵循。</p>
+</blockquote>
+<h3 id="6-面向对象开发规范【掌握】"><a href="#6-面向对象开发规范【掌握】" class="headerlink" title="6.面向对象开发规范【掌握】"></a>6.面向对象开发规范【掌握】</h3><blockquote>
+<p><strong>定义</strong>：面向对象规范是指我们在开发时，在技术没有强制规定的情况下，应该采用什么样的方式来协助我们进行代码的书写。</p>
+</blockquote>
+<ol>
+<li>属性的初始化：属性是类对于同类事务所抽离出来的共性<code>数据</code>，本身在类结构中没有价值，是当具体对象产生之后，属于对象本身的。因此在进行类中定义属性的时候，通常不会对属性进行初始化，除非属性本身的值也具有共性</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">    <span class="comment">//某个卖家拥有的商品数量，每位具体卖家对象拥有的不可能一样，所以没必要初始化</span></span><br><span class="line">  	<span class="keyword">protected</span> <span class="variable">$discount</span>;</span><br><span class="line">    <span class="comment">//某个卖家针对销售的折扣，同样没有统一的价值</span></span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//某个卖家的账户余额，任何一位卖家一开始做生意的时候，账户余额都为0，所以可以初始化</span></span><br><span class="line">    </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>属性的初始化：属性在类中初始化的基本判定就是数据是否初始化的时候统一，如果数据统一（即初始化），那么所有对象在生成之后，就拥有对应的值；如果不初始化，意味着所有对象在生成后，应该对属性进行赋值。</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span> = <span class="number">0</span>;</span><br><span class="line">&#125;  </span><br><span class="line">  </span><br><span class="line"><span class="comment">//实例化</span></span><br><span class="line"><span class="variable">$s1</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s2</span> = <span class="keyword">new</span> Saler();	<span class="comment">//所有对象都有两个属性，其中$count都没有数据，而$money都为0</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//生成对象后，对象对自己的属性进行初始化</span></span><br><span class="line"><span class="variable">$s1</span>-&gt;count = <span class="number">100</span>;	</span><br><span class="line"><span class="variable">$s2</span>-&gt;count = <span class="number">1000</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>访问修饰限定符选择：访问修饰限定符是用来限制类成员被对象访问时对象所处位置的。访问的权限从public、protected到private依次变小。使用规则如下：</li>
+</ol>
+<ul>
+<li>设定好的类成员本身不会被外部用到，那么应该使用private或者protected</li>
+<li>设定好的类成员一定会给外部访问，使用public</li>
+<li>属性通常private居多，如果需要外部访问属性，通常会定义相关方法来实现属性的查看和修改，因为可以在方法内对数据逻辑进行代码控制，安全</li>
+<li>总之一句话：尽可能增加类对成员的控制（尽可能多使用private，少使用public）</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span> = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//增加方法操作私有属性money</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">getMoney</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;money;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">setMoney</span>(<span class="params"><span class="variable">$money</span></span>)</span>&#123;</span><br><span class="line">        <span class="comment">//可以对逻辑进行修改，对数据进行安全判定，保证数据的安全性</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;money = <span class="variable">$money</span>;</span><br><span class="line">        <span class="comment">//$this-&gt;money是属性，$money是外部传入的参数，二者同名但是性质完全不同</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>属性在类中定义的时候，通常不会初始化值，除非所有类实例化得到的对象的某个属性需要是统一值</li>
+<li>应该尽可能增加类对成员的控制，即使用范围较小的访问修饰限定符优先</li>
+<li>属性通常是私有化的，一般是通过设定方法来实现属性的访问和修改</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：属性一般不会在类定义的时候就初始化，那实例化对象的时候，属性的数据不都是为空吗？这样的数据有什么价值呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：属性属于对象使用，在类中初始化的确没有太多价值，但是对象实例化之后如果属性数据为空也没有价值。因此通常属性都是在对象实例化的时候进行初始化的，这个时候就需要用到一种自动<code>构造</code>的方式来完成</p>
+</blockquote>
+<h3 id="7-构造方法【掌握】"><a href="#7-构造方法【掌握】" class="headerlink" title="7.构造方法【掌握】"></a>7.构造方法【掌握】</h3><blockquote>
+<p><strong>定义</strong>：构造方法__construct()，是一种类结构特有的特殊方法，该方法由系统规定好，开发人员在定义的时候只需要写<strong>抄</strong>一遍，有了构造方法的类在实例化对象之后，对象就会自动调用。</p>
+</blockquote>
+<ol>
+<li>构造方法实现：在类中增加一个方法__construct()即可</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//构造方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">__CLASS__</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>构造方法也是一个普通方法，不普通的地方在于，类实例化得到的对象会马上自动调用</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//接上述代码</span></span><br><span class="line"><span class="keyword">new</span> Saler();				<span class="comment">//输出Saler</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>构造方法的意义：构造方法是对象实例化的时候用来初始化对象的资源的，所以通常是用来初始化对象的属性或者其他资源初始化</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//构造方法：初始化属性</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;count = <span class="number">100</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;money = <span class="number">100</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>如果属性的数据在构造方法中初始化是固定写死的，那么与直接在定义类的时候初始化属性一样。意味着数据没有任何价值（所有对象都相同），因此通常是通过构造方法的参数来实现数据的外部传入</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//构造方法：初始化属性</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$count</span>,<span class="variable">$money</span></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;count = <span class="variable">$count</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;money = <span class="variable">$money</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>一旦构造方法拥有了形参，那么对象在调用该方法的时候就需要传入对应的实参，而构造方法又是自动调用的，所以需要在实例化对象的时候使用new 类名(构造方法对应的实参列表)来实现</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//接上述代码</span></span><br><span class="line"><span class="variable">$s1</span> = <span class="keyword">new</span> Saler(<span class="number">100</span>,<span class="number">100</span>);</span><br><span class="line"><span class="variable">$s2</span> = <span class="keyword">new</span> Saler(<span class="number">1000</span>,<span class="number">1000</span>);</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：之前所说的<code>new 类名</code> 和<code>new 类名()</code>没有区别是因为没有构造方法，或者构造方法没有参数限定，一旦构造方法有了参数，那么<code>new 类名</code> 就不能直接使用了。</p>
+<ol start="6">
+<li>构造方法不管再怎么特殊，也是用户定义的方法，言外之意除了在实例化对象时对象会自动调用之外，我们也可以手动调用构造方法（但是一般没有价值，因为对象实例化时会自动调用）</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//构造方法：初始化属性</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$count</span>,<span class="variable">$money</span></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;count = <span class="variable">$count</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;money = <span class="variable">$money</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//实例化</span></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler(<span class="number">100</span>,<span class="number">100</span>);			<span class="comment">//系统在new Saler(100,100)好之后，会自动调用一次</span></span><br><span class="line"><span class="variable">$s</span>-&gt;__construct(<span class="number">1000</span>,<span class="number">1000</span>);			<span class="comment">//允许手动调用</span></span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>构造方法__construct()是一种系统内置的方法，该方法的特性是会在对象实例化之后，对象立即自动调用</li>
+<li>构造方法的目的就是为了初始化资源，包含对象属性和其他资源</li>
+<li>一旦构造方法定义好之后，且构造方法自带参数，那么就只能使用<code>new 类名(参数列表)</code>方式才能正确实例化</li>
+<li>构造方法可以当做普通方法由对象调用（不建议）</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：构造方法是用来实现资源的初始化的，那么有没有需求来实现资源的释放呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：理论上讲，一种资源被初始化通常需要在不用的时候给释放掉，这样的程序才是好的程序。而PHP有个特点，就是脚本运行结束后系统自动回收所有内存，这就决定了PHP开发者大多数时候不喜欢额外做释放资源的工作。同样的，对象有构造方法初始化资源，也有<code>析构方法</code>释放资源。</p>
+</blockquote>
+<h3 id="8-析构方法【了解】"><a href="#8-析构方法【了解】" class="headerlink" title="8.析构方法【了解】"></a>8.析构方法【了解】</h3><blockquote>
+<p><strong>定义</strong>：析构方法__destruct()，也是一种类结构中特殊的方法，与构造方法一样，也是系统规定好，只需要开发人员<strong>抄</strong>一遍即可，对象在被销毁时会自动调用。</p>
+</blockquote>
+<ol>
+<li>析构方法实现：类中增加一个__destruct()方法</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//析构方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">__FUNCTION__</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>析构方法调用：析构方法是在对象被销毁时自动，对象的“垂死挣扎”</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//接上述代码</span></span><br><span class="line"><span class="comment">//实例化</span></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="keyword">unset</span>(<span class="variable">$s</span>);			<span class="comment">//删除对象</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>析构方法是对象用来调用释放对象中的资源，不是用来删除对象的</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//析构方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="comment">//销毁对象所占用资源的代码</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>析构方法也是普通方法，可以由对象直接调用</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//接析构方法实现代码</span></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s</span>-&gt;__destruct();		<span class="comment">//思考：此时对象是否被销毁？</span></span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>对象销毁情形</li>
+</ol>
+<ul>
+<li>保存对象的变量被用来保存其他数据，导致对象内存没有任何变量引用</li>
+<li>删除对象变量</li>
+<li>脚本执行结束：释放所有变量</li>
+</ul>
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>析构方法是一种对象销毁时自动调用的方法</li>
+<li>析构方法是用来对象销毁自身所占用的资源</li>
+<li>PHP中脚本执行结束，系统会自动回收所有资源，因此一般PHP中很少使用析构方法</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：在PHP中，变量赋值是值传递的，即变量赋值给另外一个变量，两个变量是不同的。如果变量保存的是对象，那么给变量赋值的时候，会产生两个对象吗？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：对象的产生是由实例化得到的，因此如果是将保存对象的变量赋值给另外一个变量，这个过程是不会产生新的变量的。</p>
+</blockquote>
+<h3 id="9-对象传值【了解】"><a href="#9-对象传值【了解】" class="headerlink" title="9.对象传值【了解】"></a>9.对象传值【了解】</h3><blockquote>
+<p><strong>定义</strong>：对象传值，其实就是将保存对象的变量赋值给另外一个变量，在PHP中，对象的传值是<strong>引用传递</strong>的：即一个对象变量赋值给另外一个变量，两个变量指向同一个对象的内存地址，即只有一个对象。</p>
+</blockquote>
+<ol>
+<li>对象传值就是保存对象的变量赋值给另外一个变量</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;&#125;</span><br><span class="line"><span class="variable">$s1</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s2</span> = <span class="variable">$s1</span>;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>对象传值是引用传递，不管对象赋值给多少个变量，内存中只有一个对象</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;&#125;</span><br><span class="line"><span class="variable">$s1</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s2</span> = <span class="variable">$s1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//证明</span></span><br><span class="line">var_dump(<span class="variable">$s1</span>,<span class="variable">$s2</span>);		<span class="comment">//同一个对象</span></span><br><span class="line"><span class="variable">$s1</span>-&gt;name = <span class="string">&#x27;Saler&#x27;</span>;	<span class="comment">//更改一个变量所保存对象的属性</span></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$s2</span>-&gt;name;			<span class="comment">//输出Saler</span></span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong>：对象传值是引用传值，一般情况下不会在项目中用到。</p>
+</blockquote>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：前面类成员中，属性和方法都已经清楚的知道是由对象来访问，唯独类常量没有被访问，类常量到底是如何访问的呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：类常量通过名字分析就知道是属于类的，因此类常量的访问是通过类来进行访问的。</p>
+</blockquote>
+<h3 id="10-范围解析操作符（类常量访问）【掌握】"><a href="#10-范围解析操作符（类常量访问）【掌握】" class="headerlink" title="10.范围解析操作符（类常量访问）【掌握】"></a>10.范围解析操作符（类常量访问）【掌握】</h3><blockquote>
+<p><strong>定义</strong>：范围解析操作符，由两个冒号组成“**::**”，是专门用于类实现类成员操作的，可以实现类直接访问类成员。</p>
+</blockquote>
+<ol>
+<li>类常量的普通访问尝试：尝试使用对象进行访问</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">	<span class="comment">//类常量</span></span><br><span class="line">    <span class="keyword">const</span> PI = <span class="number">3.14</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$s1</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$s1</span>-&gt;PI;			<span class="comment">//错误，$s1-&gt;PI最终转换的访问方式为:$PI，这个在类中并不存在</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>以上案例可以看出，对象无法访问类常量，那是因为类常量的定义本身就是用来给类访问的，对象是用来访问属性和方法的，类常量的访问方式为：类名::常量名</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">	<span class="comment">//类常量</span></span><br><span class="line">    <span class="keyword">const</span> PI = <span class="number">3.14</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> Saler::PI;			<span class="comment">//输出3.14</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>分析：类常量是固定的，而对象的属性是不同对象而不同的，成员方法简单的理解也是为属性本身进行加工的。因此有一些东西是专属于类的，而有部分内容是专门为对象提供的，所以就会有不同的成员拥有不同的访问方式</li>
+</ol>
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>类访问成员的方式是使用范围解析操作符“**::**”访问，由类名直接访问：类名::类常量</li>
+<li>类本身是通过对同类对象的抽象而形成，所以属性和方法本身都是由对象来访问</li>
+<li>类也需要有一些自身的数据和操作，这些就由类来进行访问</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：类要访问的成员，都只能是类常量吗？毕竟类常量是一旦定义不可修改的，这样没有多大价值。</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：在类中，类成员只有三种：类常量、属性和方法，为了区分对象和类访问，可以使用<code>static</code>关键字来修饰属性和方法。</p>
+</blockquote>
+<h3 id="11-静态成员【掌握】"><a href="#11-静态成员【掌握】" class="headerlink" title="11.静态成员【掌握】"></a>11.静态成员【掌握】</h3><p><strong>定义</strong>：静态成员，使用static关键字修饰的类成员，表示该成员属于<strong>类访问</strong>。PHP静态成员有两种，静态属性和静态方法。</p>
+<ol>
+<li>静态属性：在类中定义属性的时候使用static关键字修饰，访问的时候只能使用类+范围解析操作符+静态属性访问</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">	<span class="comment">//属性</span></span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$money</span> = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">static</span> <span class="variable">$count</span> = <span class="number">0</span>;	<span class="comment">//静态属性</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//静态成员可以直接使用类访问，而不需要先实例化对象</span></span><br><span class="line"><span class="keyword">echo</span> Saler::<span class="variable">$count</span>;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>静态方法：在定义方法的时候使用static关键字修饰，访问的时候使用类+范围解析操作符+静态方法名字()访问</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">	<span class="comment">//方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">showClass</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">__CLASS__</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//类直接访问</span></span><br><span class="line">Saler::showClass();</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>在类的内部也可以访问静态成员，同样是使用类名+范围解析操作符+静态属性/静态方法()</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">    <span class="comment">//属性</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">static</span> <span class="variable">$count</span> = <span class="number">0</span>;			<span class="comment">//私有，不允许外部直接访问</span></span><br><span class="line">	<span class="comment">//方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">showClass</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> Saler::<span class="variable">$count</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//类直接访问</span></span><br><span class="line">Saler::showClass();</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>静态方法本质也是类中定义的方法，因此也可以使用对象进行访问，但是<strong>不建议</strong></li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">    <span class="comment">//属性</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">static</span> <span class="variable">$count</span> = <span class="number">0</span>;			<span class="comment">//私有，不允许外部直接访问</span></span><br><span class="line">	<span class="comment">//方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">showClass</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> Saler::<span class="variable">$count</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//对象访问静态方法</span></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s</span>-&gt;showClass();						<span class="comment">//输出0</span></span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>同理，方法也是在类内部，在编译时就存在，因此可以通过类来进行访问，使用范围解析操作符，但是<strong>非常不建议</strong>（会报错：因为类只允许访问静态成员和类常量）</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">testStatic</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="keyword">__FUNCTION__</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//类访问普通成员方法</span></span><br><span class="line">Saler::testStatic();				<span class="comment">//输出testStatic，但是报错，当前访问的不是静态方法</span></span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>静态方法本质是给类访问，所以不允许在静态方法内部使用$this对象</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">testStaticThis</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        var_dump(<span class="keyword">$this</span>);				<span class="comment">//致命错误：$this放到了不该放的位置</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;	</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>为了保障类能直接访问数据和操作数据，可以在属性和方法前增加static关键字变成静态属性和静态方法</li>
+<li>类通过类名+范围解析操作符+静态成员的方式进行访问</li>
+<li>静态成员也收访问修饰限定符的限定，访问权限与普通属性和方法的限制一样</li>
+<li>对象可以无条件访问静态方法，而类只能访问不带$this的普通方法（不建议）</li>
+<li>静态成员是给类访问的，非静态成员是给对象访问的</li>
+<li>静态成员的访问效率比非静态成员高，因此有种说法是能用静态的时候就不用非静态  </li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：类的内部的静态方法内可能会访问到其他静态成员或者类常量，这个时候必须每次使用类名，那如果类名修改的话岂不是很麻烦？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：静态成员或者类常量的访问是必须使用类名进行访问的，不过为了方便类名的更新，减少开发者维护成本，系统引入了一个类似$this代表对象的方案：self关键字</p>
+</blockquote>
+<h3 id="12-self关键字【掌握】"><a href="#12-self关键字【掌握】" class="headerlink" title="12. self关键字【掌握】"></a>12. self关键字【掌握】</h3><blockquote>
+<p><strong>定义</strong>：self关键字是一种在类的内部（方法里面）使用，代替类名的写法。能够保障用户方便修改类名字。</p>
+</blockquote>
+<ol>
+<li>self是用来代替类名的，与范围解析操作符<code>::</code>一起使用的</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">    <span class="comment">//属性</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">static</span> <span class="variable">$count</span> = <span class="number">0</span>;			<span class="comment">//私有，不允许外部直接访问</span></span><br><span class="line">	<span class="comment">//方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">showClass</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> Saler::<span class="variable">$count</span>;</span><br><span class="line">        <span class="keyword">echo</span> <span class="built_in">self</span>::<span class="variable">$count</span>;				<span class="comment">//代替类名</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>self也可以在类的内部方便实例化对象：比如构造方法被私有化之后，就没有办法在类外部实例化对象，此时可以在类内部进行对象实例化</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">    <span class="comment">//属性</span></span><br><span class="line">    <span class="keyword">private</span> <span class="built_in">static</span> <span class="variable">$count</span> = <span class="number">0</span>;			<span class="comment">//私有，不允许外部直接访问</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;&#125;	<span class="comment">//私有，不允许外部实例化（因为对象不能外部调用）</span></span><br><span class="line">	<span class="comment">//方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">getInstance</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Saler();				<span class="comment">//使用类名实例化</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">self</span>();				<span class="comment">//使用self关键字实例化</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$s</span> = Saler::getInstance();</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>self是一种在类内部用来代替类名的关键字</li>
+<li>self可以用来在类内部访问静态成员（类常量也可以）</li>
+<li>self也可以在类内部用来实例化对象（代替类名：new self()）</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：类不管是直接访问静态成员还是先实例化然后访问类成员，都有一个前提：类必须在内存中存在，那是不是意味着所有的类操作之前，都必须先确认类在内存中是否存在呢？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：类的任何操作都需要确认类在内存存在的，不过类文件通常是一个类单独形成一个文件的。所以在操作之前需要进行类的加载。</p>
+</blockquote>
+<h3 id="13-类的加载【重要】"><a href="#13-类的加载【重要】" class="headerlink" title="13.类的加载【重要】"></a>13.类的加载【重要】</h3><blockquote>
+<p><strong>定义</strong>：所谓类的加载，本质是因为类的访问必须保证类在内存中已经存在，所以需要在用类之前将类所在的PHP文件加载到内存。</p>
+</blockquote>
+<ol>
+<li>手动加载：即要访问某个类之前，使用文件包含将类所在的文件加载进来</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line">类文件：Saler.php</span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line">    </span><br><span class="line">应用文件：useSaler.php</span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//使用Saler类需要先包含Saler类所在的文件</span></span><br><span class="line"><span class="keyword">include_once</span> <span class="string">&#x27;Saler.php&#x27;</span>;				<span class="comment">//通常使用include_once，因为类不允许重名</span></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>加载类文件是一种比较消耗资源的方式，所以有的时候不确定类是否在内存中存在，可以事先使用class_exists()函数来判定是否存在，存在就不用加载，不存在才加载</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//使用Saler类，但是不确定内存中是否存在</span></span><br><span class="line"><span class="keyword">if</span>(!class_exists(<span class="string">&#x27;Saler&#x27;</span>))&#123;</span><br><span class="line">	<span class="comment">//不存在：加载</span></span><br><span class="line">    <span class="keyword">include_once</span> <span class="string">&#x27;Saler.php&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//使用</span></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>自动加载：PHP没有那么智能的系统自动加载，所谓自动加载只是PHP提供了一种<code>加载机制</code>：即实现定义一个函数__autoload()，然后当系统需要使用类，而内存中又不存在的时候，系统就会自动调用__autoload()函数来加载类文件.</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//自动加载机制：利用系统提供的__autoload()函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">__autoload</span>(<span class="params"><span class="variable">$classname</span></span>)</span>&#123;			<span class="comment">//参数为类名：即当前需要访问的类的名字</span></span><br><span class="line">	<span class="comment">//需要人为定义去哪加载，怎么加载   </span></span><br><span class="line">    <span class="keyword">include_once</span> <span class="variable">$classname</span> . <span class="string">&#x27;.php&#x27;</span>;		<span class="comment">//假定为当前目录下，类文件名字为：类名.php</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//使用类：内存目前并没有</span></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();							<span class="comment">//系统发现内存没有Saler，所以调用__autoload()去加载</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>一个系统里，可能类文件会放到不同的路径下，因此一个完整的自动加载函数，应该要进行文件判定以及加载功能</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//定义自动加载</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">__autoload</span>(<span class="params"><span class="variable">$classname</span></span>)</span>&#123;</span><br><span class="line">	<span class="comment">//组织文件路径：假设当前路径下，有两个文件夹下都有类c和m</span></span><br><span class="line">    <span class="variable">$c_file</span> = <span class="string">&#x27;c/&#x27;</span> . <span class="variable">$classname</span> . <span class="string">&#x27;.php&#x27;</span>;		<span class="comment">//如c/Saler.php</span></span><br><span class="line">    <span class="keyword">if</span>(file_exists(<span class="variable">$c_file</span>))&#123;</span><br><span class="line">        <span class="keyword">include_once</span> <span class="variable">$c_file</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//说明c文件夹没有对应的文件</span></span><br><span class="line">        <span class="variable">$m_file</span> = <span class="string">&#x27;m/&#x27;</span> . <span class="variable">$classname</span> . <span class="string">&#x27;.php&#x27;</span>;	<span class="comment">//如m/Saler.php</span></span><br><span class="line">        <span class="keyword">if</span>(file_exists(<span class="variable">$m_file</span>))&#123;</span><br><span class="line">            <span class="keyword">include_once</span> <span class="variable">$m_file</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：自动加载是指按照开发者规定的路径去寻找对应的文件，并实现包含。如果文件不存在，那么系统会在使用类的时候报错，因为这是开发者自己犯的错，系统不能规避。</p>
+<ol start="5">
+<li>随着PHP版本的提升，在7以后，不怎么建议直接使用__autoload()函数，而是采用一种注册机制，将用户自定义的函数，放到系统内部，使用spl_autoload_register(定义好的函数)。本质与__autoload()一样</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//定义一个函数，用来加载类文件</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">my_autoload</span>(<span class="params"><span class="variable">$classname</span></span>)</span>&#123;		<span class="comment">//也需要一个参数来接收要加载的类名字</span></span><br><span class="line">    <span class="comment">//功能与__autoload()一样</span></span><br><span class="line">    <span class="variable">$c_file</span> = <span class="string">&#x27;c/&#x27;</span> . <span class="variable">$classname</span> . <span class="string">&#x27;.php&#x27;</span>;		<span class="comment">//如c/Saler.php</span></span><br><span class="line">    <span class="keyword">if</span>(file_exists(<span class="variable">$c_file</span>))&#123;</span><br><span class="line">        <span class="keyword">include_once</span> <span class="variable">$c_file</span>;</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//说明c文件夹没有对应的文件</span></span><br><span class="line">        <span class="variable">$m_file</span> = <span class="string">&#x27;m/&#x27;</span> . <span class="variable">$classname</span> . <span class="string">&#x27;.php&#x27;</span>;	<span class="comment">//如m/Saler.php</span></span><br><span class="line">        <span class="keyword">if</span>(file_exists(<span class="variable">$m_file</span>))&#123;</span><br><span class="line">            <span class="keyword">include_once</span> <span class="variable">$m_file</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//此时，上述函数永远不会自动运行，除非将函数注册到系统内部</span></span><br><span class="line">spl_autoload_register(<span class="string">&#x27;my_autoload&#x27;</span>);</span><br><span class="line">    </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：该方式其实本质就是通过两步完成了__autoload()一步的操作，但是spl_autoload_register()函数可以注册多个自定义的加载函数，更方便管理。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">c_autoload</span>(<span class="params"><span class="variable">$classname</span></span>)</span>&#123;		</span><br><span class="line">    <span class="variable">$c_file</span> = <span class="string">&#x27;c/&#x27;</span> . <span class="variable">$classname</span> . <span class="string">&#x27;.php&#x27;</span>;		</span><br><span class="line">    <span class="keyword">if</span>(file_exists(<span class="variable">$c_file</span>))&#123;</span><br><span class="line">        <span class="keyword">include_once</span> <span class="variable">$c_file</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">m_autoload</span>(<span class="params"><span class="variable">$classname</span></span>)</span>&#123;		</span><br><span class="line">    <span class="variable">$m_file</span> = <span class="string">&#x27;m/&#x27;</span> . <span class="variable">$classname</span> . <span class="string">&#x27;.php&#x27;</span>;		</span><br><span class="line">    <span class="keyword">if</span>(file_exists(<span class="variable">$m_file</span>))&#123;</span><br><span class="line">        <span class="keyword">include_once</span> <span class="variable">$m_file</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//全部注册</span></span><br><span class="line">spl_autoload_register(<span class="string">&#x27;c_autoload&#x27;</span>);	<span class="comment">//先尝试调用第一个自定义加载函数：找到了结束；找不到找第二个函数</span></span><br><span class="line">spl_autoload_register(<span class="string">&#x27;m_autoload&#x27;</span>);    </span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Autoload</span></span>&#123;</span><br><span class="line">    <span class="comment">//实现不同文件夹的自动加载</span></span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">loadC</span>(<span class="params"><span class="variable">$classname</span></span>)</span>&#123;</span><br><span class="line">        <span class="variable">$c_file</span> = <span class="string">&#x27;c/&#x27;</span>.<span class="variable">$classname</span>.<span class="string">&#x27;.class.php&#x27;</span>;</span><br><span class="line">        <span class="keyword">if</span>(file_exist(<span class="variable">$c_file</span>)) <span class="keyword">include_once</span> <span class="variable">$c_file</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="built_in">static</span> <span class="function"><span class="keyword">function</span> <span class="title">loadM</span>(<span class="params"><span class="variable">$classname</span></span>)</span>&#123;</span><br><span class="line">        <span class="variable">$m_file</span> = <span class="string">&#x27;m/&#x27;</span>.<span class="variable">$classname</span>.<span class="string">&#x27;class.php&#x27;</span>;</span><br><span class="line">        <span class="keyword">if</span>(file_exist(<span class="variable">$m_file</span>)) <span class="keyword">include_once</span> <span class="variable">$m_file</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//自动加载</span></span><br><span class="line">spl_auto_load_register(<span class="keyword">array</span>(<span class="string">&#x27;Autoload&#x27;</span>,<span class="string">&#x27;loadC&#x27;</span>));</span><br><span class="line">spl_auto_load_register(<span class="keyword">array</span>(<span class="string">&#x27;Autoload&#x27;</span>,<span class="string">&#x27;loadM&#x27;</span>));</span><br><span class="line"><span class="comment">//实例化</span></span><br><span class="line"><span class="variable">$s</span> = <span class="keyword">new</span> Saler();</span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>类的使用必须先保证内存中该类存在</li>
+<li>可以使用手动加载来确保类的使用安全：优点是明确，缺点是繁琐（类文件名字可以随意没有规范）</li>
+<li>可以使用自动加载来让系统按照开发者设定的路径和方式去寻找类，并尝试加载到内存（尽量让类文件名字统一，保证类名和文件名有关联）</li>
+<li>自动加载可以使用__autoload()函数来实现，也可以使用自定义函数+spl_autoload_register()注册共同实现（后者推荐）</li>
+<li>基本上所有的框架都在使用自动加载机制</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：对象只能通过实例化产生，而且即使是将对象赋值给变量，得到的还是同一个对象。如果有的时候需要得到新的对象，除了实例化之外还有其他方法吗？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：对象理论上应该通过实例化来产生，这是对象产生的根本。但是有时候如果想在已有对象上去产生一个新的对象，可以通过<code>克隆</code>来实现。</p>
+</blockquote>
+<h3 id="14-对象克隆【了解】"><a href="#14-对象克隆【了解】" class="headerlink" title="14.对象克隆【了解】"></a>14.对象克隆【了解】</h3><blockquote>
+<p><strong>定义</strong>：克隆对象clone，即通过已有的对象复制一个新的同样的对象，但是两者之间并非同一个对象。</p>
+</blockquote>
+<ol>
+<li>对象克隆是通过clone关键字实现，即：clone 对象;</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//实例化</span></span><br><span class="line"><span class="variable">$s1</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s1</span>-&gt;count = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//克隆</span></span><br><span class="line"><span class="variable">$s2</span> = <span class="keyword">clone</span> <span class="variable">$s1</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>克隆出来的对象与原来对象是两个内存地址，因此是两个不同的对象</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//接上述代码</span></span><br><span class="line"><span class="variable">$s2</span>-&gt;count = <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$s1</span>-&gt;count;		<span class="comment">//1，没有变化</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>对象在实例化的时候会自动调用存在的构造方法__construct()，同样的，在类的内部，PHP允许定义一个__clone()的方法，在对象被克隆后，新克隆出来的对象会自动调用</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span>;</span><br><span class="line">    <span class="comment">//克隆方法</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__clone</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        var_dump(<span class="keyword">$this</span>);			<span class="comment">//编号为2，代表是克隆出来的对象</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;count++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//实例化</span></span><br><span class="line"><span class="variable">$s1</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s1</span>-&gt;count = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//克隆</span></span><br><span class="line"><span class="variable">$s2</span> = <span class="keyword">clone</span> <span class="variable">$s1</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>如果不允许对象被克隆，可以将__clone()方法私有化（本质是不允许对象在外部被克隆）</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Saler</span></span>&#123;</span><br><span class="line">  	<span class="comment">//属性</span></span><br><span class="line">  	<span class="keyword">public</span> <span class="variable">$count</span>;				</span><br><span class="line">  	<span class="keyword">private</span> <span class="variable">$money</span>;</span><br><span class="line">    <span class="comment">//私有化克隆方法</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">__clone</span>(<span class="params"></span>)</span>&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//实例化</span></span><br><span class="line"><span class="variable">$s1</span> = <span class="keyword">new</span> Saler();</span><br><span class="line"><span class="variable">$s1</span>-&gt;count = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//克隆</span></span><br><span class="line"><span class="variable">$s2</span> = <span class="keyword">clone</span> <span class="variable">$s1</span>;			<span class="comment">//致命错误：不允许对象在外部访问一个私有方法</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>对象可以通过克隆来得到新的对象（以前只有实例化）</li>
+<li>克隆出来的对象会自动调用类中对应的__clone()方法（如果有）</li>
+<li>可以通过私有化克隆方法来实现禁止外部对象克隆</li>
+</ol>
+<hr>
+<blockquote>
+<p><strong>思考</strong>：现在掌握了很多面向对象相关的内容，但是什么时候封装类？怎么封装类？如何使用类成员？</p>
+</blockquote>
+<blockquote>
+<p><strong>引入</strong>：其实类的封装并没有多么复杂，但是需要一个熟练的过程来确定哪些东西可以放到类里，该用什么样的形式等。我们通过封装一个数据库的操作类来综合练习一下。</p>
+</blockquote>
+<h3 id="15-封装数据库操作类【掌握】"><a href="#15-封装数据库操作类【掌握】" class="headerlink" title="15.封装数据库操作类【掌握】"></a>15.封装数据库操作类【掌握】</h3><blockquote>
+<p><strong>定义</strong>：封装数据库操作类，即根据数据库的操作需求，来确认数据库操作类该有什么样的功能，以及这些功能该如何实现。</p>
+</blockquote>
+<ol>
+<li>一个类通常就是一个文件，所以要先确定文件的名字：通常类文件命名规范有两种</li>
+</ol>
+<ul>
+<li>文件名字与类名字一样，如Sql.php</li>
+<li>为了区分普通PHP文件，增加中间类描述，如Sql.class.php</li>
+<li>现在PHP几乎都是面向对象编程，所以通常采用第一种方式：因此当前命名数据类的文件为：Sql.php</li>
+</ul>
+<ol start="2">
+<li>确定类文件名字后其实也就确定了类名字，因此可以创建一个Sql类</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="comment">//数据库操作类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sql</span></span>&#123;&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>类的创建分两种：一是特定使用，即类里面的所有内容只为某次使用；二是通用，即工具类，以后很多地方可以用。</li>
+</ol>
+<ul>
+<li>特定使用，功能可以不用太灵活</li>
+<li>通用工具，功能应该大众化，数据的变化会比较多</li>
+</ul>
+<p>数据库类以后凡是要操作数据库的地方都可以用得到，很多项目都会用到，所以应该是个通用工具类，因此要考虑其到处可用的特性，让其能够灵活</p>
+<ol start="4">
+<li>数据库的操作最基本的特性不会改变：即需要连接认证，而连接认证的信息是灵活的，所以可以通过设定属性来控制，这些信息也都是不同使用者不同的，应该可以改变，所以可以通过构造方法来实现数据传入</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="comment">//数据库操作类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Sql</span></span>&#123;</span><br><span class="line">	<span class="comment">//设置属性</span></span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$host</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$port</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$user</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$pass</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$dbname</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$charset</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//构造方法初始化数据：数据较多，应该使用数组来传递数据，关联数组，而且绝大部分的开发者本意是用来测试，所以基本都是本地，因此可以给默认数据</span></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    	$info = array(</span></span><br><span class="line"><span class="comment">    		&#x27;host&#x27; =&gt; &#x27;localhost&#x27;,</span></span><br><span class="line"><span class="comment">    		&#x27;port&#x27; =&gt; &#x27;3306&#x27;,</span></span><br><span class="line"><span class="comment">    		&#x27;user&#x27; =&gt; &#x27;root&#x27;,</span></span><br><span class="line"><span class="comment">    		&#x27;pass&#x27; =&gt; &#x27;root&#x27;,</span></span><br><span class="line"><span class="comment">    		&#x27;dbname&#x27; =&gt; &#x27;test&#x27;,</span></span><br><span class="line"><span class="comment">    		&#x27;charset&#x27; =&gt; &#x27;utf8&#x27;</span></span><br><span class="line"><span class="comment">    	)</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="keyword">array</span> <span class="variable">$info</span> = <span class="keyword">array</span>(<span class="params"></span>)</span>)</span>&#123;</span><br><span class="line">        <span class="comment">//初始化：确保用户传入了数据，否则使用默认值</span></span><br><span class="line">        <span class="keyword">$this</span>-&gt;host = <span class="keyword">isset</span>(<span class="variable">$info</span>[<span class="string">&#x27;host&#x27;</span>]) ? <span class="variable">$info</span>[<span class="string">&#x27;host&#x27;</span>] : <span class="string">&#x27;localhost&#x27;</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;port = <span class="keyword">isset</span>(<span class="variable">$info</span>[<span class="string">&#x27;port&#x27;</span>]) ? <span class="variable">$info</span>[<span class="string">&#x27;port&#x27;</span>] : <span class="string">&#x27;3306&#x27;</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;user = <span class="keyword">isset</span>(<span class="variable">$info</span>[<span class="string">&#x27;user&#x27;</span>]) ? <span class="variable">$info</span>[<span class="string">&#x27;user&#x27;</span>] : <span class="string">&#x27;root&#x27;</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;pass = <span class="keyword">isset</span>(<span class="variable">$info</span>[<span class="string">&#x27;pass&#x27;</span>]) ? <span class="variable">$info</span>[<span class="string">&#x27;pass&#x27;</span>] : <span class="string">&#x27;root&#x27;</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;dbname = <span class="keyword">isset</span>(<span class="variable">$info</span>[<span class="string">&#x27;dbname&#x27;</span>]) ? <span class="variable">$info</span>[<span class="string">&#x27;dbname&#x27;</span>] : <span class="string">&#x27;test&#x27;</span>;</span><br><span class="line">        <span class="keyword">$this</span>-&gt;charset = <span class="keyword">isset</span>(<span class="variable">$info</span>[<span class="string">&#x27;charset&#x27;</span>]) ? <span class="variable">$info</span>[<span class="string">&#x27;charset&#x27;</span>] : <span class="string">&#x27;utf8&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：方法设定的原则是一个方法只实现一个简单的功能，不要多个功能堆积到一个方法中。</p>
+<ol start="5">
+<li>数据库属性会在实例化Sql对象的时候自动初始化</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//接上述代码（类外测试）</span></span><br><span class="line"><span class="variable">$s1</span> = <span class="keyword">new</span> Sql();			<span class="comment">//使用默认数据库信息</span></span><br><span class="line"><span class="variable">$db</span> = <span class="keyword">array</span>(</span><br><span class="line">	<span class="string">&#x27;host&#x27;</span> =&gt; <span class="string">&#x27;localhost&#x27;</span>,</span><br><span class="line">	<span class="string">&#x27;user&#x27;</span> =&gt; <span class="string">&#x27;root&#x27;</span>,</span><br><span class="line">	<span class="string">&#x27;pass&#x27;</span> =&gt; <span class="string">&#x27;root&#x27;</span>,</span><br><span class="line">	<span class="string">&#x27;dbname&#x27;</span> =&gt; <span class="string">&#x27;my_database&#x27;</span></span><br><span class="line">);</span><br><span class="line"><span class="variable">$s2</span> = <span class="keyword">new</span> Sql(<span class="variable">$db</span>);			<span class="comment">//使用外部数据库信息</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>数据库要操作的第一件事就是连接认证，所以需要一个连接认证的功能。这里可以使用mysqli面向对象的方法。但是需要建立一个方法来实现连接认证：连接是否成功？</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在上述类中增加一个方法：实现连接认证功能</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_connect</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="comment">//利用属性可以跨方法访问：5个参数分别为：主机、用户名、密码、数据库、端口</span></span><br><span class="line">    <span class="comment">//利用错误抑制符抑制可能出现的错误：如找不到数据库之类</span></span><br><span class="line">	<span class="variable">$link</span> = @<span class="keyword">new</span> mysqli(<span class="keyword">$this</span>-&gt;host,<span class="keyword">$this</span>-&gt;user,<span class="keyword">$this</span>-&gt;pass,<span class="keyword">$this</span>-&gt;dbname,<span class="keyword">$this</span>-&gt;port);</span><br><span class="line">    <span class="comment">//判定连接是否成功</span></span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$link</span>-&gt;connect_error)&#123;</span><br><span class="line">        <span class="comment">//mysqli对象有两个属性：connect_errno表示错误编号，connect_error表示错误信息：发生错误后终止脚本执行</span></span><br><span class="line">		<span class="keyword">die</span>( <span class="string">&#x27;Connect Error (&#x27;</span>  .  <span class="variable">$link</span> -&gt; connect_errno  .  <span class="string">&#x27;) &#x27;</span> .  <span class="variable">$link</span> -&gt; connect_error );</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="7">
+<li>用户调用Sql类的目的一定是为了操作数据库，那么用户在实例化之后就需要调用连接认证的方法。为了方便用户操作，可以帮助用户省去调用这一步骤：在构造方法中调用该方法</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在上述构造方法中调用连接认证方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="keyword">array</span> <span class="variable">$info</span> = <span class="keyword">array</span>(<span class="params"></span>)</span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//在属性初始化之后调用连接认证方法</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;sql_connnect();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="8">
+<li>至此，一旦实例化Sql类对象，就可以实现数据库的连接，但是此时还存在一个细节问题：字符集，为了保证数据库连接的正常操作，需要新增一个方法设定字符集</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在Sql类中增加设定字符集的方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_charset</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$sql</span> = <span class="string">&quot;set names <span class="subst">&#123;$this-&gt;charset&#125;</span>&quot;</span>;		<span class="comment">//组织SQL指令</span></span><br><span class="line">    <span class="comment">//此时需要调用mysqli连接数据库得到的对象：发现$link在sql_connect方法中是一个局部变量，不能跨方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="9">
+<li>由于sql_connect方法中得到的连接对象mysqli的$link是一个局部变量，无法在其他方法里使用，因此需要将连接对象$link提升为整个类的内部可用：提升为属性</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在Sql类中增加属性，保存对象</span></span><br><span class="line"><span class="keyword">public</span> <span class="variable">$link</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//修改sql_connect方法，使用属性保存连接对象</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_connect</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	<span class="keyword">$this</span>-&gt;link = @<span class="keyword">new</span> mysqli(<span class="keyword">$this</span>-&gt;host,<span class="keyword">$this</span>-&gt;user,<span class="keyword">$this</span>-&gt;pass,<span class="keyword">$this</span>-&gt;dbname,<span class="keyword">$this</span>-&gt;port);</span><br><span class="line">    <span class="comment">//判定连接是否成功</span></span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$link</span>-&gt;connect_error)&#123;</span><br><span class="line">        <span class="comment">//注意：连接资源保存在$this-&gt;link中，所以访问mysqli对象成员时需要$this-&gt;link-&gt;属性/方法()</span></span><br><span class="line">		<span class="keyword">die</span>(<span class="string">&#x27;Connect Error (&#x27;</span>  .  <span class="keyword">$this</span>-&gt;link-&gt;connect_errno  .  <span class="string">&#x27;) &#x27;</span> .  <span class="keyword">$this</span>-&gt;link-&gt;connect_error);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="10">
+<li>继续完成设定字符集的功能：使用属性保存的mysqli连接对象</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在Sql类中完善设定字符集的方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_charset</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$sql</span> = <span class="string">&quot;set names <span class="subst">&#123;$this-&gt;charset&#125;</span>&quot;</span>;		<span class="comment">//组织SQL指令</span></span><br><span class="line">    <span class="comment">//调用mysqli::query</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;link-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="11">
+<li>设置字符集的SQL指令虽然简单，但是因为有数据来源于外部，所以存在出错的风险，因此需要进行SQL错误判定</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在Sql类中完善设定字符集的方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_charset</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$sql</span> = <span class="string">&quot;set names <span class="subst">&#123;$this-&gt;charset&#125;</span>&quot;</span>;		<span class="comment">//组织SQL指令</span></span><br><span class="line">   </span><br><span class="line">    <span class="variable">$res</span> = <span class="keyword">$this</span>-&gt;link-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line">    <span class="keyword">if</span>(!<span class="variable">$res</span>)&#123;</span><br><span class="line">        <span class="comment">//失败发挥false</span></span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;Charset Error(&#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;errno . <span class="string">&#x27;) &#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;error);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="12">
+<li>同样的，字符集的设置也是为了操作数据库的前置条件，属于初始化的一部分。因此需要字符集设置的方法在构造方法中调用，方便用户操作</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在Sql类的构造方法中调用字符集设置方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="keyword">array</span> <span class="variable">$info</span> = <span class="keyword">array</span>(<span class="params"></span>)</span>)</span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//在连接数据库方法调用之后调用设置字符集方法</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;sql_charset();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="13">
+<li>至此：数据库的初始化操作已经完成，此时要考虑的事情是用户调用数据库类是为了干什么？为了执行SQL指令，也就是增删改查。在mysqli中所有的SQL执行都是通过mysqli::query()方法执行，但是我们可以根据需求封装两个函数：写方法和查方法（包含一条和多条查询）</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在Sql类中增加一个写方法：SQL指令来自于调用处提供</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_exec</span>(<span class="params"><span class="variable">$sql</span></span>)</span>&#123;</span><br><span class="line">    <span class="comment">//当前不知道SQL指令是什么样的，只是负责执行，所以由外部提供</span></span><br><span class="line">    <span class="variable">$res</span> = <span class="keyword">$this</span>-&gt;link-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line">    <span class="comment">//判断SQL有没有语法错误</span></span><br><span class="line">    <span class="keyword">if</span>(!<span class="variable">$res</span>)&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;Sql Error(&#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;errno . <span class="string">&#x27;) &#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;error);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//返回执行结果</span></span><br><span class="line">    <span class="keyword">return</span> <span class="variable">$res</span>;		<span class="comment">//本质就是一个true</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//在Sql类中增加一个读方法：Sql指令来自于调用处提供，同时设定参数供用户选择一条或全部结果</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_query</span>(<span class="params"><span class="variable">$sql</span>,<span class="variable">$all</span> = <span class="literal">false</span></span>)</span>&#123;</span><br><span class="line">    <span class="comment">//$all代表是否获取多条记录，默认false只获取一条记录</span></span><br><span class="line">    <span class="variable">$res</span> = <span class="keyword">$this</span>-&gt;link-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line">    <span class="comment">//判断SQL有没有语法错误</span></span><br><span class="line">    <span class="keyword">if</span>(!<span class="variable">$res</span>)&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;Sql Error(&#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;errno . <span class="string">&#x27;) &#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;error);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//解析其中的结果：根据用户需求获取一条或者多条记录</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$all</span>)&#123;</span><br><span class="line">        <span class="comment">//获取全部：mysqli_result::fetch_all(MYSQLI_ASSOC)表示返回关联数组（默认是索引）</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$res</span>-&gt;fetch_all(MYSQLI_ASSOC);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//获取一条：mysqli_result::fetch_assoc()</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$res</span>-&gt;fetch_assoc();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="14">
+<li>上述已经完成了数据库类要实现的基本功能：实现SQL指令的执行和结果返回，但是从功能细节的角度出发还需要进行完善：插入操作后要获取自增长id，更新和删除操作受影响的行数，查询操作中记录数量。这种使用可以通过设置方法来实现获取（自增长id），也可以通过增加属性来实现（属性简单）</li>
+</ol>
+<p>增加属性：受影响的行数，自增长id，查询记录数</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在Sql类中追加属性</span></span><br><span class="line"><span class="keyword">public</span> <span class="variable">$affected_rows</span>;	<span class="comment">//受影响行数（上次操作）</span></span><br><span class="line"><span class="keyword">public</span> <span class="variable">$num_rows</span>;		<span class="comment">//查询结果记录数（上次操作）</span></span><br></pre></td></tr></table></figure>
+<p>在写操作sql_exec中，为受影响行数赋值</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//修改sql_exec方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_exec</span>(<span class="params"><span class="variable">$sql</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$res</span> = <span class="keyword">$this</span>-&gt;link-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line">    <span class="comment">//判断SQL有没有语法错误</span></span><br><span class="line">    <span class="keyword">if</span>(!<span class="variable">$res</span>)&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;Sql Error(&#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;errno . <span class="string">&#x27;) &#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;error);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//成功保存受影响的行数：数据在mysqli对象中</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;affected_rows = <span class="keyword">$this</span>-&gt;link-&gt;affected_rows;</span><br><span class="line">    <span class="comment">//返回执行结果</span></span><br><span class="line">    <span class="keyword">return</span> <span class="variable">$res</span>;		<span class="comment">//本质就是一个true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在读操作中，为记录数</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//修改sql_query方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_query</span>(<span class="params"><span class="variable">$sql</span>,<span class="variable">$all</span> = <span class="literal">false</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$res</span> = <span class="keyword">$this</span>-&gt;link-&gt;query(<span class="variable">$sql</span>);</span><br><span class="line">    <span class="comment">//判断SQL有没有语法错误</span></span><br><span class="line">    <span class="keyword">if</span>(!<span class="variable">$res</span>)&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&#x27;Sql Error(&#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;errno . <span class="string">&#x27;) &#x27;</span> . <span class="keyword">$this</span>-&gt;link-&gt;error);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//获取记录信息：数据在mysqli_result对象中</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;num_rows = <span class="variable">$res</span>-&gt;num_rows;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//解析其中的结果：根据用户需求获取一条或者多条记录</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="variable">$all</span>)&#123;</span><br><span class="line">        <span class="comment">//获取全部：mysqli_result::fetch_all(MYSQLI_ASSOC)表示返回关联数组（默认是索引）</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$res</span>-&gt;fetch_all(MYSQLI_ASSOC);</span><br><span class="line">    &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="comment">//获取一条：mysqli_result::fetch_assoc()</span></span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$res</span>-&gt;fetch_assoc();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>增加一个方法专门获取上次插入数据的自增长ID（因为这个是人为区分，不方便放到sql_exec中）</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment">//在Sql类中增加一个方法获取上一次自增长操作id</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">sql_insert_id</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="comment">//insertid是在mysqli对象执行query方法时获得</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">$this</span>-&gt;link-&gt;insert_id;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="15">
+<li>至此：数据库类的功能已经实现，接下来要考虑类的定义规范：类对成员的控制性</li>
+</ol>
+<ul>
+<li>属性如果不需要给外部访问，私有</li>
+<li>方法如果只是内部调用，私有</li>
+</ul>
+<ol start="16">
+<li>利用数据库类实现数据库的写操作和读操作</li>
+</ol>
+<blockquote>
+<p><strong>总结</strong></p>
+</blockquote>
+<ol>
+<li>类的封装是以功能驱动为前提，相关操作存放到一个类中</li>
+<li>一个类通常是一个独立的文件，文件名与类名相同（方便后期维护和自动加载）</li>
+<li>类中如果有数据需要管理，设定属性（固定数据可以使用类常量）</li>
+<li>类中如果有功能需要实现（数据加工），设定方法</li>
+<li>一个功能通常使用一个方法实现，方法的颗粒度应该尽可能小（方便复用）</li>
+<li>应该尽可能增加类对成员的控制：即能私有尽可能私有</li>
+</ol>
 ]]></content>
       <categories>
         <category>PHP</category>
