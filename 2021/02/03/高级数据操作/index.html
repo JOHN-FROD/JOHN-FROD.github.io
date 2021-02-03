@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        高级数据操作 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">高级数据操作</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv1</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-02-03 15:18:53
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h2 id="新增数据"><a href="#新增数据" class="headerlink" title="新增数据"></a>新增数据</h2><h3 id="多数据插入"><a href="#多数据插入" class="headerlink" title="多数据插入"></a>多数据插入</h3><p>只要写一次insert指令，但是可以直接插入多条记录</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> 表名 [(字段列表)] <span class="keyword">values</span>(值列表), (值列表)…;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202164155169.png" alt="image-20210202164155169"></p>
+<h3 id="主键冲突"><a href="#主键冲突" class="headerlink" title="主键冲突"></a>主键冲突</h3><p>主键冲突：在有的表中，使用的是业务主键（字段有业务含义），但是往往在进行数据插入的时候，又不确定数据表中是否已经存在对应的主键。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202170558780.png" alt="image-20210202170558780"></p>
+<ol>
+<li>主键冲突更新：</li>
+</ol>
+<p>类似插入数据语法，如果插入的过程中主键冲突，那么采用更新方法。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> 表名 [(字段列表)] <span class="keyword">values</span>(值列表) <span class="keyword">on</span> <span class="keyword">duplicate</span> <span class="keyword">key</span> <span class="keyword">update</span> 字段 = 新值;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202171903475.png" alt="image-20210202171903475"></p>
+<p>2、 主键冲突替换：</p>
+<p>当主键冲突之后，干掉原来的数据，重新插入进去。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Replace</span> <span class="keyword">into</span> [(字段列表)] <span class="keyword">values</span>(值列表);</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202172205947.png" alt="image-20210202172205947"></p>
+<h3 id="蠕虫复制"><a href="#蠕虫复制" class="headerlink" title="蠕虫复制"></a>蠕虫复制</h3><p>蠕虫复制：一分为二，成倍的增加。从已有的数据中获取数据，并且将获取到的数据插入到数据表中</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Insert</span> <span class="keyword">into</span> 表名 [(字段列表)] <span class="keyword">select</span> */字段列表 <span class="keyword">from</span> 表;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202174525318.png" alt="image-20210202174525318"></p>
+<p><strong>注意：</strong></p>
+<ol>
+<li><p>蠕虫复制的确通常是重复数据，没有太大业务意义：可以在短期内快速增加表的数据量，从而可以测试表的压力，还可以通过大量数据来测试表的效率（索引）</p>
+</li>
+<li><p> 蠕虫复制虽好，但是要注意主键冲突。</p>
+</li>
+</ol>
+<h2 id="更新数据"><a href="#更新数据" class="headerlink" title="更新数据"></a>更新数据</h2><ol>
+<li>在更新数据的时候，特别要注意：通常一定是跟随条件更新</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Update</span> 表名 <span class="keyword">set</span> 字段名 = 新值 <span class="keyword">where</span> 判断条件;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>如果没有条件，是全表更新数据。但是可以使用limit 来限制更新的数量；</li>
+</ol>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Update</span> 表名 <span class="keyword">set</span> 字段名 = 新值 [<span class="keyword">where</span> 判断条件] <span class="keyword">limit</span> 数量; </span><br></pre></td></tr></table></figure>
+<p>改变4个a变成e</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Update</span> my_simple <span class="keyword">set</span> <span class="keyword">name</span> = ‘e’ <span class="keyword">where</span> <span class="keyword">name</span> = ‘a’ <span class="keyword">limit</span> <span class="number">4</span>;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202175109347.png" alt="image-20210202175109347"></p>
+<h2 id="删除数据"><a href="#删除数据" class="headerlink" title="删除数据"></a>删除数据</h2><ol>
+<li><p>删除数据的时候尽量不要全部删除，应该使用where进行 判定；</p>
+</li>
+<li><p>删除数据的时候可以使用limit来限制要删除的具体数量</p>
+</li>
+</ol>
+<p>Delete删除数据的时候无法重置auto_increment</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/blob/main/blog-img/image-20210202175716150.png" alt="image-20210202175716150"></p>
+<p>Mysql有一个能够重置表选项中的自增长的语法;</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Truncate 表名; 		//==&gt;drop ==&gt;create</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202175856711.png" alt="image-20210202175856711"></p>
+<h2 id="查询数据"><a href="#查询数据" class="headerlink" title="查询数据"></a>查询数据</h2><p>完整的查询指令：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Select</span> <span class="keyword">select</span>选项 字段列表 <span class="keyword">from</span> 数据源 <span class="keyword">where</span>条件 <span class="keyword">group</span> <span class="keyword">by</span>分组 <span class="keyword">having</span>条件 <span class="keyword">order</span> <span class="keyword">by</span>排序 <span class="keyword">limit</span>限制;</span><br></pre></td></tr></table></figure>
+<p>Select选项：系统该如何对待查询得到的结果</p>
+<p>All：默认的，表示保存所有的记录</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202195449435.png" alt="image-20210202195509950"></p>
+<p>Distinct：去重，去除重复的记录，只保留一条（所有的字段都相同）</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202195449435.png" alt="image-20210202195449435"></p>
+<p>字段列表：有的时候需要从多张表获取数据，在获取数据的时候，可能存在不同表中有同名的字段，需要将同名的字段命名成不同名的：别名 alias</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">字段名 [as] 别名</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202195838373.png" alt="image-20210202195838373"></p>
+<h3 id="From数据源"><a href="#From数据源" class="headerlink" title="From数据源"></a>From数据源</h3><p>From是为前面的查询提供数据：数据源只要是一个符合二维表结构的数据即可。</p>
+<h4 id="单表数据"><a href="#单表数据" class="headerlink" title="单表数据"></a>单表数据</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">From 表名;</span><br></pre></td></tr></table></figure>
+<h4 id="多表数据"><a href="#多表数据" class="headerlink" title="多表数据"></a>多表数据</h4><p>从多张表获取数据，基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from 表1,表2…</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202200204061.png" alt="image-20210202200204061"></p>
+<p>结果：两张表的记录数相乘，字段数拼接</p>
+<p>本质：从第一张表取出一条记录，去拼凑第二张表的所有记录，保留所有结果。得到的结果在数学上有一个专业的说法：笛卡尔积，这个结果出了给数据库造成压力，没有其他意义：应该尽量避免出现笛卡尔积。</p>
+<h4 id="动态数据"><a href="#动态数据" class="headerlink" title="动态数据"></a>动态数据</h4><p>From后面跟的数据不是一个实体表，而是一个从表中查询出来得到的二维结果表（子查询）。</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from (<span class="keyword">select</span> 字段列表 <span class="keyword">from</span> 表) <span class="keyword">as</span> 别名;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202200630599.png" alt="image-20210202200630599"></p>
+<h3 id="Where子句"><a href="#Where子句" class="headerlink" title="Where子句"></a>Where子句</h3><p>Where字句：用来从数据表获取数据的时候，然后进行条件筛选。</p>
+<p> 数据获取原理：针对表去对应的磁盘处获取所有的记录（一条条），where的作用就是在拿到一条结果就开始进行判断，判断是否符合条件：如果符合就保存下来，如果不符合直接舍弃（不放到内存中）</p>
+<p>Where是通过运算符进行结果比较来判断数据。</p>
+<h3 id="Group-by子句"><a href="#Group-by子句" class="headerlink" title="Group by子句"></a>Group by子句</h3><p>Group by表示分组的含义：根据指定的字段，将数据进行分组：分组的目标是为了统计</p>
+<h4 id="分组统计"><a href="#分组统计" class="headerlink" title="分组统计"></a>分组统计</h4><p>基本语法： </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">group by 字段名;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202202118076.png" alt="image-20210202202118076"></p>
+<p>Group by是为了分组后进行数据统计的，如果只是想看数据显示，那么group by没什么含义：group by将数据按照指定的字段分组之后，只会保留每组的第一条记录。</p>
+<p>利用一些统计函数：（聚合函数）</p>
+<p>count()：统计每组中的数量，如果统计目标是字段，那么不统计为空NULL字段，如果为*那么代表统计记录</p>
+<p>avg()：求平均值</p>
+<p>sum()：求和</p>
+<p>max()：求最大值</p>
+<p>min()：求最小值</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/blob/main/blog-img/image-20210202202919761.png" alt="image-20210202202919761"></p>
+<p>Group_concat()：为了将分组中指定的字段进行合并（字符串拼接）</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/blob/main/blog-img/image-20210202203214011.png" alt="image-20210202203214011"></p>
+<h4 id="多分组"><a href="#多分组" class="headerlink" title="多分组"></a>多分组</h4><p>将数据按照某个字段进行分组之后，对已经分组的数据进行再次分组</p>
+<p> 基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">group by 字段1,字段2; 	//先按照字段1进行排序，之后将结果再按照字段2进行排序，以此类推。</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202204051331.png" alt="image-20210202204051331"></p>
+<h4 id="分组排序"><a href="#分组排序" class="headerlink" title="分组排序"></a>分组排序</h4><p>Mysql中，分组默认有排序的功能：按照分组字段进行排序，默认是升序</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">group by 字段 [asc|desc]，字段 [asc|desc]</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202204259895.png" alt="image-20210202204259895"></p>
+<h4 id="回溯统计"><a href="#回溯统计" class="headerlink" title="回溯统计"></a>回溯统计</h4><p>当分组进行多分组之后，往上统计的过程中，需要进行层层上报，将这种层层上报统计的过程称之为回溯统计：每一次分组向上统计的过程都会产生一次新的统计数据，而且当前数据对应的分组字段为NULL。</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">group by 字段 [asc|desc] <span class="keyword">with</span> <span class="keyword">rollup</span>;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202205036929.png" alt="image-20210202205036929"></p>
+<p>多分组回溯统计</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202205036929.png" alt="image-20210202205308366"></p>
+<h3 id="Having子句"><a href="#Having子句" class="headerlink" title="Having子句"></a>Having子句</h3><p>Having的本质和where一样，是用来进行数据条件筛选。</p>
+<ol>
+<li>Having是在group by子句之后：可以针对分组数据进行统计筛选，但是where不行</li>
+</ol>
+<p>查询班级人数大于等于4个以上的班级</p>
+<p>Where不能使用聚合函数：聚合函数是用在group by分组的时候，where已经运行完毕</p>
+<p>Having在group by分组之后，可以使用聚合函数或者字段别名（where是从表中取出数据，别名是在数据进入到内存之后才有的）</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202210945795.png" alt="image-20210202210945795"></p>
+<p>强调：having是在group by之后，group by是在where之后：where的时候表示将数据从磁盘拿到内存，where之后的所有操作都是内存操作。</p>
+<h3 id="Order-by子句"><a href="#Order-by子句" class="headerlink" title="Order by子句"></a>Order by子句</h3><p>Order by排序：根据校对规则对数据进行排序</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">order by 字段 [asc|desc];       //asc升序，默认的</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202211211080.png" alt="image-20210202211211080"></p>
+<p>Order by也可以像group by一样进行多字段排序：先按照第一个字段进行排序，然后再按照第二个字段进行排序。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Order by 字段1 规则,字段2 规则;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202211351221.png" alt="image-20210202211351221"></p>
+<h3 id="Limit子句"><a href="#Limit子句" class="headerlink" title="Limit子句"></a>Limit子句</h3><p>Limit限制子句：主要是用来限制记录数量获取</p>
+<h4 id="记录数限制"><a href="#记录数限制" class="headerlink" title="记录数限制"></a>记录数限制</h4><p>纯粹的限制获取的数量：从第一条到指定的数量</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">limit 数量;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202211547883.png" alt="image-20210202211547883"></p>
+<p>Limit通常在查询的时候如果限定为一条记录的时候，使用的比较多：有时候获取多条记录并不能解决业务问题，但是会增加服务器的压力。</p>
+<h4 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h4><p>利用limit来限制获取指定区间的数据。</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">limit offset,length;   	//offset偏移量：从哪开始，length就是具体的获取多少条记录</span><br></pre></td></tr></table></figure>
+<p>Mysql中记录的数量从0开始</p>
+<p>Limit 0,2; 表示获取前两条记录</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202211751605.png" alt="image-20210202211751605"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/blob/main/blog-img/image-20210202211838240.png" alt="image-20210202211838240"></p>
+<p>注意：limit后面的length表示最多获取对应数量，但是如果数量不够，系统不会强求</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/blob/main/blog-img/image-20210202211824015.png" alt="image-20210202211824015"></p>
+<h2 id="查询中的运算符"><a href="#查询中的运算符" class="headerlink" title="查询中的运算符"></a>查询中的运算符</h2><h3 id="算术运算符"><a href="#算术运算符" class="headerlink" title="算术运算符"></a>算术运算符</h3><p>+、-、*、/、%</p>
+<p>基本算术运算：通常不在条件中使用，而是用于结果运算（select 字段中）</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202220941715.png" alt="image-20210202220941715"></p>
+<h3 id="比较运算符"><a href="#比较运算符" class="headerlink" title="比较运算符"></a>比较运算符</h3><p>&gt;、&gt;=、&lt;、&lt;=、=、&lt;&gt;</p>
+<p>通常是用来在条件中进行限定结果</p>
+<p>=：在mysql中，没有对应的 ==比较符号，就是使用=来进行相等判断</p>
+<p>&lt;=&gt;：相等比较</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202221233574.png" alt="image-20210202221233574"></p>
+<p>特殊应用：就是在字段结果中进行比较运算</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202221508097.png" alt="image-20210202221508097"></p>
+<p>在条件判断的时候，还有有对应的比较运算符：计算区间</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Between 条件1 and 条件2;		//闭区间查找</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202221632673.png" alt="image-20210202221632673"></p>
+<p>Between中条件1必须小于条件2，反过来不可以</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202221722572.png" alt="image-20210202221722572"></p>
+<h3 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a>逻辑运算符</h3><p>and、or、not</p>
+<p>and：逻辑与</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202221827339.png" alt="image-20210202221827339"></p>
+<p>or：逻辑或</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202221916855.png" alt="image-20210202221916855"></p>
+<p>not：逻辑非</p>
+<h3 id="In运算符"><a href="#In运算符" class="headerlink" title="In运算符"></a>In运算符</h3><p>In：在什么里面，是用来替代=，当结果不是一个值，而是一个结果集的时候</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">in (结果1,结果2,结果3…)		//只要当前条件在结果集中出现过，那么就成立</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/blob/main/blog-img/image-20210202222100602.png" alt="image-20210202222100602"></p>
+<h3 id="Is运算符"><a href="#Is运算符" class="headerlink" title="Is运算符"></a>Is运算符</h3><p>Is是专门用来判断字段是否为NULL的运算符</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">is null / is not null</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202222324678.png" alt="image-20210202222324678"></p>
+<h3 id="Like运算符"><a href="#Like运算符" class="headerlink" title="Like运算符"></a>Like运算符</h3><p>Like运算符：是用来进行模糊匹配（匹配字符串）</p>
+<p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">like ‘匹配模式’;</span><br></pre></td></tr></table></figure>
+<p> 匹配模式中，有两种占位符：</p>
+<p>_：匹配对应的单个字符</p>
+<p>%：匹配多个字符</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210202222501980.png" alt="image-20210202222501980"></p>
+<h2 id="联合查询"><a href="#联合查询" class="headerlink" title="联合查询"></a>联合查询</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>联合查询是可合并多个相似的选择查询的结果集。等同于将一个表追加到另一个表，从而实现将两个表的查询组合到一起，使用谓词为UNION或UNION ALL。</p>
+<p> 联合查询：将多个查询的结果合并到一起（纵向合并）：字段数不变，多个查询的记录数合并。</p>
+<h3 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h3><ol>
+<li><p>将同一张表中不同的结果（需要对应多条查询语句来实现），合并到一起展示数据</p>
+<p>男生身高升序排序，女生身高降序排序</p>
+</li>
+<li><p>最常见：在数据量大的情况下，会对表进行分表操作，需要对每张表进行部分数据统计，使用联合查询来讲数据存放到一起显示。</p>
+<p>QQ1表获取在线数据</p>
+<p>QQ2表获取在线数据 —》将所有在线的数据显示出来</p>
+</li>
+</ol>
+<h3 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h3><p>基本语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Select 语句 Union [union 选项] Select 语句;</span><br></pre></td></tr></table></figure>
+<p>Union选项：与select选项基本一样</p>
+<ul>
+<li>Distinct：去重，去掉完全重复的数据（默认的）</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203125848085.png" alt="image-20210203125848085"></p>
+<ul>
+<li>All：保存所有的结果</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203125909251.png" alt="image-20210203125909251"></p>
+<p><strong>注意细节：</strong>union理论上只要保证字段数一样，不需要每次拿到的数据对应的字段类型一致。永远只保留第一个select语句对应的字段名字。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203130100920.png" alt="image-20210203130100920"></p>
+<h3 id="Order-by的使用"><a href="#Order-by的使用" class="headerlink" title="Order by的使用"></a>Order by的使用</h3><ol>
+<li>在联合查询中，如果要使用order by，那么对应的select语句必须使用括号括起来</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203130402708.png" alt="image-20210203130402708"></p>
+<ol start="2">
+<li>orderby在联合查询中若要生效，必须配合使用limit：而limit后面必须跟对应的限制数量（通常可以使用一个较大的值：大于对应表的记录数）</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203130520207.png" alt="image-20210203130520207"></p>
+<h2 id="连接查询"><a href="#连接查询" class="headerlink" title="连接查询"></a>连接查询</h2><p>连接查询：将多张表连到一起进行查询（会导致记录数行和字段数列发生改变）</p>
+<h3 id="连接查询的意义"><a href="#连接查询的意义" class="headerlink" title="连接查询的意义"></a>连接查询的意义</h3><p>在关系型数据库设计过程中，实体（表）与实体之间是存在很多联系的。在关系型数据库表的设计过程中，遵循着关系来设计：一对一，一对多和多对多，通常在实际操作的过程中，需要利用这层关系来保证数据的完整性。</p>
+<h3 id="连接查询分类"><a href="#连接查询分类" class="headerlink" title="连接查询分类"></a>连接查询分类</h3><p>连接查询一共有以下几类：</p>
+<ul>
+<li><p>交叉连接</p>
+</li>
+<li><p>内连接</p>
+</li>
+<li><p>外连接：左外连接（左连接）和右外连接（右连接）</p>
+</li>
+<li><p>自然连接</p>
+</li>
+</ul>
+<h3 id="交叉连接"><a href="#交叉连接" class="headerlink" title="交叉连接"></a>交叉连接</h3><p>交叉连接：将两张表的数据与另外一张表彼此交叉</p>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><ol>
+<li><p>从第一张表依次取出每一条记录</p>
+</li>
+<li><p>取出每一条记录之后，与另外一张表的全部记录挨个匹配</p>
+</li>
+<li><p>没有任何匹配条件，所有的结果都会进行保留</p>
+</li>
+<li><p>记录数 = 第一张表记录数 * 第二张表记录数；字段数 = 第一张表字段数 + 第二张表字段数（笛卡尔积）</p>
+</li>
+</ol>
+<h4 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h4><p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">表1 cross join 表2;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203131410259.png" alt="image-20210203131410259"></p>
+<h4 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h4><p>交叉连接产生的结果是笛卡尔积，没有实际应用。</p>
+<p>本质：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from 表1,表2;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="内连接"><a href="#内连接" class="headerlink" title="内连接"></a>内连接</h3><p>内连接：inner join，从一张表中取出所有的记录去另外一张表中匹配：利用匹配条件进行匹配，成功了则保留，失败了放弃。</p>
+<h4 id="原理-1"><a href="#原理-1" class="headerlink" title="原理"></a>原理</h4><ol>
+<li><p>从第一张表中取出一条记录，然后去另外一张表中进行匹配</p>
+</li>
+<li><p>利用匹配条件进行匹配：</p>
+<p>2.1 匹配到：保留，继续向下匹配</p>
+<p>2.2 匹配失败：向下继续，如果全表匹配失败，结束</p>
+</li>
+</ol>
+<h4 id="语法-1"><a href="#语法-1" class="headerlink" title="语法"></a>语法</h4><p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">表1 [inner] join 表2 on 匹配条件;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>如果内连接没有条件（允许），那么其实就是交叉连接（避免）</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203132128041.png" alt="image-20210203132128041"></p>
+<ol start="2">
+<li>使用匹配条件进行匹配</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203132218790.png" alt="image-20210203132218790"></p>
+<ol start="3">
+<li>因为表的设计通常容易产生同名字段，尤其是ID，所以为了避免重名出现错误，通常使用表名.字段名，来确保唯一性</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203132326158.png" alt="image-20210203132326158"></p>
+<ol start="4">
+<li>通常，如果条件中使用到对应的表名，而表名通常比较长，所以可以通过表别名来简化</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203132503852.png" alt="image-20210203132503852"></p>
+<ol start="5">
+<li>内连接匹配的时候，必须保证匹配到才会保存</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203132715803.png" alt="image-20210203132715803"></p>
+<ol start="6">
+<li>内连接因为不强制必须使用匹配条件（on）因此可以在数据匹配完成之后，使用where条件来限制，效果与on一样（建议使用on）</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203132850279.png" alt="image-20210203132850279"></p>
+<h4 id="应用-1"><a href="#应用-1" class="headerlink" title="应用"></a>应用</h4><p>内连接通常是在对数据有精确要求的地方使用：必须保证两种表中都能进行数据匹配。</p>
+<h3 id="外连接"><a href="#外连接" class="headerlink" title="外连接"></a>外连接</h3><p>外链接：outer join，按照某一张表作为主表（表中所有记录在最后都会保留），根据条件去连接另外一张表，从而得到目标数据。</p>
+<p> 外连接分为两种：左外连接（left join），右外连接（right join）</p>
+<ul>
+<li><p>左连接：左表是主表</p>
+</li>
+<li><p>右连接：右表是主表</p>
+</li>
+</ul>
+<h4 id="原理-2"><a href="#原理-2" class="headerlink" title="原理"></a>原理</h4><ol>
+<li><p>确定连接主表：左连接就是left join左边的表为主表；right join就是右边为主表</p>
+</li>
+<li><p>拿主表的每一条记录，去匹配另外一张表（从表）的每一条记录</p>
+</li>
+<li><p>如果满足匹配条件：保留；不满足即不保留</p>
+</li>
+<li><p>如果主表记录在从表中一条都没有匹配成功，那么也要保留该记录：从表对应的字段值都未NULL</p>
+</li>
+</ol>
+<h4 id="语法-2"><a href="#语法-2" class="headerlink" title="语法"></a>语法</h4><p>基本语法：</p>
+<p>左连接：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">主表 left join 从表 on 连接条件;</span><br></pre></td></tr></table></figure>
+<p>右连接：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">从表 right join 主表 on连接条件;</span><br></pre></td></tr></table></figure>
+<p> 左连接对应的主表数据在左边；右连接对应的主表数据在右边：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203150620682.png" alt="image-20210203150620682"></p>
+<p>右连接查看数据</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203150715164.png" alt="image-20210203150715164"></p>
+<p><strong>特点：</strong></p>
+<ol>
+<li><p>外连接中主表数据记录一定会保存：连接之后不会出现记录数少于主表（内连接可能）</p>
+</li>
+<li><p>左连接和右连接其实可以互相转换，但是数据对应的位置（表顺序）会改变</p>
+</li>
+</ol>
+<h4 id="应用-2"><a href="#应用-2" class="headerlink" title="应用"></a>应用</h4><p>非常常用的一种获取的数据方式：作为数据获取对应主表以及其他数据（关联）</p>
+<h3 id="Using关键字"><a href="#Using关键字" class="headerlink" title="Using关键字"></a>Using关键字</h3><p>是在连接查询中用来代替对应的on关键字的，进行条件匹配。</p>
+<h4 id="原理-3"><a href="#原理-3" class="headerlink" title="原理"></a>原理</h4><ol>
+<li><p>在连接查询时，使用on的地方用using代替</p>
+</li>
+<li><p>使用using的前提是对应的两张表连接的字段是同名（类似自然连接自动匹配）</p>
+</li>
+<li><p>如果使用using关键字，那么对应的同名字段，最终在结果中只会保留一个。</p>
+</li>
+</ol>
+<h4 id="语法-3"><a href="#语法-3" class="headerlink" title="语法"></a>语法</h4><p>基本语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">表1 [inner,left,right] join 表2 using(同名字段列表); 	//连接字段</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210203151711963.png" alt="image-20210203151711963"></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：高级数据操作</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-02-03 15:18:53</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/02/03/高级数据操作/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/02/02/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%9F%BA%E7%A1%80/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">数据库基础</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%A2%9E%E6%95%B0%E6%8D%AE"><span class="nav-text">新增数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E6%95%B0%E6%8D%AE%E6%8F%92%E5%85%A5"><span class="nav-text">多数据插入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E9%94%AE%E5%86%B2%E7%AA%81"><span class="nav-text">主键冲突</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A0%95%E8%99%AB%E5%A4%8D%E5%88%B6"><span class="nav-text">蠕虫复制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E6%95%B0%E6%8D%AE"><span class="nav-text">更新数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%95%B0%E6%8D%AE"><span class="nav-text">删除数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE"><span class="nav-text">查询数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#From%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="nav-text">From数据源</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E8%A1%A8%E6%95%B0%E6%8D%AE"><span class="nav-text">单表数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E8%A1%A8%E6%95%B0%E6%8D%AE"><span class="nav-text">多表数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E6%95%B0%E6%8D%AE"><span class="nav-text">动态数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Where%E5%AD%90%E5%8F%A5"><span class="nav-text">Where子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Group-by%E5%AD%90%E5%8F%A5"><span class="nav-text">Group by子句</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E7%BB%9F%E8%AE%A1"><span class="nav-text">分组统计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%9A%E5%88%86%E7%BB%84"><span class="nav-text">多分组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E7%BB%84%E6%8E%92%E5%BA%8F"><span class="nav-text">分组排序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%9E%E6%BA%AF%E7%BB%9F%E8%AE%A1"><span class="nav-text">回溯统计</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Having%E5%AD%90%E5%8F%A5"><span class="nav-text">Having子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Order-by%E5%AD%90%E5%8F%A5"><span class="nav-text">Order by子句</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Limit%E5%AD%90%E5%8F%A5"><span class="nav-text">Limit子句</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%B0%E5%BD%95%E6%95%B0%E9%99%90%E5%88%B6"><span class="nav-text">记录数限制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%86%E9%A1%B5"><span class="nav-text">分页</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E4%B8%AD%E7%9A%84%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">查询中的运算符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">算术运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AF%94%E8%BE%83%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">比较运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">逻辑运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#In%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">In运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Is%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">Is运算符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Like%E8%BF%90%E7%AE%97%E7%AC%A6"><span class="nav-text">Like运算符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%94%E5%90%88%E6%9F%A5%E8%AF%A2"><span class="nav-text">联合查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-text">基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Order-by%E7%9A%84%E4%BD%BF%E7%94%A8"><span class="nav-text">Order by的使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2"><span class="nav-text">连接查询</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E7%9A%84%E6%84%8F%E4%B9%89"><span class="nav-text">连接查询的意义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E6%9F%A5%E8%AF%A2%E5%88%86%E7%B1%BB"><span class="nav-text">连接查询分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%A4%E5%8F%89%E8%BF%9E%E6%8E%A5"><span class="nav-text">交叉连接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-text">原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95"><span class="nav-text">语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E8%BF%9E%E6%8E%A5"><span class="nav-text">内连接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-1"><span class="nav-text">原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95-1"><span class="nav-text">语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8-1"><span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%96%E8%BF%9E%E6%8E%A5"><span class="nav-text">外连接</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-2"><span class="nav-text">原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95-2"><span class="nav-text">语法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BA%94%E7%94%A8-2"><span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Using%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-text">Using关键字</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8E%9F%E7%90%86-3"><span class="nav-text">原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%AD%E6%B3%95-3"><span class="nav-text">语法</span></a></li></ol></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>
