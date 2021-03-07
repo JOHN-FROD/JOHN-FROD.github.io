@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        SQLmap 常用命令 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">SQLmap 常用命令</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv2</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-07 19:02:43
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/CTF/">CTF</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <p>这里是一些我自己用过的或者感觉上回比较实用的一些sqlmap参数命令，有新的会不断补充</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>SQLMap 是一个开源的渗透测试工具，可以用来进行自动化检测，利用 SQL 注入漏洞，获取数据库服务器的权限。它具有功能强大的检测引擎，针对各种不同类型数据库的渗透测试的功能选项，包括获取数据库中存储的数据，访问操作系统文件甚至可以通过外带数据连接的方式执行操作系统命令。</p>
+<p>sqlmap支持五种不同的注入模式：</p>
+<ol>
+<li>基于布尔的盲注，即可以根据返回页面判断条件真假的注入。</li>
+<li>基于时间的盲注，即不能根据页面返回内容判断任何信息，用条件语句查看时间延迟语句是否执行（即页面返回时间是否增加）来判断。</li>
+<li>基于报错注入，即页面会返回错误信息，或者把注入的语句的结果直接返回在页面中。</li>
+<li>联合查询注入，可以使用union的情况下的注入。</li>
+<li>堆查询注入，可以同时执行多条语句的执行时的注入。</li>
+</ol>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><ul>
+<li>首先是sql自带的帮助文档</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -hh</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>如果你想观察sqlmap对一个点是进行了怎样的尝试判断以及读取数据的，可以使用-v参数。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0、只显示python错误以及严重的信息。</span><br><span class="line">1、同时显示基本信息和警告信息。（默认）</span><br><span class="line">2、同时显示debug信息。</span><br><span class="line">3、同时显示注入的payload。</span><br><span class="line">4、同时显示HTTP请求。</span><br><span class="line">5、同时显示HTTP响应头。</span><br><span class="line">6、同时显示HTTP响应页面。</span><br></pre></td></tr></table></figure>
+<p>如果你想看到sqlmap发送的测试payload最好的等级就是3。</p>
+<h3 id="目标选定"><a href="#目标选定" class="headerlink" title="目标选定"></a>目标选定</h3><h4 id="直接连接到数据库"><a href="#直接连接到数据库" class="headerlink" title="直接连接到数据库"></a>直接连接到数据库</h4><p>参数：-d</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -d &quot;mysql:&#x2F;&#x2F;admin:admin@127.0.0.1:3306&#x2F;db&quot;</span><br></pre></td></tr></table></figure>
+<p>对单个数据库运行sqkmap</p>
+<h4 id="指定URL"><a href="#指定URL" class="headerlink" title="指定URL"></a>指定URL</h4><p>参数：-u 或者 –url</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u &quot;http(s):&#x2F;&#x2F;targeturl:[port]&#x2F;[...]&quot; </span><br></pre></td></tr></table></figure>
+
+
+<h3 id="请求方式"><a href="#请求方式" class="headerlink" title="请求方式"></a>请求方式</h3><h4 id="HTTP数据"><a href="#HTTP数据" class="headerlink" title="HTTP数据"></a>HTTP数据</h4><p>参数：–data</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sqlmap -u &quot;http(s):&#x2F;&#x2F;targeturl:[port]&#x2F;[...]&quot; --data&#x3D;&quot;id&#x3D;1&quot;</span><br></pre></td></tr></table></figure>
+<p>此参数是把数据以POST方式提交，sqlmap会像检测GET参数一样检测POST的参数</p>
+<h4 id="HTTP-cookie头"><a href="#HTTP-cookie头" class="headerlink" title="HTTP cookie头"></a>HTTP cookie头</h4><p>参数：–cookie,–load-cookies,–drop-set-cookie</p>
+<p>这个参数在以下两个方面很有用：</p>
+<ol>
+<li><p>web应用需要登陆的时候。</p>
+</li>
+<li><p>你想要在这些头参数中测试SQL注入时。</p>
+</li>
+</ol>
+<p>可以通过抓包把cookie获取到，复制出来，然后加到–cookie参数里。</p>
+<p>在HTTP请求中，遇到Set-Cookie的话，sqlmap会自动获取并且在以后的请求中加入，并且会尝试SQL注入。</p>
+<p>如果你不想接受Set-Cookie可以使用–drop-set-cookie参数来拒接。</p>
+<p>当你使用–cookie参数时，当返回一个Set-Cookie头的时候，sqlmap会询问你用哪个cookie来继续接下来的请求。当–level的参数设定为2或者2以上的时候，sqlmap会尝试注入Cookie参数。</p>
+<h4 id="HTTP-User-Agent头"><a href="#HTTP-User-Agent头" class="headerlink" title="HTTP User-Agent头"></a>HTTP User-Agent头</h4><p>参数：–user-agent,–random-agent</p>
+<p>用于指定 user-agent ，当使用 –random-agent 时，sqlmap会从./txt/user-agents.txt获取参数。</p>
+<p>当–level的参数设定为3或者3以上的时候，sqlmap会尝试注入User-Agent参数。</p>
+<h4 id="HTTP-Host头"><a href="#HTTP-Host头" class="headerlink" title="HTTP Host头"></a>HTTP Host头</h4><p>参数：–host</p>
+<p>用于指定 host 的值。</p>
+<h4 id="HTTP-Referer头"><a href="#HTTP-Referer头" class="headerlink" title="HTTP Referer头"></a>HTTP Referer头</h4><p>参数：–referer</p>
+<p>sqlmap可以在请求中伪造HTTP中的referer，当–level参数设定为3或者3以上的时候会尝试对referer注入。</p>
+<h4 id="额外的HTTP头"><a href="#额外的HTTP头" class="headerlink" title="额外的HTTP头"></a>额外的HTTP头</h4><p>参数：–headers</p>
+<p>可以通过–headers参数来增加额外的http头。</p>
+<h3 id="探测"><a href="#探测" class="headerlink" title="探测"></a>探测</h3><h4 id="指定数据库类型"><a href="#指定数据库类型" class="headerlink" title="指定数据库类型"></a>指定数据库类型</h4><p>参数：–dbms</p>
+<p>默认sqlmap会自动探测web应用后端的数据库是什么</p>
+<h4 id="风险等级"><a href="#风险等级" class="headerlink" title="风险等级"></a>风险等级</h4><p>参数：–risk</p>
+<p>设置测试用例的类型,默认是1, 会使用常见的注入用例,2:加入基于时间的盲注, 3: 增加基于OR的测试用例，在有些时候，例如在UPDATE的语句中，注入一个OR的测试语句，可能导致更新的整个表，可能造成很大的风险。</p>
+<h3 id="注入技术"><a href="#注入技术" class="headerlink" title="注入技术"></a>注入技术</h3><h4 id="注入所使用的类型"><a href="#注入所使用的类型" class="headerlink" title="注入所使用的类型"></a>注入所使用的类型</h4><p>参数：–technique</p>
+<ul>
+<li>B: Boolean-based blind SQL injection（布尔型注入）</li>
+<li>E: Error-based SQL injection（报错型注入）</li>
+<li>U: UNION query SQL injection（可联合查询注入）</li>
+<li>S: Stacked queries SQL injection（可多语句查询注入）</li>
+<li>T: Time-based blind SQL injection（基于时间延迟注入）</li>
+</ul>
+<h3 id="列数据"><a href="#列数据" class="headerlink" title="列数据"></a>列数据</h3><h4 id="列出数据库系统的数据库"><a href="#列出数据库系统的数据库" class="headerlink" title="列出数据库系统的数据库"></a>列出数据库系统的数据库</h4><p>参数：–dbs</p>
+<p>当前用户有权限读取包含所有数据库列表信息的表中的时候，即可列出所有的数据库。</p>
+<h4 id="列举数据库表"><a href="#列举数据库表" class="headerlink" title="列举数据库表"></a>列举数据库表</h4><p>参数：–tables</p>
+<p>当前用户有权限读取包含所有数据库表信息的表中的时候，即可列出一个特定数据的所有表。</p>
+<p>如果你不提供-D参数来列指定的一个数据的时候，sqlmap会列出数据库所有库的所有表。</p>
+<h4 id="列举数据库表中的字段"><a href="#列举数据库表中的字段" class="headerlink" title="列举数据库表中的字段"></a>列举数据库表中的字段</h4><p>参数：–columns</p>
+<p>当前用户有权限读取包含所有数据库表信息的表中的时候，即可列出指定数据库表中的字段，同时也会列出字段的数据类型。</p>
+<p>如果没有使用-D参数指定数据库时，默认会使用当前数据库。</p>
+<h4 id="获取表中数据个数"><a href="#获取表中数据个数" class="headerlink" title="获取表中数据个数"></a>获取表中数据个数</h4><p>参数：–count</p>
+<p>有时候用户只想获取表中的数据个数而不是具体的内容，那么就可以使用这个参数。</p>
+<h4 id="获取整个表的数据"><a href="#获取整个表的数据" class="headerlink" title="获取整个表的数据"></a>获取整个表的数据</h4><p>参数：–dump</p>
+<p>如果当前管理员有权限读取数据库其中的一个表的话，那么就能获取这个表的所有内容。</p>
+<p>使用-D,-T参数指定想要获取哪个库的哪个表，不适用-D参数时，默认使用当前库。</p>
+<h3 id="通用"><a href="#通用" class="headerlink" title="通用"></a>通用</h3><h4 id="清除session"><a href="#清除session" class="headerlink" title="清除session"></a>清除session</h4><p>参数：–flush-session</p>
+<p>会清空当前URL相关的session</p>
+<h4 id="清除查询结果"><a href="#清除查询结果" class="headerlink" title="清除查询结果"></a>清除查询结果</h4><p>参数：–fresh-queries</p>
+<p>清除之前的查询结果,进行重新请求操作。</p>
+<h3 id="其他参数"><a href="#其他参数" class="headerlink" title="其他参数"></a>其他参数</h3><h4 id="初级用户向导"><a href="#初级用户向导" class="headerlink" title="初级用户向导"></a>初级用户向导</h4><p>参数：–wizard</p>
+<p>面向初级用户的参数，可以一步一步交互式操作</p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：SQLmap 常用命令</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-03-07 19:02:43</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/03/07/SQLmap 常用命令/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/03/07/SQL%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="left arrow-icon flex-center" >
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">SQL注入总结</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">SQLi-LABS (Challenges) 54-65关</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%A8%E6%B3%95"><span class="nav-text">用法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E6%A0%87%E9%80%89%E5%AE%9A"><span class="nav-text">目标选定</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%9B%B4%E6%8E%A5%E8%BF%9E%E6%8E%A5%E5%88%B0%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">直接连接到数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E5%AE%9AURL"><span class="nav-text">指定URL</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E6%96%B9%E5%BC%8F"><span class="nav-text">请求方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP%E6%95%B0%E6%8D%AE"><span class="nav-text">HTTP数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP-cookie%E5%A4%B4"><span class="nav-text">HTTP cookie头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP-User-Agent%E5%A4%B4"><span class="nav-text">HTTP User-Agent头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP-Host%E5%A4%B4"><span class="nav-text">HTTP Host头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP-Referer%E5%A4%B4"><span class="nav-text">HTTP Referer头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E7%9A%84HTTP%E5%A4%B4"><span class="nav-text">额外的HTTP头</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A2%E6%B5%8B"><span class="nav-text">探测</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B1%BB%E5%9E%8B"><span class="nav-text">指定数据库类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%A3%8E%E9%99%A9%E7%AD%89%E7%BA%A7"><span class="nav-text">风险等级</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%85%A5%E6%8A%80%E6%9C%AF"><span class="nav-text">注入技术</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E5%85%A5%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-text">注入所使用的类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%97%E6%95%B0%E6%8D%AE"><span class="nav-text">列数据</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%97%E5%87%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-text">列出数据库系统的数据库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%97%E4%B8%BE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8"><span class="nav-text">列举数据库表</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%97%E4%B8%BE%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E4%B8%AD%E7%9A%84%E5%AD%97%E6%AE%B5"><span class="nav-text">列举数据库表中的字段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E8%A1%A8%E4%B8%AD%E6%95%B0%E6%8D%AE%E4%B8%AA%E6%95%B0"><span class="nav-text">获取表中数据个数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%95%B4%E4%B8%AA%E8%A1%A8%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-text">获取整个表的数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E7%94%A8"><span class="nav-text">通用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B8%85%E9%99%A4session"><span class="nav-text">清除session</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B8%85%E9%99%A4%E6%9F%A5%E8%AF%A2%E7%BB%93%E6%9E%9C"><span class="nav-text">清除查询结果</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%8F%82%E6%95%B0"><span class="nav-text">其他参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9D%E7%BA%A7%E7%94%A8%E6%88%B7%E5%90%91%E5%AF%BC"><span class="nav-text">初级用户向导</span></a></li></ol></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>
