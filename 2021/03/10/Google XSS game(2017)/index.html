@@ -173,7 +173,7 @@
         
 
         <div class="article-content markdown-body">
-            <h1 id="Google-XSS-game-2017"><a href="#Google-XSS-game-2017" class="headerlink" title="Google XSS game(2017)"></a>Google XSS game(2017)</h1><p>这是新版的谷歌XSS靶场，每一关的过关条件是能够弹出**alert()**即可。</p>
+            <h1 id="Google-XSS-game-2017"><a href="#Google-XSS-game-2017" class="headerlink" title="Google XSS game(2017)"></a>Google XSS game(2017)</h1><p>这是新版的谷歌XSS靶场，每一关的过关条件是能够弹出alert()即可。</p>
 <p>地址：<a class="link"   target="_blank" rel="noopener" href="http://www.xssgame.com/" >http://www.xssgame.com/<i class="fas fa-external-link-alt"></i></a></p>
 <h2 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309171755100.png" alt="image-20210309171755100"></p>
 <p>基础题，直接输入基本的反射型XSS语句：</p>
@@ -183,7 +183,7 @@
 <h2 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309172238727.png" alt="image-20210309172238727"></p>
 <p>和旧版的level 4一样，我们查看页面元素</p>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309172452175.png" alt="image-20210309172452175"></p>
-<p>发现我么在输入框输入的值被传递到了<code>startTimer()</code>函数中，于是我们可以直接闭合掉前一个函数，另外加上**alert()**，并且把后面的内容注释掉即可：</p>
+<p>发现我么在输入框输入的值被传递到了<code>startTimer()</code>函数中，于是我们可以直接闭合掉前一个函数，另外加上alert()，并且把后面的内容注释掉即可：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#39;);alert();&#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
 <p>这里网上还有另一种解法是，先查看源码：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">startTimer</span>(<span class="params">seconds</span>) </span>&#123;</span><br><span class="line">        seconds = <span class="built_in">parseInt</span>(seconds) || <span class="number">3</span>;</span><br><span class="line">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="built_in">window</span>.confirm(<span class="string">&quot;Time is up!&quot;</span>);</span><br><span class="line">          <span class="built_in">window</span>.loading.style.display = <span class="string">&#x27;none&#x27;</span>;</span><br><span class="line">          <span class="built_in">window</span>.message.innerHTML = <span class="string">&#x27;&lt;a href=&quot;?&quot;&gt;Go back&lt;/a&gt; to the timer setup page&#x27;</span>;</span><br><span class="line">        &#125;, seconds * <span class="number">1000</span>);</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
@@ -355,6 +355,21 @@
 
         
             <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/03/10/XSS%E6%8C%91%E6%88%98%E8%B5%9B/"
+                        >
+                            <span class="left arrow-icon flex-center" >
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">XSS 挑战赛</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
                 
                 
                     <div class="article-next">

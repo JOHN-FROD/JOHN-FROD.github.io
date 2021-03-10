@@ -173,7 +173,7 @@
         
 
         <div class="article-content markdown-body">
-            <h2 id="Google-XSS-game"><a href="#Google-XSS-game" class="headerlink" title="Google XSS game"></a>Google XSS game</h2><p>这是谷歌的XSS靶场，每一关的过关条件是能够弹出**alert()**即可。</p>
+            <h2 id="Google-XSS-game"><a href="#Google-XSS-game" class="headerlink" title="Google XSS game"></a>Google XSS game</h2><p>这是谷歌的XSS靶场，每一关的过关条件是能够弹出<code>alert()</code>即可。</p>
 <p>地址：<a class="link"   target="_blank" rel="noopener" href="https://xss-game.appspot.com/" >https://xss-game.appspot.com/<i class="fas fa-external-link-alt"></i></a>  (需要科学上网)</p>
 <h2 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308224534084.png" alt="image-20210308224534084"></p>
 <p>这是一个反射型XSS，直接输入最基本的XSS代码即可：</p>
@@ -191,13 +191,13 @@
 <ul>
 <li>函数解释</li>
 </ul>
-<p>**parseInt()**：parseInt() 函数可解析一个字符串，并返回一个整数。</p>
-<p>**unescape()**：对通过 escape() 编码的字符串进行解码。</p>
-<p>**querySelectorAll()**：返回文档中匹配指定 CSS 选择器的所有元素，返回 <a class="link"   target="_blank" rel="noopener" href="https://www.runoob.com/js/js-htmldom-nodelist.html" >NodeList<i class="fas fa-external-link-alt"></i></a> 对象。NodeList 对象表示节点的集合。可以通过索引访问，索引值从 0 开始。</p>
-<p><strong>location.hash</strong> ：hash 属性是一个可读可写的字符串，该字符串是 URL 的锚部分（从 # 号开始的部分）。也就是说，他的作用是把URL的<code>#</code>以及<code>#</code>后面的数据取出来，</p>
-<p>**window.onload()**：方法用于在网页加载完毕后立刻执行的操作，即当 HTML 文档加载完毕后，立刻执行某个方法。</p>
-<p>**<em>element</em>.addEventListener(<em>event, function, useCapture</em>)**：方法用于向指定元素添加事件句柄。第一个参数是事件的类型 (如 “click” 或 “mousedown”)。第二个参数是事件触发后调用的函数。第三个参数是个布尔值用于描述事件是冒泡还是捕获。该参数是可选的。</p>
-<p>**html()**：方法设置或返回被选元素的内容（innerHTML）。当该方法用于返回内容时，则返回第一个匹配元素的内容。当该方法用于设置内容时，则重写所有匹配元素的内容。</p>
+<p>parseInt()：parseInt() 函数可解析一个字符串，并返回一个整数。</p>
+<p>unescape()：对通过 escape() 编码的字符串进行解码。</p>
+<p>querySelectorAll()：返回文档中匹配指定 CSS 选择器的所有元素，返回 <a class="link"   target="_blank" rel="noopener" href="https://www.runoob.com/js/js-htmldom-nodelist.html" >NodeList<i class="fas fa-external-link-alt"></i></a> 对象。NodeList 对象表示节点的集合。可以通过索引访问，索引值从 0 开始。</p>
+<p>location.hash ：hash 属性是一个可读可写的字符串，该字符串是 URL 的锚部分（从 # 号开始的部分）。也就是说，他的作用是把URL的<code>#</code>以及<code>#</code>后面的数据取出来，</p>
+<p>window.onload()：方法用于在网页加载完毕后立刻执行的操作，即当 HTML 文档加载完毕后，立刻执行某个方法。</p>
+<p><em>element</em>.addEventListener(<em>event, function, useCapture</em>)：方法用于向指定元素添加事件句柄。第一个参数是事件的类型 (如 “click” 或 “mousedown”)。第二个参数是事件触发后调用的函数。第三个参数是个布尔值用于描述事件是冒泡还是捕获。该参数是可选的。</p>
+<p>html()：方法设置或返回被选元素的内容（innerHTML）。当该方法用于返回内容时，则返回第一个匹配元素的内容。当该方法用于设置内容时，则重写所有匹配元素的内容。</p>
 <ul>
 <li>利用方法</li>
 </ul>
