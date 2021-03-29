@@ -312,6 +312,7 @@
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210324114801148.png" alt="image-20210324114801148"></p>
 <h3 id="浏览器缓存"><a href="#浏览器缓存" class="headerlink" title="浏览器缓存"></a>浏览器缓存</h3><p>这个是用来绕过<code>script nonce</code>的一个方法：<a class="link"   target="_blank" rel="noopener" href="https://lorexxar.cn/2017/05/16/nonce-bypass-script/" >通过浏览器缓存来bypass CSP script nonce<i class="fas fa-external-link-alt"></i></a></p>
 <p>这个看了个大概意思，也不知道行不行：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/2313934391.png" alt="img"></p>
 <p>​    就是利用修改<code>location.hash</code>览器不会请求服务器，那么nonce string就不会更换的方法。先找到要攻击页面的同源域下的另一个没有CSP保护的页面，在这个页面构造XSS，先开一个<code>&lt;iframe&gt;</code>请求要攻击的页面，获取到nonce值后，再新建一个<code>&lt;iframe&gt;</code>，添加带有nonce字符串的<code>&lt;iframe&gt;</code>窗口请求要攻击的页面，执行任意XSS。其中所有的<code>&lt;iframe&gt;</code>的<code>src</code>属性都只修改<code>#</code>后面的内容来避免刷新<code>nonce</code>。</p>
 <h3 id="上传带有JS的文件"><a href="#上传带有JS的文件" class="headerlink" title="上传带有JS的文件"></a>上传带有JS的文件</h3><p>下面的方法其实不算是绕过CSP，实际上是绕过了上传的过滤规则，然后在域内进行调用，其实是遵守了CSP的规则。</p>
 <ul>
