@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        服务器文件解析漏洞 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">服务器文件解析漏洞</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv3</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-03-31 11:27:52
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%AE%89%E5%85%A8/">安全</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%A7%A3%E6%9E%90/">服务器解析</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="服务器文件解析漏洞"><a href="#服务器文件解析漏洞" class="headerlink" title="服务器文件解析漏洞"></a>服务器文件解析漏洞</h1><p>文件解析漏洞,是指Web容器（Apache、nginx、iis等）在解析文件时出现了漏洞,以其他格式执行出脚本格式的效果。从而,黑客可以利用该漏洞实现非法文件的解析。</p>
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>linux系统中的apache的php配置文件在<code>/etc/apache2/mods-available</code>这个目录下，我在window上phpstudy环境下找不到这个php的配置文件。</p>
+<h3 id="多后缀解析漏洞"><a href="#多后缀解析漏洞" class="headerlink" title="多后缀解析漏洞"></a>多后缀解析漏洞</h3><p><strong>Apache HTTPD 支持一个文件拥有多个后缀，并为不同后缀执行不同的指令</strong>。</p>
+<ul>
+<li>AddHandler：将文件扩展名映射到指定的处理程序</li>
+</ul>
+<p>什么样的扩展名使用什么样的程序来处理，描述的是扩展名与处理程序之间的关系。如果在 Apache 的 conf 里有这样一行配置 <code>AddHandler application/x-httpd-php .php </code>这时只要文件名里包含.php 即使文件名是 test2.php.jpg 也会以 php 来执行。</p>
+<ul>
+<li>AddType：在给定的文件扩展名与特定的内容类型之间建立映射</li>
+</ul>
+<p>AddType 是与类型表相关的，描述的是扩展名与文件类型之间的关系，例如：<br><code>AddType application/x-httpd-php .jpg</code>，表示.jpg扩展名的文件就是application/x-httpd-php类型的。</p>
+<h4 id="情形一"><a href="#情形一" class="headerlink" title="情形一"></a>情形一</h4><p>如果运维人员给<code>.php</code>后缀增加了处理器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">AddHandler application&#x2F;x-httpd-php .php</span><br></pre></td></tr></table></figure>
+<p>那么，在有多个后缀的情况下，只要一个文件含有<code>.php</code>后缀的文件即将被识别成PHP文件，没必要是最后一个后缀。利用这个特性，将会造成一个可以绕过上传白名单的解析漏洞。</p>
+<p>example:</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330095553638.png" alt="image-20210330095553638"></p>
+<p>这里有一个文件上传的入口，我们尝试上传php文件，显示不支持该类型文件上传</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330095714098.png" alt="image-20210330095714098"></p>
+<p>我们把文件后缀改成jpg，再次上传，发现成功上传了</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330095822038.png" alt="image-20210330095822038"></p>
+<p>访问该目录，发现该jpg被解析为了php文件。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330095905610.png" alt="image-20210330095905610"></p>
+<h4 id="情形二"><a href="#情形二" class="headerlink" title="情形二"></a>情形二</h4><p>如果运维人员脑瘫了给<code>.jpg</code>后缀增加了处理器或者类型映射：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AddHandler application&#x2F;x-httpd-php .jpg</span><br><span class="line">AddType application&#x2F;x-httpd-php .jpg</span><br></pre></td></tr></table></figure>
+<p>那么我们上传的jpg文件或者带有jpg的多后缀文件都能够以php解析。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330114020908.png" alt="image-20210330114020908"></p>
+<h4 id="情形三"><a href="#情形三" class="headerlink" title="情形三"></a>情形三</h4><p>这种和情形二是一样的，只不过写法不一样，如果运维人员脑瘫了给<code>jpg</code>后缀增加了处理器或者类型映射：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">FilesMatch</span> &quot;<span class="attr">.</span>+\<span class="attr">.jpg</span>&quot;&gt;</span></span><br><span class="line">SetHandler application/x-httpd-php</span><br><span class="line"><span class="tag">&lt;/<span class="name">FilesMatch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330114612307.png" alt="image-20210330114612307"></p>
+<h3 id="罕见后缀"><a href="#罕见后缀" class="headerlink" title="罕见后缀"></a>罕见后缀</h3><p>有一个名为mime.types的文件，其中记录着Apache认识的后缀，在Ubuntu下，该文件位于<code>/etc/mime.types</code>，我们查看它认识PHP哪些后缀，发现其实PHP还有很多别的后缀名。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#application&#x2F;x-httpd-php			phtml pht php</span><br><span class="line">#application&#x2F;x-httpd-php-source			phps</span><br><span class="line">#application&#x2F;x-httpd-php3			php3</span><br><span class="line">#application&#x2F;x-httpd-php3-preprocessed		php3p</span><br><span class="line">#application&#x2F;x-httpd-php4			php4</span><br><span class="line">#application&#x2F;x-httpd-php5			php5</span><br></pre></td></tr></table></figure>
+<p>然后我们再到apache的php的配置文件下看看，发现配置文件下本来就支持php、phar、phtml这三种后缀的文件。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">FilesMatch</span> &quot;<span class="attr">.</span>+\<span class="attr">.ph</span>(<span class="attr">ar</span>|<span class="attr">p</span>|<span class="attr">tml</span>)$&quot;&gt;</span></span><br><span class="line">    SetHandler application/x-httpd-php</span><br><span class="line"><span class="tag">&lt;/<span class="name">FilesMatch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330141923889.png" alt="image-20210330141923889"></p>
+<p>个人认为这个不是漏洞，只不过apcahe本来就支持这些后缀，但是开发人员的黑名单遗漏了这些罕见的后缀，导致了文件的正常解析。</p>
+<h3 id="htaccess"><a href="#htaccess" class="headerlink" title=".htaccess"></a>.htaccess</h3><p>.htaccess是Apache的又一特色。一般来说，配置文件的作用范围都是全局的，但Apache提供了一种很方便的、可作用于当前目录及其子目录的配置文件——**.htaccess**（分布式配置文件）。.htaccess文件可以配置很多事情，如是否开启站点的图片缓存、自定义错误页面、自定义默认文档、设置WWW域名重定向、设置网页重定向、设置图片防盗链和访问权限控制。但我们这里只关心.htaccess文件的一个作用——MIME类型修改。</p>
+<p>想要这个生效，一是需要在apache配置文件中把<code>AllowOverride</code>改为<code>All</code></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330145516222.png" alt="image-20210330145516222"></p>
+<p>二是Apache要加载mod_Rewrite模块。加载该模块，需要在Apache的配置文件中写上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LoadModule rewrite_mudule &#x2F;usr&#x2F;lib&#x2F;apache2&#x2F;modules&#x2F;mod_rewrite.so</span><br></pre></td></tr></table></figure>
+<p>若是在Ubuntu中，可能还需要执行命令：(我的Ubuntu18并不需要)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo a2enmod rewrite</span><br></pre></td></tr></table></figure>
+<p>配置完成后，我们例如在<code>.htaccess</code>文件中写入<code>AddType application/x-httpd-php .john </code>，则让apache把文件后缀为<code>john</code>的文件都以php的方式解析。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330145815059.png"></p>
+<h3 id="换行解析漏洞-CVE-2017-15715"><a href="#换行解析漏洞-CVE-2017-15715" class="headerlink" title="换行解析漏洞 CVE-2017-15715"></a>换行解析漏洞 CVE-2017-15715</h3><p>改漏洞影响的apache版本为<strong>2.4.0~2.4.29</strong>（但是我在本机上的2.4.29上传的文件不行，难道是php版本也有很关系？）</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_FILES</span>[<span class="string">&#x27;file&#x27;</span>])) &#123;</span><br><span class="line">    <span class="variable">$name</span> = basename(<span class="variable">$_POST</span>[<span class="string">&#x27;name&#x27;</span>]);</span><br><span class="line">    <span class="variable">$ext</span> = pathinfo(<span class="variable">$name</span>,PATHINFO_EXTENSION);</span><br><span class="line">    <span class="keyword">if</span>(in_array(<span class="variable">$ext</span>, [<span class="string">&#x27;php&#x27;</span>, <span class="string">&#x27;php3&#x27;</span>, <span class="string">&#x27;php4&#x27;</span>, <span class="string">&#x27;php5&#x27;</span>, <span class="string">&#x27;phtml&#x27;</span>, <span class="string">&#x27;pht&#x27;</span>])) &#123;</span><br><span class="line">        <span class="keyword">exit</span>(<span class="string">&#x27;bad file&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    move_uploaded_file(<span class="variable">$_FILES</span>[<span class="string">&#x27;file&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>], <span class="string">&#x27;./&#x27;</span> . <span class="variable">$name</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">	&lt;title&gt;Upload&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;form method=<span class="string">&quot;POST&quot;</span> enctype=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="line">	&lt;p&gt;</span><br><span class="line">		&lt;label&gt;file:&lt;input type=<span class="string">&quot;file&quot;</span> name=<span class="string">&quot;file&quot;</span>&gt;&lt;/label&gt;</span><br><span class="line">	&lt;/p&gt;</span><br><span class="line">	&lt;p&gt;</span><br><span class="line">		&lt;label&gt;filename:&lt;input type=<span class="string">&quot;text&quot;</span> name=<span class="string">&quot;name&quot;</span> value=<span class="string">&quot;evil.php&quot;</span>&gt;&lt;/label&gt;</span><br><span class="line">	&lt;/p&gt;</span><br><span class="line">	&lt;input type=<span class="string">&quot;submit&quot;</span>&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这个后端通过<code>basename()</code>来获取用户传入的自定义文件名，再把传入的文件重命名为改文件名，这样就存在换行解析漏洞。</p>
+<p>这里在上传文件时，对文件名进行了黑名单限制，我们利用该漏洞上传一个1.php文件，使用burpsuit抓包。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210331110001890.png" alt="image-20210331110001890"></p>
+<p>在1.php后插入一个\x0A，绕过黑名单过滤，发现能够成功上传，而且访问<code>1.php%0a</code>，文件也能被当作PHP解析。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210331110115712.png" alt="image-20210331110115712"></p>
+<blockquote>
+<p>值得一提的是通常我们也不会使用这样方法给文件命名，正常的办法是使用<code>$_FILES[&#39;upload&#39;][&#39;name&#39;]</code>这种方法获取文件本身的名字，而且一般也会对文件进行重命名为一个随机的名字，因此这个漏洞实际上也很难出现在现实环境中。</p>
+</blockquote>
+<h2 id="IIS"><a href="#IIS" class="headerlink" title="IIS"></a>IIS</h2><p>使用iis5.x-6.x版本的服务器，大多为windows server 2003，网站比较古老，开发语句一般为asp；该解析漏洞也只能解析asp文件，而不能解析aspx文件。</p>
+<h3 id="目录解析"><a href="#目录解析" class="headerlink" title="目录解析"></a>目录解析</h3><p>形式：<a class="link"   target="_blank" rel="noopener" href="http://www.xxx.com/xx.asp/xx.jpg" >www.xxx.com/xx.asp/xx.jpg<i class="fas fa-external-link-alt"></i></a></p>
+<p>原理: 在IIS-6.0的版本，在.asp或.asa文件夹下的所有类型后缀文件全部解析为.asp文件。</p>
+<h3 id="文件解析"><a href="#文件解析" class="headerlink" title="文件解析"></a>文件解析</h3><p>形式：<a class="link"   target="_blank" rel="noopener" href="http://www.xxx.com/xx.asp;.jpg" >www.xxx.com/xx.asp;.jpg<i class="fas fa-external-link-alt"></i></a></p>
+<p>原理：在IIS-6.0的版本，服务器默认不解析;后面的内容，所以xxx.asp;.jpg会被解析成xxx.asp。</p>
+<h3 id="解析文件类型"><a href="#解析文件类型" class="headerlink" title="解析文件类型"></a>解析文件类型</h3><p>有的网站在上传检测中会用”黑名单”方法 ,但是IIS6.0 默认的可执行文件除了asp还包含这三种 :</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;test.asa</span><br><span class="line">&#x2F;test.cer</span><br><span class="line">&#x2F;test.cdx</span><br></pre></td></tr></table></figure>
+<h3 id="IIS7-5解析漏洞"><a href="#IIS7-5解析漏洞" class="headerlink" title="IIS7.5解析漏洞"></a>IIS7.5解析漏洞</h3><p>IIS7.5的漏洞与nginx的类似，都是由于php配置文件中，开启了cgi.fix_pathinfo，而这并不是nginx或者iis7.5本身的漏洞。<br><strong>跟nginx解析漏洞一样，要在php.ini cgi.fix_pathinfo=1 开启的情况才会产生。</strong></p>
+<p>可以配合操作系统文件命名规则，上传不符合windows文件命名规则的文件名</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">test.asp.</span><br><span class="line">test.asp(空格)</span><br><span class="line">test.php:1.jpg</span><br><span class="line">test.php:: $DATA # php在window的时候如果文件名+&quot;::$DATA&quot;会把::$DATA之后的数据当成文件流处理,不会检测后缀名.且保持&quot;::$DATA&quot;之前的文件名</span><br></pre></td></tr></table></figure>
+<p><strong>会被windows系统自动去掉不符合规则符号后面的内，然后再配合这个解析漏洞来执行文件。</strong></p>
+<h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><h3 id="空字节代码执行漏洞"><a href="#空字节代码执行漏洞" class="headerlink" title="空字节代码执行漏洞"></a>空字节代码执行漏洞</h3><p>旧版本（0.5.*，**0.6.*，0.7，0.8&lt;=0.7.65&lt;=0.8.37）。通过利用此漏洞，攻击者可以导致服务器使用PHP的FastCGI作为PHP的服务器上执行任何公开访问的文件。</p>
+<p><strong>恶意用户发出请求<code>http://example.com/file.ext％00.php</code>就会将file.ext作为PHP文件解析。</strong></p>
+<p><strong>如果一个攻击者可以控制文件的内容（即：使用头像上传形式）其结果是执行任意代码。Ngnix在遇到%00空字节时与后端FastCGI处理不一致，导致可以在图片中嵌入PHP代码然后通过访问xxx.jpg%00.php来执行其中的代码。</strong></p>
+<h3 id="PHP-CGI解析漏洞"><a href="#PHP-CGI解析漏洞" class="headerlink" title="PHP CGI解析漏洞"></a>PHP CGI解析漏洞</h3><p><a class="link"   target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html" >Fastcgi协议分析 &amp;&amp; PHP-FPM未授权访问漏洞 &amp;&amp; Exp编写<i class="fas fa-external-link-alt"></i></a><br><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/9113969-ef9717d27ce7f505.png" alt="图片.png"><br>当访问xx.com/phpinfo.jpg/1.php这个URL时，$fastcgi_script_name会被设置为“phpinfo.jpg/1.php”，然后构造成SCRIPT_FILENAME传递给PHP CGI。</p>
+<p>Nginx默认是以CGI的方式支持PHP解析的，普遍的做法是在Nginx配置文件中通过正则匹配设置SCRIPT_FILENAME。当访问xx.com/phpinfo.jpg/1.php这个URL时，$fastcgi_script_name会被设置为“phpinfo.jpg/1.php”，然后构造成SCRIPT_FILENAME传递给PHP CGI，但是PHP为什么会接受这样的参数，并将phpinfo.jpg作为PHP文件解析呢?这就要说到fix_pathinfo这个选项了。 如果开启了这个选项，那么就会触发在PHP中的如下逻辑：<br>PHP会认为SCRIPT_FILENAME是phpinfo.jpg，而1.php是PATH_INFO，所以就会将phpinfo.jpg作为PHP文件来解析了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">www.xxxx.com&#x2F;upload&#x2F;image&#x2F;1.jpg&#x2F;1.php</span><br><span class="line">www.xxxx.com&#x2F;upload&#x2F;image&#x2F;1.jpg&#x2F;%20\00.php</span><br></pre></td></tr></table></figure>
+<p>另外一种手法：上传一个名字为test.jpg，以下内容的文件。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?PHP</span> fputs(fopen(<span class="string">&#x27;shell.php&#x27;</span>,<span class="string">&#x27;w&#x27;</span>),<span class="string">&#x27;&lt;?php eval($_POST[cmd])?&gt;&#x27;</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后访问test.jpg/.php,在这个目录下就会生成一句话木马shell.php。</p>
+<p><strong>这个解析漏洞其实是PHP CGI的漏洞，在PHP的配置文件中有一个关键的选项cgi.fix_pathinfo默认是开启的，当URL中有不存在的文件，PHP就会向前递归解析。</strong><br><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/9113969-85fb966ca25aad8a.png" alt="图片.png"><br>这个往前递归的功能原本是想解决/info.php/test这种URL，能够正确解析到info.php。</p>
+<p>在Nginx配置fastcgi使用php时，会存在文件类型解析问题。其实可以说它与Nginx本身关系不大，Nginx只是作为一个代理把请求转发给fastcgi Server，PHP在后端处理这一切。因此在其他fastcgi环境下，PHP也存在此问题，只是使用Nginx作为Web Server时，一般使用fastcgi的方式调用脚本解释器，这种使用方式最为常见。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41617034/article/details/105069094" >文件解析漏洞总结-Apache<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.smi1e.top/%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/" >文件解析漏洞总结<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/m0_37711941/article/details/88684515" >Apache漏洞—多后缀名解析、目录遍历和(CVE-2017-15715)<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：服务器文件解析漏洞</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-03-31 11:27:52</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/03/31/服务器文件解析漏洞/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/03/29/%E5%8F%8D%E5%BC%B9shell/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">反弹shell</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="nav-text">服务器文件解析漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Apache"><span class="nav-text">Apache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%90%8E%E7%BC%80%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="nav-text">多后缀解析漏洞</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%83%85%E5%BD%A2%E4%B8%80"><span class="nav-text">情形一</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%83%85%E5%BD%A2%E4%BA%8C"><span class="nav-text">情形二</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%83%85%E5%BD%A2%E4%B8%89"><span class="nav-text">情形三</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BD%95%E8%A7%81%E5%90%8E%E7%BC%80"><span class="nav-text">罕见后缀</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#htaccess"><span class="nav-text">.htaccess</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8D%A2%E8%A1%8C%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E-CVE-2017-15715"><span class="nav-text">换行解析漏洞 CVE-2017-15715</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IIS"><span class="nav-text">IIS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95%E8%A7%A3%E6%9E%90"><span class="nav-text">目录解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90"><span class="nav-text">文件解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%9E%90%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B"><span class="nav-text">解析文件类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IIS7-5%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="nav-text">IIS7.5解析漏洞</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx"><span class="nav-text">Nginx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A9%BA%E5%AD%97%E8%8A%82%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E"><span class="nav-text">空字节代码执行漏洞</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP-CGI%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E"><span class="nav-text">PHP CGI解析漏洞</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>

