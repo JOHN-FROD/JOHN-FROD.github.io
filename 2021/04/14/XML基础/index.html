@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        XML基础 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">XML基础</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv4</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-04-14 09:17:18
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/XML/">XML</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="XML-基础"><a href="#XML-基础" class="headerlink" title="XML 基础"></a>XML 基础</h1><br/>
+
+<h2 id="第1章-XML-概述"><a href="#第1章-XML-概述" class="headerlink" title="第1章 XML 概述"></a>第1章 XML 概述</h2><h3 id="1-1-引入"><a href="#1-1-引入" class="headerlink" title="1.1 引入"></a>1.1 引入</h3><p>一段标注你的XML数据格式：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">to</span>&gt;</span>Tove<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">from</span>&gt;</span>Jani<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>Don&#x27;t forget me this weekend!<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>XML数据格式最主要的功能就是<strong>数据传输</strong></p>
+<br/>
+
+<p>XML数据格式主要的用途又有哪些？</p>
+<ul>
+<li><p>程序之间的数据传输通讯</p>
+</li>
+<li><p>配置文件 config.xml</p>
+</li>
+<li><p>存储数据，充当小型数据库 data.xml</p>
+</li>
+</ul>
+<br/>
+
+<p>规范数据格式，使数据具有结构性，易读易处理</p>
+<br/>
+
+<h3 id="1-2-什么是XML"><a href="#1-2-什么是XML" class="headerlink" title="1.2 什么是XML"></a>1.2 什么是XML</h3><p>XML指的是，可扩展性标记语言</p>
+<p>XML被发明的目的是传输和存储数据，而不是展示数据</p>
+<p>XML的标签必须自定义，但是在写标签名的时候一定要有含义</p>
+<p>XML是W3C推荐的数据传输格式</p>
+<br/>
+
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412095414134.png" alt="image-20210412095414134"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412095446132.png" alt="image-20210412095446132"></p>
+<br/>
+
+<p>XML和HTML的区别：</p>
+<ul>
+<li>HTML标签不能自定义；XML标签只能自定义</li>
+<li>HTML语法要求不严格；XML语法要求极其严格，必须是成对标签</li>
+<li>HTML用来展示数据；XML用来传输和存储数据</li>
+</ul>
+<br/>
+
+<h2 id="第2章-XML-的基本语法"><a href="#第2章-XML-的基本语法" class="headerlink" title="第2章 XML 的基本语法"></a>第2章 XML 的基本语法</h2><h3 id="2-1-语法规则"><a href="#2-1-语法规则" class="headerlink" title="2.1 语法规则"></a>2.1 语法规则</h3><ul>
+<li><strong>XML必须有根节点</strong>：根节点就是其他所有节点的父级节点</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412100718124.png" alt="image-20210412100718124"></p>
+<ul>
+<li><strong>XML头声明</strong>：不强制要求，可有可无，但是建议写</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412101036572.png" alt="image-20210412101036572"></p>
+<ul>
+<li><strong>所有XML元素都必须是成对标签</strong></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412101403328.png" alt="image-20210412101403328"></p>
+<ul>
+<li><p><strong>标签名大小写敏感（区分大小写）</strong></p>
+</li>
+<li><p><strong>标签不能交叉</strong></p>
+</li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412101804082.png" alt="image-20210412101804082"></p>
+<ul>
+<li><strong>注释</strong></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412101926173.png" alt="image-20210412101926173"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412102030263.png" alt="image-20210412102030263"></p>
+<ul>
+<li><strong>特殊字符需要转义为实体字符</strong></li>
+</ul>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412102529042.png" alt="image-20210412102529042"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412102548578.png" alt="image-20210412102548578"></p>
+<p>在XML中需要转义的字符有：</p>
+<table>
+<thead>
+<tr>
+<th>实体字符</th>
+<th>符号</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&amp;lt;</code></td>
+<td>&lt;</td>
+<td>less than</td>
+</tr>
+<tr>
+<td><code>&amp;gt;</code></td>
+<td>&gt;</td>
+<td>greater than</td>
+</tr>
+<tr>
+<td><code>&amp;amp;</code></td>
+<td>&amp;</td>
+<td>ampersand</td>
+</tr>
+<tr>
+<td><code>&amp;apos;</code></td>
+<td>‘</td>
+<td>apostrophe</td>
+</tr>
+<tr>
+<td><code>&amp;quot;</code></td>
+<td>“</td>
+<td>quotation mark</td>
+</tr>
+</tbody></table>
+<br/>
+
+<h3 id="2-2-元素属性"><a href="#2-2-元素属性" class="headerlink" title="2.2 元素属性"></a>2.2 元素属性</h3><p>属性就是表示标签自身的一些额外信息</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412104107448.png" alt="image-20210412104107448"></p>
+<p>属性规则：</p>
+<p>一个标签可以有多个属性，属性的值必须使用引号引起来；</p>
+<p>命名规则：数字字母下划线，数字不能开头；</p>
+<p>在解析XML数据时，属性会带来额外的解析代码（多了一步，比较麻烦）</p>
+<br/>
+
+<h3 id="2-3-CDATA"><a href="#2-3-CDATA" class="headerlink" title="2.3 CDATA"></a>2.3 CDATA</h3><p>语法：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;![CDATA[...不解析的内容....]]&gt;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412114050036.png" alt="image-20210412114050036"></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210412114059602.png" alt="image-20210412114059602"></p>
+<p>注意：特殊字符较少时，使用实体替换，较多时使用CDATA</p>
+<br/>
+
+<h2 id="第3章-DTD"><a href="#第3章-DTD" class="headerlink" title="第3章 DTD"></a>第3章 DTD</h2><h3 id="3-1-DTD简介"><a href="#3-1-DTD简介" class="headerlink" title="3.1 DTD简介"></a>3.1 DTD简介</h3><p>DTD（文档类型定义）的作用是定义 XML 文档的合法构建模块。</p>
+<p>DTD 可被成行地声明于 XML 文档中，也可作为一个外部引用。</p>
+<h4 id="内部的-DOCTYPE-声明"><a href="#内部的-DOCTYPE-声明" class="headerlink" title="内部的 DOCTYPE 声明"></a>内部的 DOCTYPE 声明</h4><p>假如 DTD 被包含在您的 XML 源文件中，它应当通过下面的语法包装在一个 DOCTYPE 声明中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE root-element [element-declarations]&gt;</span><br></pre></td></tr></table></figure>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE note [</span><br><span class="line">&lt;!ELEMENT note (to,from,heading,body)&gt;</span><br><span class="line">&lt;!ELEMENT to (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT from (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT heading (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT body (#PCDATA)&gt;</span><br><span class="line">]&gt;</span><br><span class="line">&lt;note&gt;</span><br><span class="line">&lt;to&gt;Tove&lt;&#x2F;to&gt;</span><br><span class="line">&lt;from&gt;Jani&lt;&#x2F;from&gt;</span><br><span class="line">&lt;heading&gt;Reminder&lt;&#x2F;heading&gt;</span><br><span class="line">&lt;body&gt;Don&#39;t forget me this weekend&lt;&#x2F;body&gt;</span><br><span class="line">&lt;&#x2F;note&gt;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>DOCTYPE note</strong> (第二行)定义此文档是 <strong>note</strong> 类型的文档。</li>
+<li><strong>!ELEMENT note</strong> (第三行)定义 <strong>note</strong> 元素有四个元素：”to、from、heading,、body”</li>
+<li><strong>!ELEMENT to</strong> (第四行)定义 <strong>to</strong> 元素为 “#PCDATA” 类型</li>
+<li><strong>!ELEMENT from</strong> (第五行)定义 <strong>from</strong> 元素为 “#PCDATA” 类型</li>
+<li><strong>!ELEMENT heading</strong> (第六行)定义 <strong>heading</strong> 元素为 “#PCDATA” 类型</li>
+<li><strong>!ELEMENT body</strong> (第七行)定义 <strong>body</strong> 元素为 “#PCDATA” 类型</li>
+</ul>
+<h4 id="外部文档声明"><a href="#外部文档声明" class="headerlink" title="外部文档声明"></a>外部文档声明</h4><p>假如 DTD 位于 XML 源文件的外部，那么它应通过下面的语法被封装在一个 DOCTYPE 定义中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE root-element SYSTEM &quot;filename&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>这个 XML 文档和上面的 XML 文档相同，但是拥有一个外部的 DTD: </p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">note</span> <span class="meta-keyword">SYSTEM</span> <span class="meta-string">&quot;note.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">to</span>&gt;</span>Tove<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">from</span>&gt;</span>Jani<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span>Don&#x27;t forget me this weekend!<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这是包含 DTD 的 “note.dtd” 文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ELEMENT note (to,from,heading,body)&gt;</span><br><span class="line">&lt;!ELEMENT to (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT from (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT heading (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT body (#PCDATA)&gt;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h3 id="3-2-DTD构建模块"><a href="#3-2-DTD构建模块" class="headerlink" title="3.2 DTD构建模块"></a>3.2 DTD构建模块</h3><p>所有的 XML 文档（以及 HTML 文档）均由以下简单的构建模块构成：</p>
+<h4 id="元素"><a href="#元素" class="headerlink" title="元素"></a>元素</h4><p>元素是 XML 以及 HTML 文档的<strong>主要构建模块</strong>。</p>
+<p>HTML 元素的例子是 “body” 和 “table”。XML 元素的例子是 “note” 和 “message” 。元素可包含文本、其他元素或者是空的。空的 HTML 元素的例子是 “hr”、”br” 以及 “img”。</p>
+<p>example：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span>some text<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">message</span>&gt;</span>some text<span class="tag">&lt;/<span class="name">message</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<br/>
+
+<p><strong>在一个 DTD 中，元素通过元素声明来进行声明。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ELEMENT element-name category&gt;</span><br><span class="line">或</span><br><span class="line">&lt;!ELEMENT element-name (element-content)&gt;</span><br></pre></td></tr></table></figure>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">空元素</span><br><span class="line">&lt;!ELEMENT element-name EMPTY&gt;</span><br><span class="line">只有 PCDATA 的元素</span><br><span class="line">&lt;!ELEMENT element-name (#PCDATA)&gt;</span><br><span class="line">带有任何内容的元素</span><br><span class="line">&lt;!ELEMENT element-name ANY&gt;</span><br><span class="line">带有子元素（序列）的元素</span><br><span class="line">&lt;!ELEMENT element-name (child1,child2,...)&gt;</span><br><span class="line">&lt;!ELEMENT child1 (#PCDATA)&gt;</span><br><span class="line">&lt;!ELEMENT child2 (#PCDATA)&gt;</span><br><span class="line">...</span><br><span class="line"></span><br><span class="line">声明只出现一次的元素</span><br><span class="line">&lt;!ELEMENT element-name (child-name)&gt;</span><br><span class="line">声明最少出现一次的元素</span><br><span class="line">&lt;!ELEMENT element-name (child-name+)&gt;</span><br><span class="line">声明出现零次或多次的元素</span><br><span class="line">&lt;!ELEMENT element-name (child-name*)&gt;</span><br><span class="line">声明出现零次或一次的元素</span><br><span class="line">&lt;!ELEMENT element-name (child-name?)&gt;</span><br><span class="line">声明&quot;非...&#x2F;即...&quot;类型的内容</span><br><span class="line">&lt;!ELEMENT note (to,from,header,(message|body))&gt;</span><br><span class="line">声明混合型的内容</span><br><span class="line">&lt;!ELEMENT note (#PCDATA|to|from|header|message)*&gt;</span><br></pre></td></tr></table></figure>
+<p>当子元素按照由逗号分隔开的序列进行声明时，这些子元素必须按照相同的顺序出现在文档中。在一个完整的声明中，子元素也必须被声明，同时子元素也可拥有子元素。</p>
+<h4 id="属性"><a href="#属性" class="headerlink" title="属性"></a>属性</h4><p>属性可提供<strong>有关元素的额外信息</strong>。</p>
+<p>属性总是被置于某元素的开始标签中。属性总是以<strong>名称/值</strong>的形式成对出现的。</p>
+<p>example:</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">img</span> <span class="attr">src</span>=<span class="string">&quot;computer.gif&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+<br/>
+
+<p><strong>在 DTD 中，属性通过 ATTLIST 声明来进行声明。</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ATTLIST element-name attribute-name attribute-type attribute-value&gt;</span><br></pre></td></tr></table></figure>
+<p>以下是 <strong>属性类型</strong>的选项：</p>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">CDATA</td>
+<td align="left">值为字符数据 (character data)</td>
+</tr>
+<tr>
+<td align="left">(<em>en1</em>|<em>en2</em>|..)</td>
+<td align="left">此值是枚举列表中的一个值</td>
+</tr>
+<tr>
+<td align="left">ID</td>
+<td align="left">值为唯一的 id</td>
+</tr>
+<tr>
+<td align="left">IDREF</td>
+<td align="left">值为另外一个元素的 id</td>
+</tr>
+<tr>
+<td align="left">IDREFS</td>
+<td align="left">值为其他 id 的列表</td>
+</tr>
+<tr>
+<td align="left">NMTOKEN</td>
+<td align="left">值为合法的 XML 名称</td>
+</tr>
+<tr>
+<td align="left">NMTOKENS</td>
+<td align="left">值为合法的 XML 名称的列表</td>
+</tr>
+<tr>
+<td align="left">ENTITY</td>
+<td align="left">值是一个实体</td>
+</tr>
+<tr>
+<td align="left">ENTITIES</td>
+<td align="left">值是一个实体列表</td>
+</tr>
+<tr>
+<td align="left">NOTATION</td>
+<td align="left">此值是符号的名称</td>
+</tr>
+<tr>
+<td align="left">xml:</td>
+<td align="left">值是一个预定义的 XML 值</td>
+</tr>
+</tbody></table>
+<p>默认<strong>属性值</strong>可使用下列值 :</p>
+<table>
+<thead>
+<tr>
+<th align="left">值</th>
+<th align="left">解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">值</td>
+<td align="left">属性的默认值</td>
+</tr>
+<tr>
+<td align="left">#REQUIRED</td>
+<td align="left">属性值是必需的</td>
+</tr>
+<tr>
+<td align="left">#IMPLIED</td>
+<td align="left">属性不是必需的</td>
+</tr>
+<tr>
+<td align="left">#FIXED value</td>
+<td align="left">属性值是固定的</td>
+</tr>
+</tbody></table>
+<br/>
+
+<h5 id="默认属性值"><a href="#默认属性值" class="headerlink" title="默认属性值"></a>默认属性值</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ELEMENT square EMPTY&gt;</span><br><span class="line">&lt;!ATTLIST square width CDATA &quot;0&quot;&gt;</span><br><span class="line"></span><br><span class="line">合法的 XML:</span><br><span class="line">&lt;square width&#x3D;&quot;100&quot; &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+<p>“square” 被定义为带有 CDATA 类型的 “width” 属性的空元素。如果宽度没有被设定，其默认值为0 。</p>
+<h5 id="REQUIRED"><a href="#REQUIRED" class="headerlink" title="#REQUIRED"></a>#REQUIRED</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ATTLIST element-name attribute-name attribute-type #REQUIRED&gt;</span><br></pre></td></tr></table></figure>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ATTLIST person number CDATA #REQUIRED&gt;</span><br><span class="line"></span><br><span class="line">合法的 XML:</span><br><span class="line">&lt;person number&#x3D;&quot;5677&quot; &#x2F;&gt;</span><br><span class="line"></span><br><span class="line">非法的 XML:</span><br><span class="line">&lt;person &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+<p>假如您没有默认值选项，但是仍然希望强制作者提交属性的话，请使用关键词 #REQUIRED。</p>
+<h5 id="IMPLIED"><a href="#IMPLIED" class="headerlink" title="#IMPLIED"></a>#IMPLIED</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ATTLIST element-name attribute-name attribute-type #IMPLIED&gt;</span><br></pre></td></tr></table></figure>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ATTLIST contact fax CDATA #IMPLIED&gt;</span><br><span class="line"></span><br><span class="line">合法的 XML:</span><br><span class="line">&lt;contact fax&#x3D;&quot;555-667788&quot; &#x2F;&gt;</span><br><span class="line"></span><br><span class="line">合法的 XML:</span><br><span class="line">&lt;contact &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+<p>假如您不希望强制作者包含属性，并且您没有默认值选项的话，请使用关键词 #IMPLIED。</p>
+<h5 id="FIXED"><a href="#FIXED" class="headerlink" title="#FIXED"></a>#FIXED</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ATTLIST element-name attribute-name attribute-type #FIXED &quot;value&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ATTLIST sender company CDATA #FIXED &quot;Microsoft&quot;&gt;</span><br><span class="line"></span><br><span class="line">合法的 XML:</span><br><span class="line">&lt;sender company&#x3D;&quot;Microsoft&quot; &#x2F;&gt;</span><br><span class="line"></span><br><span class="line">非法的 XML:</span><br><span class="line">&lt;sender company&#x3D;&quot;W3Schools&quot; &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+<p>如果您希望属性拥有固定的值，并不允许作者改变这个值，请使用 #FIXED 关键词。如果作者使用了不同的值，XML 解析器会返回错误。</p>
+<h5 id="列举属性值"><a href="#列举属性值" class="headerlink" title="列举属性值"></a>列举属性值</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ATTLIST element-name attribute-name (en1|en2|..) default-value&gt;</span><br></pre></td></tr></table></figure>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ATTLIST payment type (check|cash) &quot;cash&quot;&gt;</span><br><span class="line"></span><br><span class="line">XML 例子:</span><br><span class="line">&lt;payment type&#x3D;&quot;check&quot; &#x2F;&gt;</span><br><span class="line">或</span><br><span class="line">&lt;payment type&#x3D;&quot;cash&quot; &#x2F;&gt;</span><br></pre></td></tr></table></figure>
+<p>如果您希望属性值为一系列固定的合法值之一，请使用列举属性值。</p>
+<br/>
+
+<h4 id="实体"><a href="#实体" class="headerlink" title="实体"></a>实体</h4><p>实体是用于定义引用普通文本或特殊字符的快捷方式的变量。</p>
+<ul>
+<li>实体引用是对实体的引用。</li>
+<li>实体可在内部或外部进行声明。</li>
+</ul>
+<h5 id="一个内部实体声明"><a href="#一个内部实体声明" class="headerlink" title="一个内部实体声明"></a>一个内部实体声明</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY entity-name &quot;entity-value&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY writer &quot;Donald Duck.&quot;&gt;</span><br><span class="line">&lt;!ENTITY copyright &quot;Copyright runoob.com&quot;&gt;</span><br><span class="line"></span><br><span class="line">XML 实例：</span><br><span class="line">&lt;author&gt;&amp;writer;&amp;copyright;&lt;&#x2F;author&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>注意：</strong> 一个实体由三部分构成: 一个和号 <code>&amp;</code>, 一个实体名称, 以及一个分号 <code>;</code>。</p>
+<h5 id="一个外部实体声明"><a href="#一个外部实体声明" class="headerlink" title="一个外部实体声明"></a>一个外部实体声明</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY entity-name SYSTEM &quot;URI&#x2F;URL&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>example:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;!ENTITY writer SYSTEM &quot;http:&#x2F;&#x2F;www.runoob.com&#x2F;entities.dtd&quot;&gt;</span><br><span class="line">&lt;!ENTITY copyright SYSTEM &quot;http:&#x2F;&#x2F;www.runoob.com&#x2F;entities.dtd&quot;&gt;</span><br><span class="line"></span><br><span class="line">XML example:</span><br><span class="line">&lt;author&gt;&amp;writer;&amp;copyright;&lt;&#x2F;author&gt;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h4 id="PCDATA"><a href="#PCDATA" class="headerlink" title="PCDATA"></a>PCDATA</h4><p>PCDATA 的意思是被解析的字符数据（parsed character data）。</p>
+<p>可把字符数据想象为 XML 元素的开始标签与结束标签之间的文本。</p>
+<p><strong>PCDATA 是会被解析器解析的文本。这些文本将被解析器检查实体以及标记。</strong></p>
+<p>文本中的标签会被当作标记来处理，而实体会被展开。</p>
+<p>不过，被解析的字符数据不应当包含任何 <code>&amp;</code>、<code>&lt;</code> 或者 <code>&gt;</code> 字符；需要使用 <code>&amp;amp;</code>、<code>&amp;lt;</code> 以及 <code>&amp;gt; </code>实体来分别替换它们。</p>
+<br/>
+
+<h4 id="CDATA"><a href="#CDATA" class="headerlink" title="CDATA"></a>CDATA</h4><p>CDATA 的意思是字符数据（character data）。</p>
+<p><strong>CDATA 是不会被解析器解析的文本。</strong>在这些文本中的标签不会被当作标记来对待，其中的实体也不会被展开。</p>
+<br/>
+
+<h2 id="第4章-使用PHP解析-XML"><a href="#第4章-使用PHP解析-XML" class="headerlink" title="第4章 使用PHP解析 XML"></a>第4章 使用PHP解析 XML</h2><p>SimpleXML 是 PHP 5 中的新特性。</p>
+<p>SimpleXML 扩展提供了一种获取 XML 元素的名称和文本的简单方式。</p>
+<h3 id="4-1-XML解析原理"><a href="#4-1-XML解析原理" class="headerlink" title="4.1 XML解析原理"></a>4.1 XML解析原理</h3><p>PHP解析XML共分为3步：</p>
+<ol>
+<li>读取XML文档到内存</li>
+<li>形成DOM树</li>
+<li>由DOM树生成对象并返回</li>
+</ol>
+<br/>
+
+<h3 id="4-2-simpleXML类库"><a href="#4-2-simpleXML类库" class="headerlink" title="4.2 simpleXML类库"></a>4.2 simpleXML类库</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//simplexml_load_file解析XML文档，返回PHP对象</span></span><br><span class="line"><span class="variable">$x</span> = simplexml_load_file(<span class="string">&#x27;3.1.xml&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line"><span class="variable">$s</span> = file_get_contents(<span class="string">&#x27;3.1.xml&#x27;</span>);	<span class="comment">//返回字符串</span></span><br><span class="line"><span class="variable">$x</span> = simplexml_load_string(<span class="variable">$s</span>); <span class="comment">//参数接收XML内容，而不是文件</span></span><br><span class="line"></span><br><span class="line">var_dump(<span class="variable">$x</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$x</span>-&gt;man[<span class="number">0</span>]-&gt;name;</span><br></pre></td></tr></table></figure>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">#3.1.xml</span><br><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">root</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">man</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>金星<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">age</span>&gt;</span>36<span class="tag">&lt;/<span class="name">age</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">man</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">man</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>太白<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">age</span>&gt;</span>46<span class="tag">&lt;/<span class="name">age</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">man</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">root</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>返回结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">object(SimpleXMLElement)#1 (1) &#123;		#调用simplexml_load_file函数，解析XML生成的对象</span><br><span class="line">  [&quot;man&quot;]&#x3D;&gt;					#PHP将XML节点以属性的形式存放</span><br><span class="line">  array(2) &#123;				#内容如果有多条，以数组的形式存放</span><br><span class="line">    [0]&#x3D;&gt;</span><br><span class="line">    object(SimpleXMLElement)#2 (2) &#123;</span><br><span class="line">      [&quot;name&quot;]&#x3D;&gt;			#数组的值就是解析后的节点名字和内容，以对象属性的形式存放</span><br><span class="line">      string(6) &quot;金星&quot;</span><br><span class="line">      [&quot;age&quot;]&#x3D;&gt;</span><br><span class="line">      string(2) &quot;36&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    [1]&#x3D;&gt;</span><br><span class="line">    object(SimpleXMLElement)#3 (2) &#123;</span><br><span class="line">      [&quot;name&quot;]&#x3D;&gt;</span><br><span class="line">      string(6) &quot;太白&quot;</span><br><span class="line">      [&quot;age&quot;]&#x3D;&gt;</span><br><span class="line">      string(2) &quot;46&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">金星</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h3 id="4-3-遍历XML数据"><a href="#4-3-遍历XML数据" class="headerlink" title="4.3 遍历XML数据"></a>4.3 遍历XML数据</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//simplexml_load_file解析XML文档，返回PHP对象</span></span><br><span class="line"><span class="variable">$x</span> = simplexml_load_file(<span class="string">&#x27;3.1.xml&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$x</span>-&gt;man <span class="keyword">as</span> <span class="variable">$v</span>)&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$v</span>-&gt;name;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line"><span class="variable">$c</span> = count(<span class="variable">$x</span>-&gt;man);</span><br><span class="line"><span class="keyword">for</span>(<span class="variable">$i</span>=<span class="number">0</span>;<span class="variable">$i</span>&lt;<span class="variable">$c</span>;<span class="variable">$i</span>++)&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$x</span>-&gt;man[<span class="variable">$i</span>]-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h3 id="4-4-使用SimpleXML增加节点"><a href="#4-4-使用SimpleXML增加节点" class="headerlink" title="4.4 使用SimpleXML增加节点"></a>4.4 使用SimpleXML增加节点</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//simplexml_load_file解析XML文档，返回PHP对象</span></span><br><span class="line"><span class="variable">$x</span> = simplexml_load_file(<span class="string">&#x27;3.1.xml&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//对象中的addChild方法创建节点</span></span><br><span class="line"><span class="variable">$man</span> = <span class="variable">$x</span>-&gt;addChild(<span class="string">&#x27;man&#x27;</span>);</span><br><span class="line"><span class="comment">//对象中的addChild方法创建节点，并给创建后的节点添加内容</span></span><br><span class="line"><span class="variable">$man</span>-&gt;addChild(<span class="string">&#x27;name&#x27;</span>,<span class="string">&#x27;玉帝&#x27;</span>);</span><br><span class="line"><span class="variable">$man</span>-&gt;addChild(<span class="string">&#x27;age&#x27;</span>,<span class="string">&#x27;999&#x27;</span>);</span><br><span class="line"></span><br><span class="line">var_dump(<span class="variable">$x</span>);</span><br><span class="line"><span class="comment">//将添加后的对象重新解析成XML文档，写入文件</span></span><br><span class="line"><span class="variable">$x</span>-&gt;asXML(<span class="string">&#x27;3.1.xml&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="第5章-Xpath"><a href="#第5章-Xpath" class="headerlink" title="第5章 Xpath"></a>第5章 Xpath</h2><h3 id="5-1-概述"><a href="#5-1-概述" class="headerlink" title="5.1 概述"></a>5.1 概述</h3><p>XPath 是一门在 XML 文档中查找信息的语言。</p>
+<p>用来在XML文档中对元素及属性进行遍历；</p>
+<br/>
+
+<h3 id="5-2-使用以及语法"><a href="#5-2-使用以及语法" class="headerlink" title="5.2 使用以及语法"></a>5.2 使用以及语法</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">//simplexml_load_file解析XML文档，返回PHP对象</span></span><br><span class="line"><span class="variable">$x</span> = simplexml_load_file(<span class="string">&#x27;newXML.xml&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//xpath 查找后仍然返回数组，数组中的值仍然为对象</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//路径查找</span></span><br><span class="line"><span class="variable">$d</span> = <span class="variable">$x</span>-&gt;xpath(<span class="string">&#x27;/root/man/name&#x27;</span>);   <span class="comment">//参数为路径，以 / 开始的为绝对路径查找</span></span><br><span class="line"><span class="variable">$d</span> = <span class="variable">$x</span>-&gt;xpath(<span class="string">&#x27;//name&#x27;</span>);   <span class="comment">//参数为路径，以 / 开始的为绝对路径查找</span></span><br><span class="line"><span class="variable">$d</span> = <span class="variable">$x</span>-&gt;xpath(<span class="string">&#x27;//man/*&#x27;</span>);   <span class="comment">//使用*匹配所有节点</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//条件查找</span></span><br><span class="line"><span class="variable">$d</span> = <span class="variable">$x</span>-&gt;xpath(<span class="string">&#x27;//man[age&lt;120]&#x27;</span>);   <span class="comment">//使用*匹配所有节点</span></span><br><span class="line"><span class="variable">$d</span> = <span class="variable">$x</span>-&gt;xpath(<span class="string">&#x27;//man[last()]&#x27;</span>);</span><br><span class="line"><span class="variable">$d</span> = <span class="variable">$x</span>-&gt;xpath(<span class="string">&#x27;//man[@msg]&#x27;</span>);      <span class="comment">//属性查找</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">var_dump(<span class="variable">$d</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：XML基础</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-04-14 09:17:18</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/04/14/XML基础/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/2021/04/14/XXE%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="left arrow-icon flex-center" >
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">XXE总结</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/04/09/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E6%BC%8F%E6%B4%9E/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">文件包含漏洞</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#XML-%E5%9F%BA%E7%A1%80"><span class="nav-text">XML 基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC1%E7%AB%A0-XML-%E6%A6%82%E8%BF%B0"><span class="nav-text">第1章 XML 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-1-%E5%BC%95%E5%85%A5"><span class="nav-text">1.1 引入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-%E4%BB%80%E4%B9%88%E6%98%AFXML"><span class="nav-text">1.2 什么是XML</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC2%E7%AB%A0-XML-%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-text">第2章 XML 的基本语法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E8%AF%AD%E6%B3%95%E8%A7%84%E5%88%99"><span class="nav-text">2.1 语法规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E5%85%83%E7%B4%A0%E5%B1%9E%E6%80%A7"><span class="nav-text">2.2 元素属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-CDATA"><span class="nav-text">2.3 CDATA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC3%E7%AB%A0-DTD"><span class="nav-text">第3章 DTD</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-DTD%E7%AE%80%E4%BB%8B"><span class="nav-text">3.1 DTD简介</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E7%9A%84-DOCTYPE-%E5%A3%B0%E6%98%8E"><span class="nav-text">内部的 DOCTYPE 声明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%96%E9%83%A8%E6%96%87%E6%A1%A3%E5%A3%B0%E6%98%8E"><span class="nav-text">外部文档声明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-DTD%E6%9E%84%E5%BB%BA%E6%A8%A1%E5%9D%97"><span class="nav-text">3.2 DTD构建模块</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%83%E7%B4%A0"><span class="nav-text">元素</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7"><span class="nav-text">属性</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%BB%98%E8%AE%A4%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-text">默认属性值</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#REQUIRED"><span class="nav-text">#REQUIRED</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#IMPLIED"><span class="nav-text">#IMPLIED</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#FIXED"><span class="nav-text">#FIXED</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%88%97%E4%B8%BE%E5%B1%9E%E6%80%A7%E5%80%BC"><span class="nav-text">列举属性值</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%9E%E4%BD%93"><span class="nav-text">实体</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%86%85%E9%83%A8%E5%AE%9E%E4%BD%93%E5%A3%B0%E6%98%8E"><span class="nav-text">一个内部实体声明</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%A4%96%E9%83%A8%E5%AE%9E%E4%BD%93%E5%A3%B0%E6%98%8E"><span class="nav-text">一个外部实体声明</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PCDATA"><span class="nav-text">PCDATA</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CDATA"><span class="nav-text">CDATA</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC4%E7%AB%A0-%E4%BD%BF%E7%94%A8PHP%E8%A7%A3%E6%9E%90-XML"><span class="nav-text">第4章 使用PHP解析 XML</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-XML%E8%A7%A3%E6%9E%90%E5%8E%9F%E7%90%86"><span class="nav-text">4.1 XML解析原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-simpleXML%E7%B1%BB%E5%BA%93"><span class="nav-text">4.2 simpleXML类库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E9%81%8D%E5%8E%86XML%E6%95%B0%E6%8D%AE"><span class="nav-text">4.3 遍历XML数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E4%BD%BF%E7%94%A8SimpleXML%E5%A2%9E%E5%8A%A0%E8%8A%82%E7%82%B9"><span class="nav-text">4.4 使用SimpleXML增加节点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AC%AC5%E7%AB%A0-Xpath"><span class="nav-text">第5章 Xpath</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#5-1-%E6%A6%82%E8%BF%B0"><span class="nav-text">5.1 概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-2-%E4%BD%BF%E7%94%A8%E4%BB%A5%E5%8F%8A%E8%AF%AD%E6%B3%95"><span class="nav-text">5.2 使用以及语法</span></a></li></ol></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>
